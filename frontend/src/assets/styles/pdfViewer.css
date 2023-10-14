@@ -1,0 +1,126 @@
+.pdfviewer {
+  width: 100%;
+  /* height: auto; */
+  /* max-height: calc(100vh - 60px); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  /* position: relative;
+    overflow: hidden; */
+  /* Disable scrolling */
+}
+
+@media screen and (min-width: 1024px) {
+  .pdfviewer {
+    height: 100vh;
+    max-height: none;
+  }
+}
+
+@media screen and (max-height: 700px) {
+  .pdfviewer {
+    height: unset;
+    max-height: none;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .pdfviewer {
+    height: 60vh;
+    max-height: none;
+  }
+}
+
+/* Customer properties file PDF */
+.rpv-core__modal-body {
+  width: 100% !important;
+}
+
+.rpv-core__minimal-button[data-testid="theme__switch-button"] {
+  display: none !important;
+}
+
+.rpv-core__minimal-button[data-testid="open__button"] {
+  display: none !important;
+}
+
+.rpv-page-navigation__current-page-input {
+  width: 2rem !important;
+}
+
+.rpv-core__menu-item--ltr[data-testid="view-mode__dual-menu"] {
+  display: none !important;
+}
+
+/* @media screen and (min-width: 1200px) {
+    .content-cookie {
+        height: 750px;
+    }
+} */
+@media screen and (min-width: 1600px) {
+  .pdfviewer {
+    /* height: 900px; */
+  }
+}
+
+/*Ipad dọc(768 x 1024)*/
+@media screen and (max-width: 768px) {
+}
+
+/*Tablet nhỏ(480 x 640)*/
+@media screen and (max-width: 480px) {
+}
+
+/*Iphone(480 x 640)*/
+@media screen and (max-width: 576px) {
+}
+
+/*Smart phone nhỏ*/
+@media screen and (max-width: 320px) {
+  .pdfviewer {
+    height: 500px;
+  }
+}
+
+.rpv-default-layout__toolbar {
+  z-index: unset !important;
+}
+
+.rpv-default-layout__container {
+  border: none !important;
+}
+
+/* backgroundColor PDF */
+/* .rpv-core__inner-page {
+    background-color: rgba(237, 237, 240, 1) !important;
+} */
+
+/* css accordion */
+.css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root.Mui-expanded {
+  min-height: 10px !important;
+}
+
+.css-o4b71y-MuiAccordionSummary-content.Mui-expanded {
+  margin: 15px 0 !important;
+}
+
+.css-17o5nyn.Mui-expanded {
+  margin: 15px 0px !important;
+}
+
+.css-u7qq7e {
+  padding: unset !important;
+}
+
+.css-1iji0d4.Mui-expanded {
+  min-height: 10px !important;
+}
+
+.css-mfm6ys-MuiPaper-root-MuiAccordion-root:before {
+  position: absolute;
+}
+
+.css-15v22id-MuiAccordionDetails-root {
+  padding: 0px !important;
+}

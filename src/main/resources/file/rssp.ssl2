@@ -1,0 +1,7 @@
+mobileid.rssp.baseurl=https://rssp.mobile-id.vn/rssp/v2/
+mobileid.rssp.rp.name=PAPERLESS
+mobileid.rssp.rp.user=PAPERLESS
+mobileid.rssp.rp.password=8Dsh6ewB
+mobileid.rssp.rp.signature=FMdrj9HoZXuyjTbOamm6zj0n2HBki1VHWSTU3WeHDE+e6L6ek4v4+xTUzAckOsbUH7UKt0TsvZKl4wkTC12KHi2uqr95GSspfTn0iDqwTSNWD+uuAhh/CsJqr0azJZjc9/gDRssy3fdj1RLGdcLTKJTFebCNPfd28XBZ6r1Rh7BrndowOP//zxJt0hNqdSYI7lSIZUQ0q+jPIfg6Whd6snPVUd0Ch0NB6QvIUDaTEtKKQFbQeFVZNeqpglYNtiS67GDy/wwgJBNPERgJwaknDX7H34fclP5OhBG8e7umnK5noS8VEHzU819Zj+ncGOrL1ROceQZTCJwJq5I7l3KOeQ==
+mobileid.rssp.rp.keystore.file=file/PAPERLESS.p12
+mobileid.rssp.rp.keystore.password=9qsVPxCu

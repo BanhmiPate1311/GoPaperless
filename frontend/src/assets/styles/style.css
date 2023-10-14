@@ -1,0 +1,674 @@
+#root {
+}
+
+body {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #211529;
+  text-align: left;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+h2 {
+  font-family: "Montserrat", "Nucleo", "Helvetica", "sans-serif" !important;
+  padding-top: 18px;
+}
+
+div {
+  font-family: "Montserrat", "Nucleo", "Helvetica", "sans-serif" !important;
+  font-size: 14px;
+}
+
+input {
+  font-family: "Montserrat", "Nucleo", "Helvetica", "sans-serif" !important;
+  font-size: 14px;
+}
+
+.panel-header {
+  /* background: -webkit-linear-gradient(right, #0a98e7 0%, #3e3a94 100%); */
+  border-bottom: 1px solid #e8e9ed;
+  left: 0;
+  right: 0;
+  height: 55px;
+  position: fixed;
+  top: 0;
+}
+
+footer.site-footer {
+  padding: 0 1.875em;
+  border-top: 1px solid #ccc;
+  /* background: #0b95e5; */
+  position: fixed;
+  width: 100%;
+  z-index: 999;
+  bottom: 0;
+}
+
+footer.site-footer .footer-inner {
+  color: #fff;
+  font-size: 14px;
+  padding: 1em;
+}
+
+.pull-right {
+  float: right;
+}
+
+/* Áp dụng style khác cho main trên thiết bị có độ rộng màn hình nhỏ hơn 576px (mobile) */
+@media screen and (max-width: 576px) {
+  main {
+    padding-top: 30px;
+    padding-bottom: 150px;
+  }
+}
+@media screen and (max-width: 576px) {
+  .searchcrite {
+    margin-left: -8px;
+    margin-top: 10px;
+  }
+}
+
+/* Áp dụng style khác cho main trên thiết bị có độ rộng màn hình lớn hơn 768px (laptop)*/
+@media (min-width: 768px) {
+  main {
+    padding: 60px;
+  }
+}
+
+@media (min-width: 768px) {
+  .searchcrite {
+    margin-left: 100px;
+    margin-top: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .laptop-content {
+    margin-left: 2rem;
+    margin-top: -30px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .mobile-content {
+    display: flex;
+    align-items: center;
+    width: 66.66666667%;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .css-heg063-MuiTabs-flexContainer {
+    flex-wrap: wrap;
+  }
+  .css-k008qs {
+    flex-wrap: wrap;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .css-1aquho2-MuiTabs-indicator {
+    display: none;
+  }
+  .css-ttwr4n {
+    display: none;
+  }
+}
+
+/* reponsive footer */
+@media only screen and (max-width: 767px) {
+  .site-footer {
+    padding: 20px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-inner .col-sm-8,
+  .footer-inner .col-sm-4 {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.new-document-container,
+.preview-document-container {
+  margin-top: 20px;
+}
+
+.new-document-container h2,
+.preview-document-container h2 {
+  font-size: 20px;
+  font-family: "Open Sans", sans-serif !important;
+  font-weight: 300;
+  margin-bottom: 17px;
+  color: inherit;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.arrow-up {
+  transform: rotate(180deg);
+}
+
+.bd-bottom {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 10px;
+  padding-bottom: 5px;
+  margin: 0 1px;
+}
+.bd-top {
+  border-top: 1px solid #fff;
+}
+
+.re-sign {
+  background-color: #f8f8f8;
+  /*       border-bottom: 1px solid rgba(0, 0, 0, 0.1);*/
+}
+
+.Card:hover {
+  background-color: #b2dfdb;
+}
+
+.phone-input {
+  border: none;
+  outline: none;
+}
+
+@media (min-width: 992px) {
+  .dis-flex {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    /* display: -webkit-flex !important; */
+    display: -ms-flexbox !important;
+  }
+}
+
+.border-red {
+  border: 1px solid red !important;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.border-none {
+  border: none;
+}
+
+.text-right {
+  text-align: right !important;
+  padding-left: 10px;
+}
+
+.pull-right {
+  float: right;
+}
+
+/* Remove default styles */
+.dropdown {
+  background-color: transparent;
+  border: none;
+}
+
+/* Add styles for button and dropdown content */
+.dropbtn {
+  background-color: transparent;
+  font-size: 14px;
+  border: none;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+  /* min-width: 160px; */
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  transform: translateY(-100%);
+}
+
+.dropdown-content a {
+  color: #0d6efd;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.css-hg18dx-MuiButtonBase-root-MuiTab-root {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+}
+
+.new-document-container h2,
+.preview-document-container h2 {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-weight: 400 !important;
+}
+
+.css-1e6y48t-MuiButtonBase-root-MuiButton-root {
+  text-transform: capitalize !important;
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+
+  padding: 0 !important;
+}
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+}
+
+.css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+  color: black !important;
+}
+
+.css-13cp4kv {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+}
+
+.css-1ujsas3 {
+  text-transform: capitalize !important;
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  padding: 0 !important;
+  margin-top: -5px;
+}
+
+.css-1v4ccyo {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+}
+
+.css-1o6z5ng {
+  padding: 6px 14px !important;
+}
+
+.react-tel-input .form-control {
+  font-size: 14px !important;
+}
+
+.row > * {
+  padding: unset !important;
+}
+
+.row {
+  margin-left: unset !important;
+}
+
+.css-1sumxir-MuiFormLabel-root-MuiInputLabel-root {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+/*.css-6ffsbr-MuiAutocomplete-root .MuiOutlinedInput-root {
+     padding: 0px 1px !important;
+}*/
+
+.css-6ffsbr-MuiAutocomplete-root {
+  /* width: 300px; */
+}
+
+.css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+.react-tel-input .special-label {
+  font-size: 11px !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.css-u9osun {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+.css-j5nvp8 .MuiOutlinedInput-root .MuiAutocomplete-input {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+.MuiAutocomplete-paper li {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+.css-1uvydh2 {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+.css-46bh2p-MuiCardContent-root {
+  padding: unset !important;
+}
+
+.css-1qw96cp {
+  padding: unset !important;
+}
+
+.css-1wo2ey9-MuiFormLabel-root-MuiInputLabel-root {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 16px !important;
+}
+
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+/*outline label*/
+.css-opco2b {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 16px !important;
+}
+
+/*//filed Search criteria*/
+.css-qiwgdb {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+  padding: 15px 14px;
+}
+
+.css-1km1ehz {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+}
+
+.react-tel-input .country-list {
+  bottom: 100%;
+}
+
+/*fix phone input*/
+
+.react-tel-input .flag-dropdown {
+  border-top: none !important;
+  top: 5px !important;
+  border-right: 1px solid #ccc !important;
+  border-left: none !important;
+  border-bottom: none !important;
+  margin-bottom: 3px;
+  margin-left: 1px;
+}
+
+/*filed personal code*/
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
+  font-family: "Montserrat", "Nucleo", "Helvetica", sans-serif !important;
+  font-size: 14px !important;
+  padding: 18px 14px !important;
+}
+
+.react-phone-input {
+  position: relative;
+}
+
+.react-phone-input .PhoneInputCountry {
+  position: absolute;
+  border-right: 1px solid #ccc !important;
+  border-left: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  margin-bottom: 10px;
+  margin: 1px;
+  background-color: #f5f5f5;
+  border: 1px solid #cacaca;
+  height: 95%;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.react-phone-input .PhoneInputCountry > .PhoneInputCountryIcon {
+  font-size: x-large;
+}
+
+.react-phone-input .PhoneInputCountry > .PhoneInputCountrySelectArrow {
+  position: absolute;
+  z-index: 1;
+  top: -10px;
+  left: 25px;
+  display: block;
+  background: white;
+  padding: 0 5px;
+  font-size: 13px;
+  white-space: nowrap;
+  transform: none !important;
+  border: none;
+}
+
+.react-phone-input input {
+  border: none;
+  background: #ffffff;
+  border: 1px solid #cacaca;
+  border-radius: 5px;
+  width: 300px;
+  outline: none;
+  padding: 16px 14px 18.5px 58px !important;
+  transition: box-shadow ease 0.25s, border-color ease 0.25s;
+}
+
+.react-phone-input input:hover {
+  border-color: black;
+}
+
+.react-phone-input input:focus {
+  outline: 1px solid #1e90ff !important;
+}
+
+.react-phone-input label {
+  position: absolute;
+  background-color: white;
+  z-index: 999;
+  font-size: 16px !important;
+  line-height: 1.4375em;
+  letter-spacing: 0.00938em;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
+  transform: translate(14px, -9px) scale(0.75);
+}
+
+.textfield label {
+  position: absolute;
+  background-color: white;
+  z-index: 999;
+  font-size: 16px !important;
+  line-height: 1.4375em;
+  letter-spacing: 0.00938em;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
+  transform: translate(14px, -11px) scale(0.75);
+}
+
+/* custom phone input */
+.react-phone-input {
+  position: relative;
+}
+
+.react-phone-input .PhoneInputCountry {
+  position: absolute;
+  border-right: 1px solid #ccc !important;
+  border-left: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  margin-bottom: 10px;
+  margin: 1px;
+  background-color: #f5f5f5;
+  border: 1px solid #cacaca;
+  height: 95%;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.react-phone-input .PhoneInputCountry > .PhoneInputCountryIcon {
+  font-size: x-large;
+}
+
+.react-phone-input .PhoneInputCountry > .PhoneInputCountrySelectArrow {
+  position: absolute;
+  z-index: 1;
+  top: -10px;
+  left: 25px;
+  display: block;
+  background: white;
+  padding: 0 5px;
+  font-size: 13px;
+  white-space: nowrap;
+  transform: none !important;
+  border: none;
+}
+
+.react-phone-input input {
+  border: none;
+  background: #ffffff;
+  border: 1px solid #cacaca;
+  border-radius: 5px;
+  width: 300px;
+  outline: none;
+  padding: 18.5px 14px 18.5px 58px;
+  transition: box-shadow ease 0.25s, border-color ease 0.25s;
+}
+
+.react-phone-input input:hover {
+  border-color: black;
+}
+
+.react-phone-input label {
+  position: absolute;
+  background-color: white;
+  z-index: 999;
+  font-size: 16px !important;
+  line-height: 1.4375em;
+  letter-spacing: 0.00938em;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
+  transform: translate(14px, -11px) scale(0.75);
+}
+
+/* sign document */
+.with-card {
+  /* margin: 0px 4px 10px 10px; */
+  width: 100px;
+  height: 100px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 5px;
+}
+
+.with-smart {
+  /* margin: 0px 4px 10px 10px; */
+  width: 150px;
+  height: 150px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 5px;
+}
+
+.with-mobile {
+  /* margin: 0px 4px 10px 10px; */
+  width: 150px;
+  height: 156px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 5px;
+}
+
+/* batch */
+.panel-batch {
+  background: #009ede;
+  height: 55px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.expand-all {
+}
+.expand-all:hover {
+  border: 2px solid #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 8px 10px;
+}
+.counter-count {
+  padding-left: 15px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  height: 55px;
+  color: #99d8f2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 400;
+}
+
+.text-color {
+  color: #aaaaaa;
+}
+
+/* Sequence */
+.progress {
+  height: 6px;
+  box-shadow: none;
+  width: 100px;
+  top: 0;
+  bottom: 0;
+}
+.progress-text {
+  font-size: 13px;
+  margin-left: 20px;
+}
+.link-visited {
+  text-decoration: none;
+  color: #9a9a9a;
+}
+.link-visited:active {
+  text-decoration: underline;
+  color: #5b5b5b;
+}
+@media screen and (max-width: 576px) {
+  .sequentially {
+    justify-content: center;
+  }
+  .usb-card {
+    width: 370px;
+  }
+}
+@media (min-width: 768px) {
+  .document {
+    text-align: end;
+  }
+}
+
+/* Open css */
+.preview-document-step {
+  color: #009ede;
+  margin-right: 15px;
+}
+
+@media screen and (max-width: 576px) {
+  .sequence-btn {
+    justify-content: center;
+  }
+}
+@media (min-width: 768px) {
+  .sequence-btn {
+    justify-content: end;
+  }
+}

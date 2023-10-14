@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.2.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>vn.mobile-id</groupId>
+    <artifactId>paperless</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>paperless</name>
+    <description>paperless gateway project for Spring Boot</description>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!--			<exclusions>-->
+            <!--				<exclusion>-->
+            <!--					<groupId>commons-logging</groupId>-->
+            <!--					<artifactId>commons-logging</artifactId>-->
+            <!--				</exclusion>-->
+            <!--				&lt;!&ndash;dev thì comment lại&ndash;&gt;-->
+            <!--				<exclusion>-->
+            <!--					<groupId>org.apache.tomcat.embed</groupId>-->
+            <!--					<artifactId>tomcat-embed-websocket</artifactId>-->
+            <!--				</exclusion>-->
+            <!--				<exclusion>-->
+            <!--					<groupId>org.springframework.boot</groupId>-->
+            <!--					<artifactId>spring-boot-starter-tomcat</artifactId>-->
+            <!--				</exclusion>-->
+            <!--				&lt;!&ndash; // dev thì comment lại&ndash;&gt;-->
+            <!--			</exclusions>-->
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ua-parser</groupId>
+            <artifactId>uap-java</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.27</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.17.1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>r05</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc10</artifactId>
+            <version>19.13.0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>react</artifactId>
+            <version>18.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-jcr2spi</artifactId>
+            <version>2.16.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-spi</artifactId>
+            <version>2.16.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-spi-commons</artifactId>
+            <version>2.16.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-spi2dav</artifactId>
+            <version>2.16.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-webdav</artifactId>
+            <version>2.16.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <!--        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.50</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.50</version>
+        </dependency>-->
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>bcpkix-jdk15to18</artifactId>
+            <version>2023.06.23</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>bcprov-jdk15onto18</artifactId>
+            <version>2023.06.23</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>bcutil-jdk15onto18</artifactId>
+            <version>2023.06.23</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13</version>
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-barcodes</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-commons</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-font-asian</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-forms</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-hyph</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-io</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-kernel</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-layout</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-pdfa</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-pdftest</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-sign</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-styled-xml-parser</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>itext7-svg</artifactId>
+            <version>2023.07.26-7.2.4</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>awsv4_lib</artifactId>
+            <version>20220607</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>MobileID-FMS-Client</artifactId>
+            <version>2019.08.23-rv116</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\MobileID-FMS-Client-2019.08.23-rv116.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vm.mobileid</groupId>
+            <artifactId>jackrabbit-api</artifactId>
+            <version>2.16.3</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\jackrabbit-api-2.16.3.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>jackrabbit-jcr-commons</artifactId>
+            <version>2.16.3</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\jackrabbit-jcr-commons-2.16.3.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>jackrabbit-jcr2dav</artifactId>
+            <version>2.16.3</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\jackrabbit-jcr2dav-2.16.3.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>rssp.exsig</artifactId>
+            <version>1.0</version>
+            <!--<systemPath>E:\PPL_V2\paperless-main-sign\lib\lib.rssp.exsig.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>vn.mobile-id</groupId>
+            <artifactId>rssp.pdf</artifactId>
+            <version>1.0</version>
+            <!--            <systemPath>E:\PPL_V2\paperless-main-sign\lib\lib.rssp.pdf(1).jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jmrtd-0.7.18</groupId>
+            <artifactId>jmrtd-0.7.18</artifactId>
+            <version>0.7.18</version>
+        </dependency>
+        <dependency>
+            <groupId>scuba-smartcards-0.0.19</groupId>
+            <artifactId>scuba-smartcards-0.0.19</artifactId>
+            <version>0.0.19</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
+<dependency>
+    <groupId>com.nimbusds</groupId>
+    <artifactId>nimbus-jose-jwt</artifactId>
+    <version>9.31</version>
+</dependency>
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <!-- Plugin để build ReactJS -->
+            <!--            <plugin>-->
+            <!--                <groupId>com.github.eirslett</groupId>-->
+            <!--                <artifactId>frontend-maven-plugin</artifactId>-->
+            <!--                <version>1.12.1</version>-->
+            <!--                <configuration>-->
+            <!--                    <workingDirectory>frontend/build</workingDirectory>-->
+            <!--                    <installDirectory>target/classes/static</installDirectory>-->
+            <!--                </configuration>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>install node and npm</id>-->
+            <!--                        <goals>-->
+            <!--                            <goal>install-node-and-npm</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <nodeVersion>v16.17.1</nodeVersion>-->
+            <!--                            <npmVersion>8.15.0</npmVersion>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                    <execution>-->
+            <!--                        <id>npm install</id>-->
+            <!--                        <goals>-->
+            <!--                            <goal>npm</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <arguments>install</arguments>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                    <execution>-->
+            <!--                        <id>npm build</id>-->
+            <!--                        <goals>-->
+            <!--                            <goal>npm</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <arguments>run build</arguments>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+            <!--             Plugin để sao chép các tệp ReactJS vào gói cuối cùng -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/classes/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/frontend/build</directory>
+                                    <includes>
+                                        <include>**/*.*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

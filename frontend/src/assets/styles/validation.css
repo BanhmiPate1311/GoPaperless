@@ -1,0 +1,207 @@
+.content-signature {
+  padding-left: 2px;
+  padding-right: 10px;
+  margin-left: 23px;
+  margin-right: 7px;
+  /* width: calc(100% - 42px); */
+  overflow-y: break-word;
+  /* height: 100vh; */
+  /* padding-bottom: 250px; */
+}
+.header-cookie {
+  height: 80px;
+  border-bottom: 1px solid #e9e9e9;
+  /* padding: 10px 0 10px 25px; */
+  color: #26293f;
+  font-weight: bold;
+  font-size: 0.75em;
+  line-height: 1.2;
+}
+
+.font-title {
+  padding-top: 20px;
+  font-size: 18px;
+  font-weight: 700 !important;
+}
+
+.content-cookie {
+  padding-left: 2px;
+  padding-right: 10px;
+  margin-left: 23px;
+  margin-right: 7px;
+  /* width: calc(100% - 42px); */
+  overflow-y: auto;
+  height: 551px;
+  padding-bottom: 120px;
+}
+
+.content-sign {
+  display: flex;
+  flex-direction: column;
+  /* min-height: 100%; */
+  margin: 0px;
+  background: rgb(232, 235, 240);
+  .border-field {
+    border: 1px solid #dfdbd6;
+    box-shadow: none;
+    display: block;
+    border-radius: 8px;
+    padding: 20px;
+  }
+}
+
+.css-ufz7ne {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.css-91kxzg {
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  min-height: calc(100vh - 60px);
+  width: 100%;
+  padding-left: 24px;
+  padding-right: 24px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-bottom: 30px;
+}
+
+.css-r11a23 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.css-thqqgj {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  position: relative;
+  padding-top: 24px;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.css-10ktgt9 {
+  /* padding-left: 10px; */
+  padding-right: 60px;
+}
+
+.css-h6dcj7 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  position: relative;
+}
+
+.css-pmda5y {
+  -webkit-flex: none;
+  -ms-flex: none;
+  flex: none;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  height: auto;
+  width: 480px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.css-1e61wdr {
+  position: relative;
+  height: auto;
+  color: #000000;
+  background: #ffffff;
+  border-radius: 8px;
+  /* // box-shadow: 0px 1px 3px rgba(0,0,0,0.2); */
+}
+.css-wnj41j {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  /* padding: 24px; */
+}
+.css-1nqdrf4 {
+  height: auto;
+  width: 480px;
+}
+.css-1r2zlre {
+  position: relative;
+  -webkit-transition: box-shadow 0.2s ease-in-out;
+  transition: box-shadow 0.2s ease-in-out;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+.css-10vgal8 {
+  width: 480px;
+}
+.css-19wcyhm {
+  background: #e8ebf0;
+  position: fixed;
+  bottom: 31px;
+  /* right: 24px; */
+  padding-bottom: 24px;
+  /* // z-index: 2; */
+  -webkit-transition: box-shadow 0.3s, background 0.3s ease-in-out;
+  transition: box-shadow 0.3s, background 0.3s ease-in-out;
+}
+.css-1oy1ewu {
+  /* padding: 24px 0; */
+  background: #ffffff;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  position: relative;
+  z-index: 2;
+  -webkit-transition: box-shadow 0.2s ease-in-out;
+  transition: box-shadow 0.2s ease-in-out;
+}
+.css-1oy1ewu--noShadow {
+  box-shadow: 0px 3px 7px rgba(0, 0, 0, 0);
+}
+
+.css-1oy1ewu--isModalOpen {
+  box-shadow: 0px 3px 7px rgba(0, 0, 0, 0.2);
+}
+
+.css-1oy1ewu--overflow:before {
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.05);
+}
+.css-1oy1ewu--overflow:after {
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.05);
+}
