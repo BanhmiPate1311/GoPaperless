@@ -33,8 +33,11 @@ import { useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import { v4 as uuidv4 } from "uuid";
 import { useSearchParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { apiControllerManagerActions } from "../../store/apiControllerManager";
 
 const PdfView = ({ workFlow }) => {
+  const dispatch = useDispatch();
   const menuRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
@@ -46,11 +49,14 @@ const PdfView = ({ workFlow }) => {
   // console.log("selectedMenuItem: ", selectedMenuItem);
   const [signatures, setSignatures] = useState([]);
   const [pdfPages, setPdfPages] = useState([]); // list of all pdf pages
+
   const [pdfInfo, setPdfInfo] = useState(null); // pdf info
   const [zoom, setZoom] = useState(1);
   const [previousViewPageIndex, setPreviousViewPageIndex] = useState(0);
-  const [search] = useSearchParams();
-  const [signerToken] = useState(search.get("access_token"));
+
+  useEffect(() => {
+    dispatch(apiControllerManagerActions.setSignaturePrepare(signatures));
+  }, [signatures]);
 
   useEffect(() => {
     const getDocumentDetails = async () => {
@@ -99,25 +105,24 @@ const PdfView = ({ workFlow }) => {
     pdfRange.addEventListener("mouseleave", mouseOut);
 
     // Trình nghe sự kiện click và mousedown toàn bộ trang
-    // const handleGlobalClickAndMouseDown = (e) => {
-    //   console.log("e: ", e);
-    //   if (
-    //     (menuRef.current.contains(e.target) &&
-    //       e.target.className?.includes("pdf-page")) ||
-    //     !menuRef.current.contains(e.target)
-    //   ) {
-    //     console.log("object");
-    //     handleCloseContextMenu();
-    //   }
-    // };
+    const handleGlobalClickAndMouseDown = (e) => {
+      // console.log("e: ", e);
+      if (
+        (menuRef.current.contains(e.target) &&
+          e.target.className?.includes("pdf-page")) ||
+        !menuRef.current.contains(e.target)
+      ) {
+        handleCloseContextMenu();
+      }
+    };
 
     // Đăng ký trình nghe sự kiện click và mousedown
-    // window.addEventListener("click", handleGlobalClickAndMouseDown);
+    window.addEventListener("click", handleGlobalClickAndMouseDown);
     // window.addEventListener("mousedown", handleGlobalClickAndMouseDown);
 
     return () => {
       // Hủy đăng ký trình nghe sự kiện khi component unmount
-      // window.removeEventListener("click", handleGlobalClickAndMouseDown);
+      window.removeEventListener("click", handleGlobalClickAndMouseDown);
       // window.removeEventListener("mousedown", handleGlobalClickAndMouseDown);
       pdfRange.removeEventListener("mousemove", mouseMove);
       pdfRange.removeEventListener("mouseleave", mouseOut);
@@ -130,7 +135,7 @@ const PdfView = ({ workFlow }) => {
       const pagesNumber = pdfInfo.document_pages;
 
       const documentCustomPage = pdfInfo.document_custom_page;
-      console.log({ documentCustomPage });
+      // console.log({ documentCustomPage });
       const pdfPages = [];
       for (let i = 0; i < pagesNumber; i++) {
         const page = documentCustomPage.find(
@@ -151,7 +156,7 @@ const PdfView = ({ workFlow }) => {
       const resFields = await fpsService.getFields({
         documentId: documentID,
       });
-      console.log({ resFields });
+      // console.log({ resFields });
       let signatures = Object.values(resFields.data)
         .flat()
         .map((item) => {
@@ -163,7 +168,7 @@ const PdfView = ({ workFlow }) => {
         ...signatures,
       ]);
       setSignatures(signatures);
-      console.log("signatures: ", signatures);
+      // console.log("signatures: ", signatures);
 
       for (let i = 1; i <= pagesNumber; i++) {
         fpsService
@@ -210,7 +215,7 @@ const PdfView = ({ workFlow }) => {
   };
 
   const handleMoveToIndexPage = (index) => {
-    const pdfInfosContainer = document.getElementById("pdfPages-container");
+    const pdfInfosContainer = document.getElementById("pdf-view");
     const targetPage = document.getElementById(`page-${index}`);
     pdfInfosContainer.scrollTo({
       top: targetPage.offsetTop - pdfInfosContainer.offsetTop,
@@ -232,25 +237,51 @@ const PdfView = ({ workFlow }) => {
     );
   };
 
-  const handleMenuItemClick = (item) => {
-    console.log("item: ", item);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const handlePdfPage = (item, event) => {
+    const rect = event.target.getBoundingClientRect(); // Lấy kích thước và vị trí của phần tử được click
+    const x = event.clientX - rect.left; // Xác định vị trí x dựa trên vị trí của chuột
+
+    const y = event.clientY - rect.top;
+
+    const data = {
+      x: (x * 100) / item.actualWidth,
+      y: (y * 100) / item.actualHeight,
+      width: 22,
+      height: 5,
+      page: item.currentPage,
+    };
+    // setPageNumber(item);
+    setPageNumber(data);
+  };
+
+  const handleMenuItemClick = (item, event) => {
     if (
-      signatures.findIndex((item) => item.signerToken === signerToken) !== -1
+      signatures.findIndex(
+        (item) => item.signerToken === workFlow.signerToken
+      ) !== -1
     ) {
+      handleCloseContextMenu();
       return alert("Signature Duplicated");
     }
+    // const rect = event.target.getBoundingClientRect(); // Lấy kích thước và vị trí của phần tử được click
+    // const x = event.clientX - rect.left; // Xác định vị trí x dựa trên vị trí của chuột
+
+    // const y = event.clientY - rect.top;
+
     const newSignature = {
       type: String(item).toUpperCase(),
       field_name: String(item).toUpperCase() + uuidv4(),
-      page: 1,
+      page: pageNumber.page,
       dimension: {
-        x: 0,
-        y: 0,
+        x: pageNumber.x,
+        y: pageNumber.y,
         width: 22,
         height: 5,
       },
       visible_enabled: true,
-      signerToken,
+      signerToken: workFlow.signerToken,
     };
 
     setSignatures((prev) => [...prev, newSignature]);
@@ -334,9 +365,9 @@ const PdfView = ({ workFlow }) => {
     // 1: 880, 790
     // context menu width: 158
     const pageX = e.pageX;
-    // console.log("pageX: ", pageX);
+    console.log("pageX: ", pageX);
     const pageY = e.pageY;
-    // console.log("pageY: ", pageY);
+    console.log("pageY: ", pageY);
     // const maxX = window.innerWidth;
     // console.log("maxX: ", maxX);
     // const maxY = window.innerHeight;
@@ -344,12 +375,12 @@ const PdfView = ({ workFlow }) => {
 
     // if pageY - 265 > 523 : pageY - 266
     const contextMenuHeight = 265;
-    const contextMenuWidth = 158;
-    const minY = 523;
-    const maxY = 880;
+    const contextMenuWidth = 131;
+    const minY = 620;
+    const maxY = 1008;
 
     setContextMenuPosition({
-      x: pageX + contextMenuWidth < 750 ? pageX : pageX - contextMenuWidth,
+      x: pageX + contextMenuWidth < 650 ? pageX : pageX - contextMenuWidth,
       y:
         pageY + contextMenuHeight < 920
           ? pageY - (pageY - minY) / 2
@@ -525,8 +556,9 @@ const PdfView = ({ workFlow }) => {
                 onMenuItemClick={handleMenuItemClick}
               />
             )}
-            <Box flexGrow={1}>
-              {/* {JSON.stringify(pdfPages)} */}
+            <Box flexGrow={1} id="pdfPages-container" bgcolor="#f8f8f8">
+              {/* {JSON.stringify(signatures)} */}
+
               {pdfPages.map((item, index) => (
                 <Document
                   useSignaturesState={() => [signatures, setSignatures]}
@@ -535,6 +567,7 @@ const PdfView = ({ workFlow }) => {
                   pdfInfo={pdfInfo}
                   index={index}
                   key={index}
+                  handlePdfPage={handlePdfPage}
                 />
               ))}
             </Box>

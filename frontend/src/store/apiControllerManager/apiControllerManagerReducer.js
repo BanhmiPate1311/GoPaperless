@@ -11,6 +11,7 @@ const initialState = {
   isFetching: false,
   errorSignFile: undefined,
   isLoading: false,
+  signaturePrepare: [],
 };
 
 export const {
@@ -35,6 +36,9 @@ export const {
     },
     setIsLoading(state, action) {
       state.isLoading = action.payload;
+    },
+    setSignaturePrepare(state, action) {
+      state.signaturePrepare = action.payload;
     },
   },
 

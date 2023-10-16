@@ -20,12 +20,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import vn.mobileid.paperless.API.GatewayAPI;
+import vn.mobileid.paperless.Model.smartId.request.SignRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 
@@ -60,7 +57,7 @@ public class RSSPController {
     // download get mapping with signingToken path variable
     @GetMapping("{signingToken}/download")
     public ResponseEntity<?> downloadFile(@PathVariable String signingToken,
-            @RequestParam("access_token") String accessToken) {
+                                          @RequestParam("access_token") String accessToken) {
         try {
 
 //            String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
@@ -146,27 +143,10 @@ public class RSSPController {
 
     @PostMapping("/signFile")
     public ResponseEntity<?> signFile(
-            @RequestParam("requestID") String requestID,
-            @RequestParam("signingToken") String signingTokenRequest,
-            @RequestParam("filename") String fileName,
-            @RequestParam("signerToken") String signerTokenRequest,
-            @RequestParam("connectorName") String connectorName,
-            @RequestParam("signingOption") String singingOption,
-            @RequestParam("codeNumber") String codeNumber,
-            @RequestParam("credentialID") String credentialID,
-            @RequestParam("signerId") String signerId,
-            @RequestParam("certChain") String certChain,
-            @RequestParam("type") String typeRequest,
-            @RequestParam("prefixCode") String prefixCode,
-            @RequestParam("relyingParty") String relyingParty,
-            @RequestParam("codeEnable") String codeEnable,
-            @RequestParam("lang") String lang,
-            @RequestParam String enterpriseId,
-            @RequestParam String workFlowId,
+            @RequestBody SignRequest signRequest,
             HttpServletRequest request)
             throws Throwable {
-        String result = rsspService.signFile(requestID, signingTokenRequest, fileName, signerTokenRequest, singingOption,
-                codeNumber, credentialID, signerId, certChain, typeRequest, prefixCode, relyingParty, codeEnable, request, connectorName, enterpriseId, workFlowId, lang);
+        String result = rsspService.signFile(signRequest, request);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

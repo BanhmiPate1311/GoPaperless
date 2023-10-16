@@ -52,5 +52,17 @@ public class FpsController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PutMapping("/{documentId}/{field}/putSignature")
+    public ResponseEntity<?> putSignature(@PathVariable int documentId, @PathVariable String field, @RequestBody BasicFieldAttribute data) throws Exception {
 
+        String response = fpsService.putSignature(documentId, field, data);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{documentId}/{field_name}/deleteSignatue")
+    public ResponseEntity<?> deleteSignatue(@PathVariable int documentId, @PathVariable String field_name) throws Exception {
+
+        String response = fpsService.deleteSignatue(documentId, field_name);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

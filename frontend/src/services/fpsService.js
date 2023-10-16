@@ -35,7 +35,7 @@ export const fpsService = {
   putSignature: async ({ document_id }, data, { field }) => {
     try {
       const response = await api.put(
-        `/fps/v1/documents/${document_id}/fields/${field}`,
+        `/fps/${document_id}/${field}/putSignature`,
         data
       );
       return response.data; // Trả về dữ liệu từ câu trả lời của máy chủ
@@ -44,15 +44,14 @@ export const fpsService = {
       throw error; // Ném lỗi để xử lý ở nơi gọi hàm này
     }
   },
-  // removeSignature: async ({ document_id }, field_name) => {
-  //   AxiosFPS.delete(`/fps/v1/documents/${document_id}/fields`, {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${bear}`,
-  //     },
-  //     data: {
-  //       field_name,
-  //     },
-  //   }).catch((err) => {});
-  // },
+  removeSignature: async ({ document_id }, field_name) => {
+    try {
+      const response = await api.delete(
+        `/fps/${document_id}/${field_name}/deleteSignatue`
+      );
+    } catch (error) {
+      console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+      throw error; // Ném lỗi để xử lý ở nơi gọi hàm này
+    }
+  },
 };

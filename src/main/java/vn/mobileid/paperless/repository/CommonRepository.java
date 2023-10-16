@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import vn.mobileid.exsig.*;
 import vn.mobileid.paperless.API.SigningMethodAsyncImp;
 import vn.mobileid.paperless.entity.SignPosition;
+import vn.mobileid.paperless.fps.request.HashFileRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 import vn.mobileid.paperless.service.FileJRBService;
@@ -20,7 +21,7 @@ import vn.mobileid.paperless.utils.CommonFunction;
 import vn.mobileid.paperless.utils.Difinitions;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
+//import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -158,7 +159,8 @@ public class CommonRepository {
 
         String sBase64 = "";
         try {
-            sBase64 = DatatypeConverter.printBase64Binary(pdfSigned);
+            sBase64 = Base64.getEncoder().encodeToString(pdfSigned);
+//            sBase64 = DatatypeConverter.printBase64Binary(pdfSigned);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -496,6 +498,68 @@ public class CommonRepository {
 
         }
         return null;
+    }
+
+    public void getMetaData (HashFileRequest data, String signerToken) throws Exception {
+        Participants[][] rsParticipant = new Participants[1][];
+        connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
+        if (rsParticipant[0] != null && rsParticipant[0].length > 0) {
+            String meta = rsParticipant[0][0].META_INFORMATION;
+            JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
+
+//                    JsonElement signingPurposeElement = jsonObject.get("signing_purpose");
+            String signingPurpose = "Signature";
+
+            if (jsonObject != null && jsonObject.has("signing_purpose")) {
+                signingPurpose = jsonObject.get("signing_purpose").getAsString();
+                // Tiếp tục xử lý dữ liệu trong signingPurposeElement
+            } else {
+                // Xử lý khi không tìm thấy thuộc tính "signing_purpose"
+            }
+
+            String reason = "Purpose: " + signingPurpose; // Mặc định là "Purpose: " + signingPurpose
+            String page = "1";
+            String top = null;
+            String left = null;
+            String width = "135";
+            String height = "39";
+            String text = "Sample text";
+            String type = "image";
+
+//                    JsonElement pdfElement = jsonObject.get("pdf");
+            if (jsonObject != null && jsonObject.has("pdf")) {
+                JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
+                if (pdfObject.has("reason")) {
+                    reason = pdfObject.get("reason").getAsString();
+                }
+                JsonElement annotationElement = pdfObject.get("annotation");
+                if (annotationElement != null) {
+                    JsonObject annotationObject = annotationElement.getAsJsonObject();
+                    if (annotationObject.has("page")) {
+                        page = annotationObject.get("page").getAsString();
+                    }
+                    if (annotationObject.has("top")) {
+                        top = annotationObject.get("top").getAsString();
+                    }
+                    if (annotationObject.has("left")) {
+                        left = annotationObject.get("left").getAsString();
+                    }
+                    if (annotationObject.has("width")) {
+                        width = annotationObject.get("width").getAsString();
+                    }
+                    if (annotationObject.has("height")) {
+                        height = annotationObject.get("height").getAsString();
+                    }
+                    if (annotationObject.has("text")) {
+                        text = annotationObject.get("text").getAsString();
+                    }
+                    if (annotationObject.has("type")) {
+                        type = annotationObject.get("type").getAsString();
+                    }
+                }
+
+            }
+        }
     }
 
 }

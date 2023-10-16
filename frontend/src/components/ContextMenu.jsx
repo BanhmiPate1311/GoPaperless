@@ -79,7 +79,7 @@ const ContextMenu = ({ x, y, onClose, onMenuItemClick }) => {
               minWidth: "29px",
             },
           }}
-          onClick={() => onMenuItemClick(item.value)}
+          onClick={(e) => onMenuItemClick(item.value, e)}
         >
           <ListItemIcon sx={{ color: "inherit" }}>{item.icon}</ListItemIcon>
           <ListItemText

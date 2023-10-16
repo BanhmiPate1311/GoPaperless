@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { Close } from "@mui/icons-material";
+import { useRef, useState } from "react";
 import { useDrag } from "react-dnd";
 import { ResizableBox } from "react-resizable";
 import { fpsService } from "../../services/fpsService";
-import { Close } from "@mui/icons-material";
-import { useSearchParams } from "react-router-dom";
-import { Box } from "@mui/material";
+import "../../assets/styles/react-resizable.css";
 
 export default function Signature({
   useSignatureDataState = () => [null, () => {}],
@@ -43,7 +42,7 @@ export default function Signature({
   });
 
   const handleRemoveSignature = async () => {
-    alert("Lam dep trai");
+    // alert("Lam dep trai");
     fpsService.removeSignature(pdfInfo, signatureData.field_name);
     setSignature(null);
   };

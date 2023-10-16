@@ -6,17 +6,28 @@ import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import "../../assets/styles/fieldSmartId.css";
 import { api } from "../../constants/api";
-import { apiControllerManagerActions } from "../../store/apiControllerManager";
+import {
+  apiControllerManagerActions,
+  useApiControllerManager,
+} from "../../store/apiControllerManager";
 import ButtonField from "../form/button_field";
 import ComboBoxField from "../form/combo_box_field";
 import InputField from "../form/input_field";
 import PhoneInputField from "../form/phone_input_field";
 import Notice from "./Notice";
 import ModalField from "./modal_field";
+import { useSearchParams } from "react-router-dom";
+import { smartIdService } from "../../services/smartid";
 
 const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+
+  const { signaturePrepare } = useApiControllerManager();
+  const signature = signaturePrepare.find(
+    (item) => item.signerToken === workFlow.signerToken
+  );
+  console.log("signature: ", signature);
 
   const [isFetching, setIsFecthing] = useState(false);
   const [prefix, setPrefix] = useState([]);
@@ -192,7 +203,6 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
   };
 
   const getCertificate = async () => {
-    console.log("lang: ", lang);
     setIsFecthing(true);
     try {
       let codeNumber = "";
@@ -267,45 +277,55 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
     if (personalCode) {
       codeNumber = value + ":" + personalCode.trim();
     }
-    const formData = new FormData();
-    formData.append("lang", lang);
-    formData.append("requestID", requestID);
-    formData.append("signingToken", workFlow.signingToken);
-    formData.append("filename", workFlow.fileName);
-    formData.append("signerToken", workFlow.signerToken);
-    formData.append("connectorName", connectorName);
-    formData.append("signingOption", "smartid");
-    formData.append("codeNumber", codeNumber);
-    formData.append("enterpriseId", workFlow.enterpriseId);
-    formData.append("workFlowId", workFlow.workFlowId);
-    formData.append(
-      "credentialID",
-      content.listCertificate[cerSelected].credentialID
-    );
-    formData.append("signerId", signerID);
-    formData.append("certChain", content.listCertificate[cerSelected].cert);
-    formData.append("prefixCode", content.prefixCode);
-    formData.append("relyingParty", content.relyingParty);
-    formData.append("codeEnable", content.codeEnable);
-    if (phoneNumber) {
-      if (phoneNumber.includes("+84")) {
-        codeNumber = value + ":" + phoneNumber.replace("+84", "0").trim();
-      }
-      formData.append("type", value);
-    }
-    if (personalCode) {
-      codeNumber = value + ":" + personalCode.trim();
-      formData.append("type", value);
-    }
-    formData.append("codeNumber", codeNumber);
+
+    const data = {
+      lang,
+      requestID,
+      signingToken: workFlow.signingToken,
+      fileName: workFlow.fileName,
+      signerToken: workFlow.signerToken,
+      connectorName,
+      signingOption: "smartid",
+      codeNumber,
+      enterpriseId: workFlow.enterpriseId,
+      workFlowId: workFlow.workFlowId,
+      credentialID: content.listCertificate[cerSelected].credentialID,
+      signerId: signerID,
+      certChain: content.listCertificate[cerSelected].cert,
+      prefixCode: content.prefixCode,
+      relyingParty: content.relyingParty,
+      codeEnable: content.codeEnable,
+      signature: signature ? signature : {},
+      type: value,
+    };
+    // const formData = new FormData();
+    // formData.append("lang", lang);
+    // formData.append("requestID", requestID);
+    // formData.append("signingToken", workFlow.signingToken);
+    // formData.append("filename", workFlow.fileName);
+    // formData.append("signerToken", workFlow.signerToken);
+    // formData.append("connectorName", connectorName);
+    // formData.append("signingOption", "smartid");
+    // formData.append("codeNumber", codeNumber);
+    // formData.append("enterpriseId", workFlow.enterpriseId);
+    // formData.append("workFlowId", workFlow.workFlowId);
+    // formData.append(
+    //   "credentialID",
+    //   content.listCertificate[cerSelected].credentialID
+    // );
+    // formData.append("signerId", signerID);
+    // formData.append("certChain", content.listCertificate[cerSelected].cert);
+    // formData.append("prefixCode", content.prefixCode);
+    // formData.append("relyingParty", content.relyingParty);
+    // formData.append("codeEnable", content.codeEnable);
+    // formData.append(
+    //   "field_name",
+    //   signature?.field_name ? signature?.field_name : ""
+    // );
+    // formData.append("type", value);
     try {
-      api
-        .post("/signFile", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          signal: signFileController.signal,
-        })
+      smartIdService
+        .sign(data)
         .then((response) => {
           // const messageHome = {
           //   message: "Document signed successfully.",
@@ -338,6 +358,7 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
             setMessageError(title);
           }
         })
+
         .finally(() => {});
       api
         .get("/getVC?requestID=" + requestID, {
@@ -367,7 +388,6 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
   const [scroll, setScroll] = useState("paper");
 
   const handleClickOpen = (scrollType) => {
-    console.log("tip");
     setMessageError("");
     setScroll(scrollType);
     getCertificate();

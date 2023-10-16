@@ -22,7 +22,7 @@ const FileSigned = ({ listSignedInfo }) => {
     <>
       {listSignedInfo.map((e, index) => {
         const signedInfo = JSON.parse(e.value);
-        // console.log("signedInfo: ", signedInfo);
+
         signedType = e.is_seal === true ? "SEAL" : "NORMAL";
         return (
           <Fragment key={index}>
@@ -45,7 +45,7 @@ const FileSigned = ({ listSignedInfo }) => {
                   </IconButton>
                 </span>
 
-                {signedInfo.certificate.subject.common_name}
+                {signedInfo.signature.certificate.subject.common_name}
               </div>
 
               <div className="col-6">
@@ -87,7 +87,7 @@ const FileSigned = ({ listSignedInfo }) => {
                         <span style={{ color: "#AAA" }}>
                           {t("single.signingTime")}:
                         </span>{" "}
-                        {formatTime(signedInfo.signing_time)}
+                        {formatTime(signedInfo.signature.signing_time)}
                         <span
                           data-tooltip={t("single.signed")}
                           data-side="right"
@@ -113,7 +113,7 @@ const FileSigned = ({ listSignedInfo }) => {
                         <span style={{ color: "#AAA" }}>
                           {t("single.certificateOwner")}:
                         </span>{" "}
-                        {signedInfo.certificate.subject.common_name}
+                        {signedInfo.signature.certificate.subject.common_name}
                       </div>
                       <div
                         className="col-6"
@@ -126,7 +126,7 @@ const FileSigned = ({ listSignedInfo }) => {
                         <span style={{ color: "#AAA" }}>
                           {t("single.certificateIssuer")}:
                         </span>{" "}
-                        {signedInfo.certificate.issuer.organization}
+                        {signedInfo.signature.certificate.issuer.organization}
                       </div>
                       <div
                         className="col-6"
@@ -140,12 +140,12 @@ const FileSigned = ({ listSignedInfo }) => {
                           {t("single.certificatevValidite")}:
                         </span>{" "}
                         {moment(
-                          signedInfo.certificate.valid_from,
+                          signedInfo.signature.certificate.valid_from,
                           "YYYY-MM-DD HH:mm:ss"
                         ).format("DD/MM/YYYY HH:mm:ss")}
                         {" - "}
                         {moment(
-                          signedInfo.certificate.valid_to,
+                          signedInfo.signature.certificate.valid_to,
                           "YYYY-MM-DD HH:mm:ss"
                         ).format("DD/MM/YYYY HH:mm:ss")}
                       </div>
@@ -163,7 +163,7 @@ const FileSigned = ({ listSignedInfo }) => {
                         Signature
                       </div>
 
-                      {signedInfo.metadata.location !== "" && (
+                      {signedInfo.signature.metadata.location !== "" && (
                         <div
                           className="col-6"
                           style={{
@@ -175,7 +175,7 @@ const FileSigned = ({ listSignedInfo }) => {
                           <span style={{ color: "#AAA" }}>
                             {t("single.location")}:
                           </span>{" "}
-                          {signedInfo.metadata.location}
+                          {signedInfo.signature.metadata.location}
                         </div>
                       )}
 
@@ -191,7 +191,7 @@ const FileSigned = ({ listSignedInfo }) => {
                         <span style={{ color: "#AAA" }}>
                           {t("single.reason")}
                         </span>{" "}
-                        {signedInfo.metadata.reason}
+                        {signedInfo.signature.metadata.reason}
                       </div>
                     </div>
                   </div>

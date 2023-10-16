@@ -12,6 +12,7 @@ const Document = ({
   pdfInfo,
   handleValidateSignature,
   index,
+  handlePdfPage,
 }) => {
   const [signatures, setSignatures] = useSignaturesState();
   const dropSigRef = useRef();
@@ -141,7 +142,7 @@ const Document = ({
   };
 
   return (
-    <Box ref={dropSig(dropSigRef)} position="relative">
+    <Box id={`page-${index}`} ref={dropSig(dropSigRef)} position="relative">
       <Box
         sx={{
           backgroundImage: `url(${pdfPage.imgURI})`,
@@ -150,8 +151,10 @@ const Document = ({
           minHeight: pdfPage.height + "px",
           width: pdfPage.width + "px",
           height: pdfPage.height + "px",
+          marginBottom: `${index === 0 ? "30px" : 0}`,
         }}
         className="pdf-page"
+        onContextMenu={(e) => handlePdfPage(pdfPage, e)}
       >
         {signatures.map((signatureData, index) => {
           return (
