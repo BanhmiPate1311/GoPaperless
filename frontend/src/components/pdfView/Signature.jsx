@@ -127,14 +127,25 @@ export default function Signature({
           onMouseDown={handleRemoveSignature}
           className="p-0.5 text-[16px] z-10 text-red-500 hover:cursor-pointer hover:opacity-80 rounded-full bg-white"
         /> */}
-        <div onClick={handleRemoveSignature}>
-          <Close
+        <div
+          onClick={handleRemoveSignature}
+          style={{
+            background: "red",
+            color: "white",
+            borderRadius: "50%",
+            width: "20px",
+            height: "20px",
+            textAlign: "center",
+          }}
+        >
+          {/* <Close
             style={{
               background: "red",
               color: "white",
               borderRadius: "50%",
             }}
-          />
+          /> */}
+          X
         </div>
       </div>
     );

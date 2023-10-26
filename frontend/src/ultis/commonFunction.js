@@ -311,15 +311,73 @@ export const createValidIcon = (value) => {
 export const createValidLabel = (value) => {
   switch (value) {
     case "overview":
-      return "Overview";
-    case "signature":
-      return "Signatures";
-    case "seal":
-      return "Seals";
+      return i18n.t("validation.tab1");
+    case "signatures":
+      return i18n.t("validation.tab2");
+    case "seals":
+      return i18n.t("validation.tab3");
     case "details":
-      return "Details";
+      return i18n.t("validation.tab4");
     default:
       return "Unknown Tab";
+  }
+};
+
+export const createValidStatus = (value) => {
+  console.log("value: ", value);
+  switch (value) {
+    case "Valid":
+      return i18n.t("validation.overviewStatus1");
+    case "There are warnings":
+      return i18n.t("validation.overviewStatus2");
+    case "There are errors":
+      return i18n.t("validation.overviewStatus3");
+    default:
+      return null;
+  }
+};
+
+export const createValidName = (value) => {
+  console.log("value: ", value);
+  switch (value) {
+    case "valid Signature":
+      return i18n.t("validation.validSig");
+    case "indeterminate Signature":
+      return i18n.t("validation.indeterminateSig");
+    case "invalid Signature":
+      return i18n.t("validation.invalidSig");
+    case "valid Seal":
+      return i18n.t("validation.validSeal");
+    case "indeterminate Seal":
+      return i18n.t("validation.indeterminateSeal");
+    case "invalid Seal":
+      return i18n.t("validation.invalidSeal");
+    default:
+      return null;
+  }
+};
+
+export const createValidTitle = (value) => {
+  console.log("value: ", value);
+  switch (value) {
+    case "Signature is valid":
+      return i18n.t("validation.sigValidTitle2");
+    case "Seal is valid":
+      return i18n.t("validation.sealValidTitle2");
+    default:
+      return null;
+  }
+};
+
+export const createValidSubTitle = (value) => {
+  console.log("value: ", value);
+  switch (value) {
+    case "Electronic Signature":
+      return i18n.t("validation.signSubTitle");
+    case "Electronic Seal":
+      return i18n.t("validation.sealSubTitle");
+    default:
+      return null;
   }
 };
 

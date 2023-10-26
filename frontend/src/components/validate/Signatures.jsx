@@ -1,21 +1,13 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
-import React, { useState } from "react";
-import ShowSignature from "./ShowSignature";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SignDetail from "./SignDetail";
-import { ReactComponent as IconChipWhite } from "../../assets/images/icon_Chip_White.svg";
 import { Error } from "@mui/icons-material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { ReactComponent as IconChipWhite } from "../../assets/images/icon_Chip_White.svg";
+import SignDetail from "./SignDetail";
+import { useTranslation } from "react-i18next";
+import imageNotFound from "../../assets/images/noSignature.png";
 
 const Signatures = ({ validFile, signType }) => {
-  console.log("validFile: ", validFile);
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState("panel");
 
   const handleChangeShow = (panel) => (event, isExpanded) => {
@@ -27,17 +19,24 @@ const Signatures = ({ validFile, signType }) => {
       name: "valid",
       value: validFile.filter((sig) => sig.indication === "TOTAL_PASSED"),
       icon: (
-        <Box padding="7px" bgcolor="rgb(255, 240, 226)">
-          <IconChipWhite />
-        </Box>
+        <Stack
+          padding="7px"
+          border="1px solid transparent"
+          // bgcolor="rgb(255, 240, 226)"
+          borderRadius="50px"
+          justifyContent="center"
+          direction="row"
+        >
+          <IconChipWhite width={17} height={17} />
+        </Stack>
       ),
       title:
         signType === "Signature"
-          ? "Qualified Electronic Signature"
-          : "Advanced Electronic Seal",
+          ? t("validation.sigValidTitle")
+          : t("validation.sealValidTitle"),
     },
     {
-      name: "indeteminate",
+      name: "indeterminate",
       value: validFile.filter((sig) => sig.indication === "INDETERMINATE"),
       icon: (
         <Stack
@@ -50,7 +49,7 @@ const Signatures = ({ validFile, signType }) => {
           <Error sx={{ color: "rgb(235, 106, 0)", fontSize: "18px" }} />
         </Stack>
       ),
-      title: "Insufficient information to ascertain validity",
+      title: t("validation.indeterminateTitle"),
     },
     {
       name: "invalid",
@@ -65,26 +64,41 @@ const Signatures = ({ validFile, signType }) => {
           <Error sx={{ color: "rgb(216, 81, 63)", fontSize: "18px" }} />
         </Stack>
       ),
-      title: "Checks of the signature failed",
+      title: t("validation.invalidTitle"),
     },
   ];
   const newSign = valueSign.filter((sig) => sig.value.length > 0);
-  console.log("newSign: ", newSign);
+
   return (
     <>
-      <Box sx={{ p: 3 }}>
-        {/* <Title>Signatures</Title> */}
-        <div style={{ fontSize: "14px", fontWeight: "550" }}>Signatures</div>
+      <Box p={3} fontWeight={550}>
+        {signType === "Signature" ? t("validation.tab2") : t("validation.tab3")}
       </Box>
       <Divider />
-      <Box>
+      {validFile.length === 0 ? (
         <Box>
-          {newSign.length > 0 &&
-            newSign.map((val, i) => (
-              <SignDetail sign={val} signType={signType} key={i} />
-            ))}
+          <Box width={200} textAlign="center" mx="auto">
+            <img
+              width="100%"
+              // style={{ width: "20px" }}
+              src={imageNotFound}
+              alt="loading"
+            />
+          </Box>
+          <Typography textAlign="center" variant="h5" fontWeight="bold">
+            {t("validation.signatureNotFound")}
+          </Typography>
         </Box>
-      </Box>
+      ) : (
+        <Box>
+          <Box>
+            {newSign.length > 0 &&
+              newSign.map((val, i) => (
+                <SignDetail sign={val} signType={signType} key={i} />
+              ))}
+          </Box>
+        </Box>
+      )}
     </>
   );
 };

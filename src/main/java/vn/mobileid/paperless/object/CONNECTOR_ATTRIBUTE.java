@@ -14,7 +14,7 @@ import java.util.List;
  * @author PHY
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class COMNECTOR_ATTRIBUTE {
+public class CONNECTOR_ATTRIBUTE {
 
     private List<Attribute> attributes;
     private String attributeType;

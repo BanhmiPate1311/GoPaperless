@@ -33,22 +33,22 @@ public class LoadConnectorToRAM implements ServletContextListener {
      * @throws Exception
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
-
     @Autowired
     private process connect;
+
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
         System.out.println("*********Load ConnectorToRAM started*********");
         try {
 
             ConnectorName[][] object = new ConnectorName[1][];
-            
+
             connect.USP_GW_CONNECTOR_LIST(object);
             if (object[0].length > 0 && object != null) {
                 ArrayList<ConnectorName> tempList;
                 tempList = new ArrayList<>();
                 tempList.addAll(Arrays.asList(object[0]));
-                LoadParamSystem.updateParamSystem(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME, tempList);
+                LoadParamSystem.updateParamSystem(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME, tempList);
                 System.out.println("*********load ram done started*********");
 
             }
@@ -73,7 +73,6 @@ public class LoadConnectorToRAM implements ServletContextListener {
         } catch (Exception e) {
             System.out.println(e);
         }
-
 
     }
 

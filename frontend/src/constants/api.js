@@ -23,8 +23,8 @@ import axios from "axios";
 
 export const api = axios.create({
   // local
-  // baseURL: "/signing",
-  baseURL: "http://localhost:8080/signing",
+  baseURL: "/signing",
+  // baseURL: "http://localhost:8080/signing",
   headers: {
     "Content-Type": "application/json",
   },

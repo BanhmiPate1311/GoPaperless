@@ -65,10 +65,10 @@ public class FileJRBService {
 
         String sPropertiesFMS = "";
         ConnectorName[][] object = new ConnectorName[1][];
-        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
-        if(connector.size()>0){
-            for(int m =0; m < connector.size();m++){
-                if(connector.get(m).CONNECTOR_NAME.equals(Difinitions.CONFIG_CONECTOR_DMS_MOBILE_ID)){
+        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
+        if (connector.size() > 0) {
+            for (int m = 0; m < connector.size(); m++) {
+                if (connector.get(m).CONNECTOR_NAME.equals(Difinitions.CONFIG_CONNECTOR_DMS_MOBILE_ID)) {
                     sPropertiesFMS = connector.get(m).IDENTIFIER;
                 }
             }
@@ -129,7 +129,6 @@ public class FileJRBService {
 //        }
 //        return jrbFile;
 //    }
-
     // up file lên jackrabit
 //    public static JCRFile downloadFMS(String sUUID, String sPropertiesFMS) {
 //        JCRFile jrbFile = null;
@@ -203,6 +202,7 @@ public class FileJRBService {
 
         return responseEntity.getBody();
     }
+
     //    public static JCRFile uploadPdfToken(String fileNameToSave, String sMimeType, InputStream stream,
 //                                         String sPropertiesFMS, byte[] pdfFile) {
 //        JCRFile jrbFile = null;
@@ -276,7 +276,6 @@ public class FileJRBService {
             result = null;
         }
         return result;
-
 
     }
 

@@ -1,5 +1,6 @@
 package vn.mobileid.paperless.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import vn.mobileid.paperless.fps.*;
+import vn.mobileid.paperless.fps.request.FpsSignRequest;
 import vn.mobileid.paperless.fps.request.HashFileRequest;
 
 import java.util.HashMap;
@@ -19,8 +21,8 @@ import java.util.Objects;
 
 @Service
 public class FpsService {
+
     private String accessToken;
-    private String bearerToken;
 
     public void getAccessToken() {
         String authorizeUrl = "https://fps.mobile-id.vn/fps/v1/authenticate";
@@ -34,9 +36,9 @@ public class FpsService {
         // Tạo dữ liệu JSON cho yêu cầu POST
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("grant_type", "client_credentials");
-        requestData.put("client_id", "MI_MobileApp");
+        requestData.put("client_id", "Dokobit_Gateway");
         requestData.put("remember_me_enabled", false);
-        requestData.put("client_secret", "h9fSyjob8OF2SjlLSJY0");
+        requestData.put("client_secret", "TmFtZTogRG9rb2JpdCBHYXRld2F5IFdlYgpDcmVhdGVkIGF0OiAxNjk3NjAzNDE5CkNyZWF0ZWQgYnk6IEdpYVRLClZlcnNpb24gY2xpZW50IFNlY3JldDogMSA=");
 
         // Tạo HttpEntity với dữ liệu JSON và headers
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
@@ -45,8 +47,12 @@ public class FpsService {
         this.accessToken = Objects.requireNonNull(responseEntity.getBody()).getAccess_token();
     }
 
-    public String getDocumentId(String uuid) throws Exception {
+    public int getDocumentId(String uuid) throws Exception {
+        System.out.println("uuid: " + uuid);
+//        String synchronizeUrl = "https://fps.mobile-id.vn/fps/v1/synchronize";
+
         String synchronizeUrl = "https://fps.mobile-id.vn/fps/v1/synchronize";
+//        String accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTgwNDE0MTY1NzEsImlhdCI6MTY5ODAzNzgxNjU3MSwiaXNzIjoiaHR0cHM6Ly9mcHMubW9iaWxlLWlkLnZuIiwiYXVkIjoiZW50ZXJwcmlzZSIsInN1YiI6IkZQUyIsInR5cCI6IkJlYXJlciIsInNjb3BlIjoiTUlfTW9iaWxlQXBwIiwic2lkIjoiMDkxMi01OTY0MS02MDg0OCIsImF6cCI6Ik1vYmlsZS1JRCBDb21wYW55IiwibW9iaWxlIjoiMTkwMCA2ODg0IiwiYWlkIjozLCJpY2kiOjF9.QqT0AxiTUgJLTT59tP7qeS_sTD5pwR6uEQVar_n1oiEIq5H-sr_xTDX7RAsmcUFhporNj3-liBGahFGgtBRKOANMAHXwxfTsPx0WWw-JukKMsnvwruDedASmgiUsV8SGS609rHjXC-y8IgHFnrXA7s8EzECLAvc6NyoRbVuBRsW-m3-A0hQUJo1b-Hy61Un4xnrQ_y2guyN7AEn1Obb4y1MMuZFXf8z0x9jthO8bFJLpr0vAi_moNqOX31QWa9TxSaBQWoz5ob-l3TwiC4JRBA7BjBd132FRT9FGUXRwDAx31lwAorC9ufHF8RzgTQ1j1M20MBjbYwVk-lfzUotj9w";
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -68,11 +74,9 @@ public class FpsService {
 // Assuming the responseBody is a JSON string, you can parse it into a JsonNode
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(responseBody);
-
 // Get the "document_id" field from the JsonNode as a JSON string
-            String documentIdJsonString = jsonNode.get("document_id").toString();
+            return jsonNode.get("document_id").asInt();
 
-            return documentIdJsonString;
         } catch (HttpClientErrorException e) {
             HttpStatus statusCode = e.getStatusCode();
             System.out.println("HTTP Status Code: " + statusCode.value());
@@ -83,6 +87,7 @@ public class FpsService {
                 throw new Exception(e.getMessage());
             }
         }
+
     }
 
     public byte[] getImageBasse64(int documentId, int page) throws Exception {
@@ -126,12 +131,8 @@ public class FpsService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(getImageBasse64Url, HttpMethod.GET, httpEntity, String.class);
-            // Get the response body as a String
-            String responseBody = response.getBody();
 
-// Convert the response body to a JsonNode using Jackson's ObjectMapper
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readTree(responseBody).toString();
+            return response.getBody();
         } catch (HttpClientErrorException e) {
             HttpStatus statusCode = e.getStatusCode();
             System.out.println("HTTP Status Code: " + statusCode.value());
@@ -211,6 +212,7 @@ public class FpsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
+        headers.set("x-dimension-unit", "percentage");
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("field_name", data.getFieldName());
@@ -218,6 +220,8 @@ public class FpsService {
         requestData.put("dimension", data.getDimension());
         requestData.put("visible_enabled", data.getVisibleEnabled());
 
+        Gson gson = new Gson();
+        System.out.println("Request Data: " + gson.toJson(requestData));
 
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
 
@@ -226,12 +230,8 @@ public class FpsService {
 //            return Objects.requireNonNull(responseEntity.getBody()).getDocument_id();
 
             ResponseEntity<String> response = restTemplate.exchange(addSignatureUrl, HttpMethod.POST, httpEntity, String.class);
-            // Get the response body as a String
-            String responseBody = response.getBody();
 
-// Convert the response body to a JsonNode using Gson's ObjectMapper
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readTree(responseBody).toString();
+            return response.getBody();
         } catch (HttpClientErrorException e) {
             HttpStatus statusCode = e.getStatusCode();
             System.out.println("HTTP Status Code: " + statusCode.value());
@@ -245,13 +245,14 @@ public class FpsService {
     }
 
     public String putSignature(int documentId, String field, @NotNull BasicFieldAttribute data) throws Exception {
-        String addSignatureUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields/" + field;
+        String putSignatureUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields/" + field;
 
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
+        headers.set("x-dimension-unit", "percentage");
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("field_name", data.getFieldName());
@@ -259,14 +260,13 @@ public class FpsService {
         requestData.put("dimension", data.getDimension());
         requestData.put("visible_enabled", data.getVisibleEnabled());
 
-
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
 
         try {
 //            ResponseEntity<SynchronizeDto> responseEntity = restTemplate.exchange(addSignatureUrl, HttpMethod.POST, httpEntity, SynchronizeDto.class);
 //            return Objects.requireNonNull(responseEntity.getBody()).getDocument_id();
 
-            ResponseEntity<String> response = restTemplate.exchange(addSignatureUrl, HttpMethod.PUT, httpEntity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(putSignatureUrl, HttpMethod.PUT, httpEntity, String.class);
             // Get the response body as a String
 
             return response.getBody();
@@ -343,18 +343,55 @@ public class FpsService {
             // Get the response body as a String
             String responseBody = response.getBody();
 
-// Convert the response body to a JsonNode using Gson's ObjectMapper
+//            JsonObject jsonObject1 = gson.fromJson(responseBody, JsonObject.class);
+//            return jsonObject1.get("hash_value").getAsString();
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(responseBody);
 
-// Get the "document_id" field from the JsonNode as a JSON string
-            return jsonNode.get("hash_value").toString();
+            return jsonNode.get("hash_value").asText();
         } catch (HttpClientErrorException e) {
             HttpStatus statusCode = e.getStatusCode();
             System.out.println("HTTP Status Code: " + statusCode.value());
             if (statusCode.value() == 401) {
                 getAccessToken();
                 return hashSignatureField(documentId, data);
+            } else {
+                throw new Exception(e.getMessage());
+            }
+        }
+    }
+
+    public String signDocument(int documentId, FpsSignRequest data) throws Exception {
+        String signDocumentUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/sign";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("field_name", data.getFieldName());
+        requestData.put("hash_value", data.getHashValue());
+        requestData.put("signature_value", data.getSignatureValue());
+        requestData.put("certificate_chain", data.getCertificateChain());
+
+        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
+
+        try {
+//            ResponseEntity<SynchronizeDto> responseEntity = restTemplate.exchange(addSignatureUrl, HttpMethod.POST, httpEntity, SynchronizeDto.class);
+//            return Objects.requireNonNull(responseEntity.getBody()).getDocument_id();
+
+            ResponseEntity<String> response = restTemplate.exchange(signDocumentUrl, HttpMethod.POST, httpEntity, String.class);
+            // Get the response body as a String
+            System.out.println("check: " + response.getBody());
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            HttpStatus statusCode = e.getStatusCode();
+            System.out.println("HTTP Status Code: " + statusCode.value());
+            if (statusCode.value() == 401) {
+                getAccessToken();
+                return signDocument(documentId, data);
             } else {
                 throw new Exception(e.getMessage());
             }

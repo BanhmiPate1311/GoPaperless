@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.*;
 
-
 @Service
 public class ViettelCAService {
 
@@ -49,7 +48,6 @@ public class ViettelCAService {
     @Autowired
     private GatewayAPI gatewayAPI;
 
-
     public String login(String userId, String connectorName, ConnectorLogRequest connectorLogRequest) throws Exception {
 
         String sPropertiesFMS = "";
@@ -57,7 +55,7 @@ public class ViettelCAService {
         String baseURL = "";
         String clientSecret = "";
         String profileId = "";
-        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
+        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
         if (connector.size() > 0) {
             for (int m = 0; m < connector.size(); m++) {
                 if (connector.get(m).CONNECTOR_NAME.equals(connectorName)) {
@@ -96,7 +94,6 @@ public class ViettelCAService {
             throw new Exception(e.getMessage());
         }
 
-
     }
 
     public CertDetail[] getCertificate(String accessToken, ConnectorLogRequest connectorLogRequest) throws Exception {
@@ -122,7 +119,6 @@ public class ViettelCAService {
         try {
 
             boolean error = false;
-
 
             WorkFlowList[][] rsWFList = new WorkFlowList[1][];
             connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
@@ -154,12 +150,9 @@ public class ViettelCAService {
             // download first file
             String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
 
-
             String document_name = rsWFList[0][0].WORKFLOW_DOCUMENT_NAME;
 
-
             int document_id = rsFile[0][0].getLAST_PPL_FILE_SIGNED_ID();
-
 
             String[] sResultConnector = new String[2];
             String pIdentierConnector = connect.getIdentierConnector(connectorName, sResultConnector);
@@ -172,7 +165,6 @@ public class ViettelCAService {
 //            System.out.println("sSignature_id: " + sSignature_id);
 
 //            List<String> hashList = commonRepository.createHashList(signerToken, signingToken, certChain, credentialID, "", sSignature_id);
-
             PrepareSigningRequest prepareSigningRequest = new PrepareSigningRequest(
                     signingToken,
                     signerToken,
@@ -229,7 +221,6 @@ public class ViettelCAService {
 //            callBackLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
 //            callBackLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
 //            commonRepository.postBack(callBackLogRequest, rsParticipant, pdfSigned, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, tsTimeSigned, rsWFList, sFileID_Last, certChain, serialNumber, signingOption, sType, request);
-
             return result;
         } catch (Exception e) {
             e.printStackTrace();

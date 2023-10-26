@@ -8,9 +8,10 @@ import React from "react";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShowSignature from "./ShowSignature";
+import { createValidName } from "../../ultis/commonFunction";
 
 const SignDetail = ({ sign, signType }) => {
-  console.log("sign: ", sign);
+  let name = sign.name + " " + signType;
   const [expanded, setExpanded] = useState("panel");
 
   const handleChangeShow = (panel) => (event, isExpanded) => {
@@ -36,10 +37,12 @@ const SignDetail = ({ sign, signType }) => {
           alignItems: "center",
         }}
       >
-        <Typography sx={{ width: "90%", flexShrink: 0 }}>
-          {sign.name} signatures
+        <Typography variant="h6" sx={{ width: "90%", flexShrink: 0 }}>
+          {createValidName(name)}
         </Typography>
-        <Typography sx={{ color: "text.secondary" }}>{sign.length}</Typography>
+        <Typography variant="h6" sx={{ color: "text.secondary" }}>
+          {sign.value.length}
+        </Typography>
       </AccordionSummary>
       {sign.value.map((val, i) => {
         return (

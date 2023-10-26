@@ -63,7 +63,7 @@ public class ElectronicIdService {
     public String checkPersonalCode(String lang, String code, String type, String connectorName) throws IOException {
 
         String sPropertiesFMS = "";
-        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
+        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
         if (connector.size() > 0) {
             for (int m = 0; m < connector.size(); m++) {
                 if (connector.get(m).CONNECTOR_NAME.equals(connectorName)) {

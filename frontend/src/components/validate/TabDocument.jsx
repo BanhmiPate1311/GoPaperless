@@ -6,6 +6,7 @@ import { createValidIcon, createValidLabel } from "../../ultis/commonFunction";
 import Overview from "./Overview";
 import Signatures from "./Signatures";
 import Details from "./Details";
+import { useTranslation } from "react-i18next";
 
 function TabPanel(props) {
   const { children, value, index, quantity, status, ...other } = props;
@@ -17,7 +18,7 @@ function TabPanel(props) {
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
-      style={{ width: "100%" }}
+      style={{ width: "392px" }}
     >
       {value === index && (
         <Box>
@@ -42,16 +43,21 @@ function a11yProps(index) {
 }
 
 const TabDocument = ({ validFile }) => {
-  console.log("validFile: ", validFile);
   const filteredObject = Object.keys(validFile).reduce((result, key) => {
     // Kiểm tra nếu giá trị của key không phải là mảng rỗng thì thêm vào object kết quả
-    if (!Array.isArray(validFile[key]) || validFile[key].length > 0) {
+    if (
+      !Array.isArray(validFile[key]) ||
+      validFile[key].length > 0 ||
+      key === "signatures"
+    ) {
       result[key] = validFile[key];
     }
     return result;
   }, {});
 
-  const tabName = Object.keys(filteredObject).filter((tab) => tab !== "file");
+  const tabName = Object.keys(filteredObject).filter(
+    (tab) => tab !== "file" && tab !== "lang"
+  );
 
   const [value, setValue] = useState(0);
 
@@ -123,7 +129,7 @@ const TabDocument = ({ validFile }) => {
               icon={createValidIcon(val)}
               // label="with Mobile-ID"
               // label={createValidLabel(val)}
-              label={val}
+              label={createValidLabel(val)}
               {...a11yProps(index)}
             />
           );
@@ -170,7 +176,13 @@ const TabDocument = ({ validFile }) => {
         )}
         {tabName[value] === "details" && (
           <TabPanel value={value} index={value}>
-            <Details validFile={validFile.details} />
+            <Details
+              validFile={validFile.details}
+              notSign={
+                validFile.signatures.length === 0 &&
+                validFile.seals.length === 0
+              }
+            />
           </TabPanel>
         )}
       </Box>

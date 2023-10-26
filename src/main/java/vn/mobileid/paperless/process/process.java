@@ -128,7 +128,6 @@ public class process {
 //            Connection[] temp_connection = new Connection[]{conns};
 //            CloseDatabase(temp_connection);
 //        }
-
     public void USP_GW_ENTERPRISE_INFO_GET(ENTERPRISE[][] response, int pENTERPRISE_ID, String NAME) throws Exception {
         CallableStatement proc_stmt = null;
         Connection conns = null;
@@ -227,7 +226,7 @@ public class process {
     public String getIDENTIFIER() throws Exception {
         process connect = new process();
         ConnectorName[][] object = new ConnectorName[1][];
-        String pCONNECTOR_NAME = Difinitions.CONFIG_CONECTOR_DMS_MOBILE_ID;
+        String pCONNECTOR_NAME = Difinitions.CONFIG_CONNECTOR_DMS_MOBILE_ID;
         connect.USP_GW_CONNECTOR_GET(object, pCONNECTOR_NAME);
         String intt = null;
 //        System.out.println(object.length);
@@ -240,11 +239,11 @@ public class process {
         return intt;
     }
 
-    public String USP_GW_PPL_FILE_ADD(int pENTERPRISE_ID, String pFILE_NAME, int pFILE_SIZE, int pFILE_STATUS, String pURL, String pFILE_TYPE,
-                                      String pMIME_TYPE,
-                                      String pDIGEST, String pCONTENT, String pFILE_UUID, String pDMS_PROPERTY, String pUPLOAD_TOKEN,
-                                      String pHMAC,
-                                      String pCREATED_BY, int[] pFILE_ID) throws Exception {
+    public String USP_GW_PPL_FILE_ADD(int pENTERPRISE_ID, String pFILE_NAME, Integer pFILE_SIZE, int pFILE_STATUS, String pURL, String pFILE_TYPE,
+            String pMIME_TYPE,
+            String pDIGEST, String pCONTENT, String pFILE_UUID, String pDMS_PROPERTY, String pUPLOAD_TOKEN,
+            String pHMAC,
+            String pCREATED_BY, int[] pFILE_ID) throws Exception {
         String convrtr = "1";
         Connection conns = null;
         CallableStatement proc_stmt = null;
@@ -404,7 +403,7 @@ public class process {
 
     // update signer status
     public String USP_GW_PPL_WORKFLOW_PARTICIPANTS_UPDATE_STATUS(String pSIGNER_TOKEN, int pSIGNER_STATUS,
-                                                                 String pLAST_MODIFIED_BY, int intIS_SET_POSITION)
+            String pLAST_MODIFIED_BY, int intIS_SET_POSITION)
             throws Exception {
         String convrtr = "1";
         Connection conns = null;
@@ -438,9 +437,9 @@ public class process {
 
     // update ppl file
     public String USP_GW_PPL_FILE_UPDATE(int pFILE_ID, int pFILE_STATUS, String pFILE_NAME,
-                                         String pFILE_SIZE, String pURL, String pFILE_TYPE, String pMIME_TYPE, String pDIGEST,
-                                         String pCONTENT, String pFILE_UUID, String pDMS_PROPERTY, String pHMAC,
-                                         String pLAST_MOTIFIED_BY) throws Exception {
+            String pFILE_SIZE, String pURL, String pFILE_TYPE, String pMIME_TYPE, String pDIGEST,
+            String pCONTENT, String pFILE_UUID, String pDMS_PROPERTY, String pHMAC,
+            String pLAST_MOTIFIED_BY) throws Exception {
         String convrtr = "1";
         Connection conns = null;
         CallableStatement proc_stmt = null;
@@ -522,7 +521,7 @@ public class process {
 
     // insert workflow file
     public String USP_GW_PPL_WORKFLOW_FILE_ADD(int pPPL_WORKFLOW_ID, int pPPL_FILE_ID, String pTYPE,
-                                               String pFILE_INFO, int pFROM_FILE_ID, String pHMAC, String pCREATED_BY) throws Exception {
+            String pFILE_INFO, int pFROM_FILE_ID, String pHMAC, String pCREATED_BY) throws Exception {
         String convrtr = "1";
         Connection conns = null;
         CallableStatement proc_stmt = null;
@@ -865,15 +864,19 @@ public class process {
 
     // update participans
     public String USP_GW_PPL_WORKFLOW_PARTICIPANTS_UPDATE(String pSIGNER_TOKEN, String pSIGNED_TYPE,
-                                                          java.sql.Timestamp pSIGNED_TIME,
-                                                          String pSIGNATURE_ID, String pSIGNED_ALGORITHM, String pCERTIFICATE, String pSIGNATURE_TYPE,
-                                                          String pSIGNING_OPTION, String pLAST_MODIFIED_BY) throws Exception {
+            String pSIGNED_TIME,
+            String pSIGNATURE_ID, String pSIGNED_ALGORITHM, String pCERTIFICATE, String pSIGNATURE_TYPE,
+            String pSIGNING_OPTION, String pGRACE_PERIOD_END_TIME, String pSIGNATURE_VALUE,
+            int pPPL_FILE_SIGNED_ID, String pLAST_MODIFIED_BY) throws Exception {
         String convrtr = "1";
         Connection conns = null;
         CallableStatement proc_stmt = null;
         try {
+            System.out.println("pGRACE_PERIOD_END_TIME" + pGRACE_PERIOD_END_TIME);
+            System.out.println("pPPL_FILE_SIGNED_ID" + pPPL_FILE_SIGNED_ID);
+            System.out.println("pLAST_MODIFIED_BY" + pLAST_MODIFIED_BY);
             conns = OpenDatabase();
-            proc_stmt = conns.prepareCall("{ call USP_PPL_WORKFLOW_PARTICIPANTS_UPDATE(?,?,?,?,?,?,?,?,?,?) }");
+            proc_stmt = conns.prepareCall("{ call USP_GW_PPL_WORKFLOW_PARTICIPANTS_UPDATE(?,?,?,?,?,?,?,?,?,?,?,?,?) }");
 
             proc_stmt.setString("pSIGNER_TOKEN", pSIGNER_TOKEN);
             proc_stmt.setString("pSIGNED_TYPE", pSIGNED_TYPE);
@@ -887,6 +890,9 @@ public class process {
             proc_stmt.setString("pCERTIFICATE", pCERTIFICATE);
             proc_stmt.setString("pSIGNATURE_TYPE", pSIGNATURE_TYPE);
             proc_stmt.setString("pSIGNING_OPTION", pSIGNING_OPTION);
+            proc_stmt.setString("pGRACE_PERIOD_END_TIME", pGRACE_PERIOD_END_TIME);
+            proc_stmt.setString("pSIGNATURE_VALUE", pSIGNATURE_VALUE);
+            proc_stmt.setInt("pPPL_FILE_SIGNED_ID", pPPL_FILE_SIGNED_ID);
             proc_stmt.setString("pLAST_MODIFIED_BY", pLAST_MODIFIED_BY);
 
             proc_stmt.registerOutParameter("pRESPONSE_CODE", java.sql.Types.NVARCHAR);
@@ -1060,15 +1066,15 @@ public class process {
     }
 
     public String getIdentierConnector(String sConnectorName, String[] sResult) throws Exception {
-        process conect = new process();
+        process connect = new process();
         String sPropertiesFMS = "0";
         ConnectorName[][] object = new ConnectorName[1][];
-        ArrayList<ConnectorName> conector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
-        if (conector.size() > 0) {
-            for (int m = 0; m < conector.size(); m++) {
-                if (conector.get(m).CONNECTOR_NAME.equals(sConnectorName)) {
-                    sResult[0] = conector.get(m).IDENTIFIER;
-                    sResult[1] = conector.get(m).PREFIX_CODE;
+        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
+        if (connector.size() > 0) {
+            for (int m = 0; m < connector.size(); m++) {
+                if (connector.get(m).CONNECTOR_NAME.equals(sConnectorName)) {
+                    sResult[0] = connector.get(m).IDENTIFIER;
+                    sResult[1] = connector.get(m).PREFIX_CODE;
                 }
             }
         }
@@ -1479,7 +1485,6 @@ public class process {
             CloseDatabase(temp_connection);
         }
     }
-
 
 //    public void USP_GW_PPL_WORKFLOW_GET(WorkFlowList[][] response, String pSIGNING_TOKEN) throws Exception {
 //        CallableStatement proc_stmt = null;

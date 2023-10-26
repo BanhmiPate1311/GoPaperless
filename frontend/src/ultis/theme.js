@@ -5,6 +5,12 @@ import { red } from "@mui/material/colors";
 export let theme = createTheme({
   typography: {
     fontFamily: "Montserrat,Nucleo,Helvetica,sans-serif",
+    h6: {
+      fontSize: 14, // Adjust the font size as needed
+    },
+    h5: {
+      fontSize: 13, // Adjust the font size as needed
+    },
   },
   palette: {
     primary: {

@@ -3,11 +3,20 @@ package vn.mobileid.paperless.aws.dto;
 import java.util.List;
 
 public class ValidViewDto {
+    private String lang;
     private OverviewDto overview;
     private List<SignatureDto> signatures;
     private List<SignatureDto> seals;
     private DetailsDto details;
     private FileDto file;
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
 
     public OverviewDto getOverview() {
         return overview;

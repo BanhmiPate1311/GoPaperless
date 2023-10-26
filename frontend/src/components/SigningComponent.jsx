@@ -1,36 +1,32 @@
-import React, { Fragment, memo, useEffect, useRef, useState } from "react";
-import { AdsClick, InsertDriveFile } from "@mui/icons-material";
-import { Alert, Button, Collapse, IconButton } from "@mui/material";
 import {
-  ExpandMore,
-  ExpandLess,
-  Search,
   AccessTimeRounded,
+  ExpandLess,
+  ExpandMore,
+  InsertDriveFile,
+  Search,
 } from "@mui/icons-material";
+import { Alert, Button, Collapse, IconButton } from "@mui/material";
+import React, { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import {
   apiControllerManagerActions,
   useApiControllerManager,
 } from "../store/apiControllerManager";
-import { Worker } from "@react-pdf-viewer/core";
-import { Viewer } from "@react-pdf-viewer/core";
 // Import the styles
 import "@react-pdf-viewer/core/lib/styles/index.css";
 // default layout plugin
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 // Import styles of default layout plugin
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import NavTab from "./NavTab";
+import { api } from "../constants/api";
 import {
   checkStatus,
   checkType,
   handleDocument,
   handleInputClickName,
 } from "../ultis/commonFunction";
-import { api } from "../constants/api";
 import FileSigned from "./FileSigned";
-import ContextMenu from "./ContextMenu";
+import NavTab from "./NavTab";
 import PdfView from "./pdfView/PdfView";
 // import { ReactComponent as ReactLogo } from "../assets/images/finger.svg";
 // <ReactLogo />

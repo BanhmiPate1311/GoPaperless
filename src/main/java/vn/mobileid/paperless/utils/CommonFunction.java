@@ -151,7 +151,7 @@ public class CommonFunction {
         }
     }
 
-    public static String JsonCertificateObject(String sCertificate, String sType, String sCode, String signingTime,
+    public static String JsonCertificateObject(String sCertificate, String sCode, String signingTime,
                                                String signingOption,
                                                String sAction, String sToken, String sSigner, String sStatus, String sFile, String sFileSigest,
                                                String sSignature_id, String sCountryCode) {
@@ -195,7 +195,7 @@ public class CommonFunction {
         return sJson;
     }
 
-    public static String PostBackJsonCertificateObject(CallBackLogRequest callBackLogRequest, String url, String sCertificate, String sType, String sCode,
+    public static String PostBackJsonCertificateObject(CallBackLogRequest callBackLogRequest, String url, String sCertificate, String sCode,
                                                        String signingTime, String signingOption,
                                                        String sAction, String sToken, String sSigner, String sStatus, String sFile, String sFileSigest,
                                                        String sSignature_id, String sCountryCode) {
@@ -261,7 +261,7 @@ public class CommonFunction {
         return sResult;
     }
 
-    public static String PostBackJsonObject(CallBackLogRequest callBackLogRequest,String url, String sCertificate, String sType, String sCode,
+    public static String PostBackJsonObject(CallBackLogRequest callBackLogRequest,String url, String sCertificate, String sCode,
                                             String signingOption, String sAction, String sToken,
                                             String sSigner, String sStatus, String sFile, String sCountryCode, String file_digest) {
         String sResult = "0";
@@ -324,7 +324,9 @@ public class CommonFunction {
             }
             DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             CertificateFactory certFactory1 = CertificateFactory.getInstance("X.509");
-            InputStream in = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(certstr));
+//            InputStream in = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(certstr));
+            byte[] certBytes = Base64.getDecoder().decode(certstr);
+            InputStream in = new ByteArrayInputStream(certBytes);
             X509Certificate cert = (X509Certificate) certFactory1.generateCertificate(in);
             info[0] = cert.getSubjectDN();
             info[0] = info[0].toString().replace("\\", "");

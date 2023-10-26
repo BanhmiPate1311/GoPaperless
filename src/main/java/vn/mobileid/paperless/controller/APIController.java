@@ -27,10 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.mobileid.paperless.API.GatewayAPI;
-import vn.mobileid.paperless.fps.DocumentDetails;
-import vn.mobileid.paperless.fps.DocumentFields;
-import vn.mobileid.paperless.fps.ImageBase64;
-import vn.mobileid.paperless.fps.Signature;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 
@@ -147,7 +143,7 @@ public class APIController {
         ArrayList<Object> list = new ArrayList<Object>();
         ConnectorName[][] rsFile = new ConnectorName[1][];
         String pPROVIDERs = pPROVIDER.get("param");
-        ArrayList<ConnectorName> provider = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
+        ArrayList<ConnectorName> provider = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
         ArrayList<CountryModel> countryList = LoadParamSystem.getParamCountry(Difinitions.CONFIG_LOAD_PARAM_COUNTRY);
         if (provider.size() > 0) {
             for (int m = 0; m < provider.size(); m++) {
@@ -206,10 +202,8 @@ public class APIController {
             }
         }
 
-
         return list;
     }
-
 
     @RequestMapping(value = {"/headerFooterOpen"}, method = RequestMethod.POST)
     public ArrayList<Object> headerFooterOpen(@RequestBody Map<String, String> uploadToken) throws Exception {
@@ -286,7 +280,6 @@ public class APIController {
                 }
             }
         }
-
 
         return list;
     }
@@ -420,7 +413,6 @@ public class APIController {
 
 //        FileFirst[][] rsFile = new FileFirst[1][];
 //        String pSIGNING_TOKEN = signingToken.get("signingToken");
-
         connect.USP_GW_PPL_WORKFLOW_GET_LAST_FILE(objectPPLFile, pSIGNING_TOKEN);
 
         if (objectPPLFile[0].length > 0) {
@@ -428,12 +420,11 @@ public class APIController {
                 String sUUID = objectPPLFile[0][i].getLAST_PPL_FILE_UUID();
                 String uploadToken = objectPPLFile[0][i].getUPLOAD_TOKEN();
 
-                int documentId = Integer.parseInt(fpsService.getDocumentId(sUUID));
+                int documentId = fpsService.getDocumentId(sUUID);
 
 //                byte[] jrbFile = FileJRBService.downloadFMS2(sUUID);
 //                byte[] jrbFile = gatewayAPI.getFileFromUploadToken(uploadToken);
 //                String base64Document = fpsService.getImageBasse64(documentId).getFile_data();
-
 //                if (jrbFile != null) {
 //                    byte[] bytes = IOUtils.toByteArray(jrbFile.getStream());
 //                    byte[] newBytes = Itext7CommonFunction.RemoveSignaturesFromDocument(jrbFile);
@@ -441,7 +432,6 @@ public class APIController {
 //                    String base64Encoded = jrbFile;
 //                    int fileSize = Base64.getDecoder().decode(base64Document).length;
 //                    String sFileSize = Integer.toString(fileSize);
-
                 Map<String, Object> response = new HashMap<>();
 
                 response.put("fileId", objectPPLFile[0][i].getFIRST_PPL_FILE_SIGNED_ID());
@@ -449,6 +439,7 @@ public class APIController {
 //                    response.put("uuid", sUUID);
 //                    response.put("base64", base64Encoded);
 //                    response.put("base64", base64Document);
+                response.put("lastFileId", objectPPLFile[0][i].getLAST_PPL_FILE_SIGNED_ID());
                 response.put("fileName", objectPPLFile[0][i].getLAST_PPL_FILE_NAME());
                 response.put("fileSize", objectPPLFile[0][i].getFILE_SIZE());
                 response.put("enterpriseId", objectPPLFile[0][i].getENTERPRISE_ID());
@@ -554,7 +545,6 @@ public class APIController {
 //            byte[] newBytes = Itext7CommonFunction.RemoveSignaturesFromDocument(file);
 //            firstFileFromUpLoadToken.setBase64(Base64.getEncoder().encodeToString(newBytes));
 //        }
-
         connect.USP_GW_PPL_FILE_GET(pUpload_token, firstFileFromUpLoadToken);
         System.out.println("Uuid:" + firstFileFromUpLoadToken.getFileUuid());
 //        String uploadToken = firstFileFromUpLoadToken.getUploadToken();
@@ -588,7 +578,7 @@ public class APIController {
 
         ConnectorName[][] object = new ConnectorName[1][];
         String cnt = connectorName.get("connector");
-        ArrayList<ConnectorName> conector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
+        ArrayList<ConnectorName> conector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
         if (conector.size() > 0) {
             for (int m = 0; m < conector.size(); m++) {
                 if (conector.get(m).CONNECTOR_NAME.equals(cnt)) {
@@ -659,7 +649,7 @@ public class APIController {
         boolean VERIFICATION_CODE_ENABLED = false;
         String sPropertiesFMS = "";
         String cnt = connectorName.get("connectorName");
-        ArrayList<ConnectorName> provider = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
+        ArrayList<ConnectorName> provider = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
         if (provider.size() > 0) {
             for (int m = 0; m < provider.size(); m++) {
                 if (provider.get(m).CONNECTOR_NAME.equals(cnt)) {
@@ -668,8 +658,8 @@ public class APIController {
             }
         }
         ObjectMapper objectMapper = new ObjectMapper();
-        COMNECTOR_ATTRIBUTE proParse = objectMapper.readValue(sPropertiesFMS, COMNECTOR_ATTRIBUTE.class);
-        for (COMNECTOR_ATTRIBUTE.Attribute attribute : proParse.getAttributes()) {
+        CONNECTOR_ATTRIBUTE proParse = objectMapper.readValue(sPropertiesFMS, CONNECTOR_ATTRIBUTE.class);
+        for (CONNECTOR_ATTRIBUTE.Attribute attribute : proParse.getAttributes()) {
             if (attribute.getName().equals(Difinitions.CONFIG_WORKFLOW_VERIFICATION_CODE_ENABLED)) {
                 VERIFICATION_CODE_ENABLED = Boolean.parseBoolean(attribute.getValue());
             }
@@ -692,6 +682,5 @@ public class APIController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"checkid_client_installer.exe\"")
                 .body(resource);
     }
-
 
 }

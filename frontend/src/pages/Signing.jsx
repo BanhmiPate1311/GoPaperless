@@ -29,6 +29,7 @@ export const Signing = () => {
       });
       setIsFetching(false);
     } catch (error) {
+      setIsFetching(false);
       console.error(error);
     }
   };

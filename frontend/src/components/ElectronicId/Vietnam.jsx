@@ -100,16 +100,18 @@ const Vietnam = ({ swError, connectorName, workFlow }) => {
           />
         </Box>
 
-        <Box width={300}>
-          <ComboBoxField
-            data={prefix}
-            value={type}
-            handleMenuItemChange={handleMenuItemClick}
-            // disabled={isFetching}
-            valueExtractorValue={(item) => item.prefix}
-            valueExtractorText={(item) => item.remark}
-          />
-        </Box>
+        {prefix.length !== 0 && (
+          <Box width={300}>
+            <ComboBoxField
+              data={prefix}
+              value={type}
+              handleMenuItemChange={handleMenuItemClick}
+              // disabled={isFetching}
+              valueExtractorValue={(item) => item.prefix}
+              valueExtractorText={(item) => item.remark}
+            />
+          </Box>
+        )}
       </Stack>
 
       <Stack spacing={6} direction="row" useFlexGap flexWrap="wrap" pt={4}>

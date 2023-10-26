@@ -5,6 +5,7 @@
  */
 package vn.mobileid.paperless.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
@@ -26,6 +27,7 @@ import vn.mobileid.paperless.Model.Response.BaseCertificateInfo;
 import vn.mobileid.paperless.Model.smartId.request.SignRequest;
 import vn.mobileid.paperless.aws.dto.CertResponse;
 import vn.mobileid.paperless.config.RSSPConfig;
+import vn.mobileid.paperless.fps.request.FpsSignRequest;
 import vn.mobileid.paperless.fps.request.HashFileRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
@@ -70,6 +72,9 @@ public class RSSPService {
     @Autowired
     private RSSPConfig rsspConfig;
 
+    @Autowired
+    private FpsService fpsService;
+
     @Value("${dev.mode}")
     private boolean devMode;
 
@@ -89,30 +94,30 @@ public class RSSPService {
         String pIdentierConnector = connect.getIdentierConnector(connectorName, sResultConnector);
         String prefixCode = sResultConnector[1];
         ObjectMapper objectMapper = new ObjectMapper();
-        COMNECTOR_ATTRIBUTE proParse = objectMapper.readValue(sResultConnector[0], COMNECTOR_ATTRIBUTE.class);
-        for (COMNECTOR_ATTRIBUTE.Attribute attribute : proParse.getAttributes()) {
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_URI)) {
+        CONNECTOR_ATTRIBUTE proParse = objectMapper.readValue(sResultConnector[0], CONNECTOR_ATTRIBUTE.class);
+        for (CONNECTOR_ATTRIBUTE.Attribute attribute : proParse.getAttributes()) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_URI)) {
                 baseUrl = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_NAME)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_NAME)) {
                 relyingParty = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_USERNAME)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_USERNAME)) {
                 relyingPartyUser = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_PASSWORD)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_PASSWORD)) {
                 relyingPartyPassword = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_SIGNATURE)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_SIGNATURE)) {
                 relyingPartySignature = attribute.getValue();
             }
             if (devMode) {
                 relyingPartyKeyStoreValue = "D:/project/file/PAPERLESS.p12";
-            } else if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_KEYSTORE_FILE_URL)) {
+            } else if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_KEYSTORE_FILE_URL)) {
                 relyingPartyKeyStoreValue = attribute.getValue();//
             }
             if (attribute.getName()
-                    .equals(Difinitions.CONFIG_CONECTOR_DMS_MOBILE_ID_KEYSTORE_PASSWORD)) {
+                    .equals(Difinitions.CONFIG_CONNECTOR_DMS_MOBILE_ID_KEYSTORE_PASSWORD)) {
                 relyingPartyKeyStorePassword = attribute.getValue();
             }
             if (attribute.getName().equals(Difinitions.CONFIG_WORKFLOW_VERIFICATION_CODE_ENABLED)) {
@@ -155,21 +160,21 @@ public class RSSPService {
         String pIdentierConnector = connect.getIdentierConnector(connectorName, sResultConnector);
         String prefixCode = sResultConnector[1];
         ObjectMapper objectMapper = new ObjectMapper();
-        COMNECTOR_ATTRIBUTE proParse = objectMapper.readValue(sResultConnector[0], COMNECTOR_ATTRIBUTE.class);
-        for (COMNECTOR_ATTRIBUTE.Attribute attribute : proParse.getAttributes()) {
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_URI)) {
+        CONNECTOR_ATTRIBUTE proParse = objectMapper.readValue(sResultConnector[0], CONNECTOR_ATTRIBUTE.class);
+        for (CONNECTOR_ATTRIBUTE.Attribute attribute : proParse.getAttributes()) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_URI)) {
                 baseUrl = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_NAME)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_NAME)) {
                 relyingParty = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_USERNAME)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_USERNAME)) {
                 relyingPartyUser = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_PASSWORD)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_PASSWORD)) {
                 relyingPartyPassword = attribute.getValue();
             }
-            if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_SIGNATURE)) {
+            if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_SIGNATURE)) {
                 relyingPartySignature = attribute.getValue();
             }
             if (devMode) {
@@ -179,11 +184,11 @@ public class RSSPService {
                     relyingPartyKeyStoreValue = "D:/project/file/PAPERLESS.p12";
                 }
 
-            } else if (attribute.getName().equals(Difinitions.CONFIG_CONECTOR_RSSP_MOBILE_ID_KEYSTORE_FILE_URL)) {
+            } else if (attribute.getName().equals(Difinitions.CONFIG_CONNECTOR_RSSP_MOBILE_ID_KEYSTORE_FILE_URL)) {
                 relyingPartyKeyStoreValue = attribute.getValue();//
             }
             if (attribute.getName()
-                    .equals(Difinitions.CONFIG_CONECTOR_DMS_MOBILE_ID_KEYSTORE_PASSWORD)) {
+                    .equals(Difinitions.CONFIG_CONNECTOR_DMS_MOBILE_ID_KEYSTORE_PASSWORD)) {
                 relyingPartyKeyStorePassword = attribute.getValue();
             }
             if (attribute.getName().equals(Difinitions.CONFIG_WORKFLOW_VERIFICATION_CODE_ENABLED)) {
@@ -192,11 +197,11 @@ public class RSSPService {
 
         }
 //        logger.info("session: " + session.toString());
-        System.out.println("baseUrl: " + baseUrl.toString());
-        System.out.println("relyingParty: " + relyingParty.toString());
-        System.out.println("relyingPartyUser: " + relyingPartyUser.toString());
-        System.out.println("relyingPartyPassword: " + relyingPartyPassword.toString());
-        System.out.println("relyingPartyKeyStoreValue: " + relyingPartyKeyStoreValue.toString());
+//        System.out.println("baseUrl: " + baseUrl);
+//        System.out.println("relyingParty: " + relyingParty);
+//        System.out.println("relyingPartyUser: " + relyingPartyUser);
+//        System.out.println("relyingPartyPassword: " + relyingPartyPassword);
+//        System.out.println("relyingPartyKeyStoreValue: " + relyingPartyKeyStoreValue);
 
         ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
         connectorLogRequest.setpCONNECTOR_NAME(connectorName);
@@ -288,70 +293,70 @@ public class RSSPService {
     public String signFile(
             SignRequest signRequest,
             HttpServletRequest request) throws Throwable {
-        System.out.println("field_name: " + signRequest.getFileName());
-        String field_name = signRequest.getSignature().getFieldName();
+        System.out.println("field_name: " + signRequest.getFieldName());
+        String field_name = signRequest.getFieldName();
         String connectorName = signRequest.getConnectorName();
-        String enterpriseId = signRequest.getEnterpriseId();
-        String workFlowId = signRequest.getWorkFlowId();
+        int enterpriseId = signRequest.getEnterpriseId();
+        int workFlowId = signRequest.getWorkFlowId();
         String signingToken = signRequest.getSigningToken();
         String signerToken = signRequest.getSignerToken();
         String lang = signRequest.getLang();
         String codeNumber = signRequest.getCodeNumber();
         String relyingParty = signRequest.getRelyingParty();
         String prefixCode = signRequest.getPrefixCode();
-        String codeEnable = signRequest.getCodeEnable();
+        boolean codeEnable = signRequest.isCodeEnable();
         String credentialID = signRequest.getCredentialID();
         String signingOption = signRequest.getSigningOption();
         String signerId = signRequest.getSignerId();
         String certChain = signRequest.getCertChain();
         String fileName = signRequest.getFileName();
         String requestID = signRequest.getRequestID();
+        int lastFileId = signRequest.getLastFileId();
 
-        if(field_name == null || field_name.isEmpty()){
-            ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
-            connectorLogRequest.setpCONNECTOR_NAME(connectorName);
-            connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
-            connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
-            try {
-                System.out.println("connectorName: " + connectorName);
-                boolean error = false;
+        ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
+        connectorLogRequest.setpCONNECTOR_NAME(connectorName);
+        connectorLogRequest.setpENTERPRISE_ID(enterpriseId);
+        connectorLogRequest.setpWORKFLOW_ID(workFlowId);
+        try {
+            System.out.println("connectorName: " + connectorName);
+            boolean error = false;
 
-                WorkFlowList[][] rsWFList = new WorkFlowList[1][];
-                connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
-                String sResult = "0";
+            WorkFlowList[][] rsWFList = new WorkFlowList[1][];
+            connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
+            String sResult = "0";
 
-                // check workflow status
-                if (rsWFList[0] == null || rsWFList[0].length == 0 || rsWFList[0][0].WORKFLOW_STATUS != Difinitions.CONFIG_PPL_WORKFLOW_STATUS_PENDING) {
-                    error = true;
-                    sResult = "Signer Status invalid";// trạng thái không hợp lệ
-                    throw new Exception(sResult);
-                }
+            // check workflow status
+            if (rsWFList[0] == null || rsWFList[0].length == 0 || rsWFList[0][0].WORKFLOW_STATUS != Difinitions.CONFIG_PPL_WORKFLOW_STATUS_PENDING) {
+                error = true;
+                sResult = "Signer Status invalid";// trạng thái không hợp lệ
+                throw new Exception(sResult);
+            }
 
-                // check workflow participant
-                Participants[][] rsParticipant = new Participants[1][];
-                connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
-                if (rsParticipant[0] == null || rsParticipant[0].length == 0 || rsParticipant[0][0].SIGNER_STATUS != Difinitions.CONFIG_WORKFLOW_PARTICIPANTS_SIGNER_STATUS_ID_PENDING) {
-                    sResult = "The document has already been signed";
-                }
+            // check workflow participant
+            Participants[][] rsParticipant = new Participants[1][];
+            connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
+            if (rsParticipant[0] == null || rsParticipant[0].length == 0 || rsParticipant[0][0].SIGNER_STATUS != Difinitions.CONFIG_WORKFLOW_PARTICIPANTS_SIGNER_STATUS_ID_PENDING) {
+                sResult = "The document has already been signed";
+            }
 
-                String sUUID_Last = "";
-                int sFileID_Last = 0;
-                LastFile[][] rsFile = new LastFile[1][];
-                connect.USP_GW_PPL_WORKFLOW_GET_LAST_FILE(rsFile, signingToken);
-                if (rsFile[0].length > 0) {
-                    sFileID_Last = rsFile[0][0].getLAST_PPL_FILE_SIGNED_ID();
-                    sUUID_Last = rsFile[0][0].getLAST_PPL_FILE_UUID();
-                }
+            String sUUID_Last = "";
+            int sFileID_Last = 0;
+            LastFile[][] rsFile = new LastFile[1][];
+            connect.USP_GW_PPL_WORKFLOW_GET_LAST_FILE(rsFile, signingToken);
+            if (rsFile[0].length > 0) {
+                sFileID_Last = rsFile[0][0].getLAST_PPL_FILE_SIGNED_ID();
+                sUUID_Last = rsFile[0][0].getLAST_PPL_FILE_UUID();
+            }
 
-                // download first file
-                String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
+            // download first file
+            String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
 
-                long millis = System.currentTimeMillis();
-                String sSignatureHash = signerToken + millis;
+            long millis = System.currentTimeMillis();
+            String sSignatureHash = signerToken + millis;
 //            String sSignature_id = prefixCode + "-" + CommonHash.hashPass(sSignatureHash.getBytes());
-                String sSignature_id = prefixCode + "-" + CommonHash.toHexString(CommonHash.hashPass(sSignatureHash)).toUpperCase();
+            String sSignature_id = prefixCode + "-" + CommonHash.toHexString(CommonHash.hashPass(sSignatureHash)).toUpperCase();
 
-                System.out.println("credentialID: " + credentialID);
+            System.out.println("credentialID: " + credentialID);
 
 //            List<String> hashList = commonRepository.createHashList(signerToken, signingToken, certChain, credentialID, "", sSignature_id);
 
@@ -359,6 +364,28 @@ public class RSSPService {
 //            String json = gson.toJson(hashList);
 //            System.out.println("json ne: " + json);
 
+            // get user-agent
+            String userAgent = request.getHeader("User-Agent");
+            Parser parser = new Parser();
+            Client c = parser.parse(userAgent);
+            // set app interface
+            String rpName = "{\"OPERATING SYSTEM\":\"" + c.os.family + " " + c.os.major + "\",\"BROWSER\":\"" + c.userAgent.family + " " + c.userAgent.major + "\",\"RP NAME\":\"" + relyingParty + "\"}";
+
+            String fileType2 = fileName.substring(fileName.lastIndexOf(".") + 1);
+            String message = " {\"FILE NAME\":\"" + fileName + "\", \"FILE TYPE\":\"" + fileType2 + "\"}";
+
+            MobileDisplayTemplate template = new MobileDisplayTemplate();
+            template.setScaIdentity("PAPERLESS GATEWAY");
+            template.setMessageCaption("DOCUMENT SIGNING");
+            template.setNotificationMessage("PAPERLESS GATEWAY ACTIVITES");
+            template.setMessage(message);
+            template.setRpName(rpName);
+            template.setVcEnabled(codeEnable);
+            template.setAcEnabled(true);
+
+            String hashList = "";
+
+            if (field_name == null || field_name.isEmpty()) {
                 System.out.println("kiem tra:");
                 PrepareSigningRequest prepareSigningRequest = new PrepareSigningRequest(
                         signingToken,
@@ -369,53 +396,79 @@ public class RSSPService {
                         connectorName,
                         null
                 );
-                String hashList = gatewayAPI.PrepareSign(prepareSigningRequest);
-                System.out.println("hashList: " + hashList);
-                System.out.println("signingOption :" + signingOption);
+                hashList = gatewayAPI.PrepareSign(prepareSigningRequest);
+            } else {
+                HashFileRequest hashFileRequest = commonRepository.getMetaData(signRequest.getSignerToken());
+                List<String> listCertChain = new ArrayList<>();
+                listCertChain.add(certChain);
+                hashFileRequest.setCertificateChain(listCertChain);
+                hashFileRequest.setFieldName(signRequest.getFieldName());
 
-                // get user-agent
-                String userAgent = request.getHeader("User-Agent");
-                Parser parser = new Parser();
-                Client c = parser.parse(userAgent);
-                // set app interface
-                String rpName = "{\"OPERATING SYSTEM\":\"" + c.os.family + " " + c.os.major + "\",\"BROWSER\":\"" + c.userAgent.family + " " + c.userAgent.major + "\",\"RP NAME\":\"" + relyingParty + "\"}";
+                hashList = fpsService.hashSignatureField(signRequest.getDocumentId(), hashFileRequest);
 
-                String fileType2 = fileName.substring(fileName.lastIndexOf(".") + 1);
-                String message = " {\"FILE NAME\":\"" + fileName + "\", \"FILE TYPE\":\"" + fileType2 + "\"}";
+            }
 
-                MobileDisplayTemplate template = new MobileDisplayTemplate();
-                template.setScaIdentity("PAPERLESS GATEWAY");
-                template.setMessageCaption("DOCUMENT SIGNING");
-                template.setNotificationMessage("PAPERLESS GATEWAY ACTIVITES");
-                template.setMessage(message);
-                template.setRpName(rpName);
-                template.setVcEnabled(Boolean.parseBoolean(codeEnable));
-                template.setAcEnabled(true);
-
-                HashAlgorithmOID hashAlgo = HashAlgorithmOID.SHA_256;
-                DocumentDigests doc = new DocumentDigests();
-                doc.hashAlgorithmOID = hashAlgo;
-                doc.hashes = new ArrayList<>();
-                doc.hashes.add(Utils.base64Decode(hashList));
-
-                if (Boolean.parseBoolean(codeEnable)) {
-                    List<byte[]> list = new ArrayList<>();
-                    list.add(Base64.getMimeDecoder().decode(hashList));
-                    String codeVC = CommonFunction.computeVC(list);
-                    vcStoringService.store(requestID, codeVC);
-                }
+            System.out.println("hashList: " + hashList);
+            System.out.println("signingOption :" + signingOption);
 
 
-                String sad = crt.authorize(connectorLogRequest, lang, credentialID, 1, doc, null, template);
+            HashAlgorithmOID hashAlgo = HashAlgorithmOID.SHA_256;
+            DocumentDigests doc = new DocumentDigests();
+            doc.hashAlgorithmOID = hashAlgo;
+            doc.hashes = new ArrayList<>();
+            doc.hashes.add(Utils.base64Decode(hashList));
+
+            if (codeEnable) {
+                List<byte[]> list = new ArrayList<>();
+                list.add(Base64.getMimeDecoder().decode(hashList));
+                String codeVC = CommonFunction.computeVC(list);
+                vcStoringService.store(requestID, codeVC);
+            }
+
+
+            String sad = crt.authorize(connectorLogRequest, lang, credentialID, 1, doc, null, template);
 
 //            commonRepository.connectorLog(connectorLogRequest);
 
-                SignAlgo signAlgo = SignAlgo.RSA;
-                List<byte[]> signatures = crt.signHash(connectorLogRequest, lang, credentialID, doc, signAlgo, sad);
-                String signature = Base64.getEncoder().encodeToString(signatures.get(0));
-                System.out.println("kiem tra lần 2: ");
-                String result = gatewayAPI.sign(signingToken, signerToken, signerId, signature);
-                System.out.println("result: " + result);
+            SignAlgo signAlgo = SignAlgo.RSA;
+            List<byte[]> signatures = crt.signHash(connectorLogRequest, lang, credentialID, doc, signAlgo, sad);
+            String signature = Base64.getEncoder().encodeToString(signatures.get(0));
+            System.out.println("kiem tra signature: " + signature);
+
+            if (field_name == null || field_name.isEmpty()) {
+                return gatewayAPI.sign(signingToken, signerToken, signerId, signature);
+            } else {
+                int isSetPosition = 1;
+                FpsSignRequest fpsSignRequest = new FpsSignRequest();
+                fpsSignRequest.setFieldName(signRequest.getFieldName());
+                fpsSignRequest.setHashValue(hashList);
+                fpsSignRequest.setSignatureValue(signature);
+
+                List<String> listCertChain = new ArrayList<>();
+                listCertChain.add(certChain);
+                fpsSignRequest.setCertificateChain(listCertChain);
+
+                System.out.println("kiem tra progress: ");
+
+                String responseSign = fpsService.signDocument(signRequest.getDocumentId(), fpsSignRequest);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(responseSign);
+                String uuid = jsonNode.get("uuid").asText();
+                int fileSize = jsonNode.get("file_size").asInt();
+                String digest = jsonNode.get("digest").asText();
+                String signedHash = jsonNode.get("signed_hash").asText();
+                String signedTime = jsonNode.get("signed_time").asText();
+
+                CallBackLogRequest callBackLogRequest = new CallBackLogRequest();
+                callBackLogRequest.setpENTERPRISE_ID(enterpriseId);
+                callBackLogRequest.setpWORKFLOW_ID(workFlowId);
+
+//                String fileName = "abc"; // tạm thời
+                commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, lastFileId, request);
+                return responseSign;
+            }
+
 
 //            commonRepository.connectorLog(connectorLogRequest);
 //
@@ -442,163 +495,16 @@ public class RSSPService {
 //
 //            commonRepository.postBack(callBackLogRequest, rsParticipant, pdfSigned, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, tsTimeSigned, rsWFList, sFileID_Last, certChain, codeNumber, signingOption, sType, request);
 
-                return "OK";
-            } catch (Exception e) {
-                commonRepository.connectorLog(connectorLogRequest);
-                throw new Exception(e.getMessage());
-            } finally {
-                vcStoringService.remove(requestID);
-            }
-        }else {
-            HashFileRequest hashFileRequest = new HashFileRequest();
-
+//            return "OK";
+        } catch (Exception e) {
+            commonRepository.connectorLog(connectorLogRequest);
+            throw new Exception(e.getMessage());
+        } finally {
+            vcStoringService.remove(requestID);
         }
 
-        return "OK";
+
     }
 
-//    public String signFile(
-//            String requestID,
-//            String signingToken,
-//            String fileName,
-//            String signerToken,
-//            String signingOption,
-//            String codeNumber,
-//            String credentialID,
-//            String signerId,
-//            String certChain,
-//            String sType,
-//            String prefixCode,
-//            String relyingParty,
-//            String codeEnable,
-//            HttpServletRequest request,
-//            String connectorName,
-//            String enterpriseId,
-//            String workFlowId,
-//            String lang) throws Throwable {
-//        ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
-//        connectorLogRequest.setpCONNECTOR_NAME(connectorName);
-//        connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
-//        connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
-//        try {
-//            boolean error = false;
-//
-//            WorkFlowList[][] rsWFList = new WorkFlowList[1][];
-//            connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
-//            String sResult = "0";
-//
-//            // check workflow status
-//            if (rsWFList[0] == null || rsWFList[0].length == 0 || rsWFList[0][0].WORKFLOW_STATUS != Difinitions.CONFIG_PPL_WORKFLOW_STATUS_PENDING) {
-//                error = true;
-//                sResult = "Signer Status invalid";// trạng thái không hợp lệ
-//                throw new Exception(sResult);
-//            }
-//
-//            // check workflow participant
-//            Participants[][] rsParticipant = new Participants[1][];
-//            connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
-//            if (rsParticipant[0] == null || rsParticipant[0].length == 0 || rsParticipant[0][0].SIGNER_STATUS != Difinitions.CONFIG_WORKFLOW_PARTICIPANTS_SIGNER_STATUS_ID_PENDING) {
-//                sResult = "The document has already been signed";
-//            }
-//
-//            String sUUID_Last = "";
-//            int sFileID_Last = 0;
-//            PPLFile[][] rsFile = new PPLFile[1][];
-//            connect.USP_GW_PPL_WORKFLOW_GET_LAST_FILE(rsFile, signingToken);
-//            if (rsFile[0].length > 0) {
-//                sFileID_Last = rsFile[0][0].ID;
-//                sUUID_Last = rsFile[0][0].FILE_UUID;
-//            }
-//
-//            // download first file
-//            String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
-//
-//            long millis = System.currentTimeMillis();
-//            String sSignatureHash = signerToken + millis;
-////            String sSignature_id = prefixCode + "-" + CommonHash.hashPass(sSignatureHash.getBytes());
-//            String sSignature_id = prefixCode + "-" + CommonHash.toHexString(CommonHash.hashPass(sSignatureHash)).toUpperCase();
-//
-//            System.out.println("credentialID: " + credentialID);
-//
-//            List<String> hashList = commonRepository.createHashList(signerToken, signingToken, certChain, credentialID, "", sSignature_id);
-//
-////            Gson gson = new GsonBuilder().create();
-////            String json = gson.toJson(hashList);
-////            System.out.println("json ne: " + json);
-//
-//            // get user-agent
-//            String userAgent = request.getHeader("User-Agent");
-//            Parser parser = new Parser();
-//            Client c = parser.parse(userAgent);
-//            // set app interface
-//            String rpName = "{\"OPERATING SYSTEM\":\"" + c.os.family + " " + c.os.major + "\",\"BROWSER\":\"" + c.userAgent.family + " " + c.userAgent.major + "\",\"RP NAME\":\"" + relyingParty + "\"}";
-//
-//            String fileType2 = fileName.substring(fileName.lastIndexOf(".") + 1);
-//            String message = " {\"FILE NAME\":\"" + fileName + "\", \"FILE TYPE\":\"" + fileType2 + "\"}";
-//
-//            MobileDisplayTemplate template = new MobileDisplayTemplate();
-//            template.setScaIdentity("PAPERLESS GATEWAY");
-//            template.setMessageCaption("DOCUMENT SIGNING");
-//            template.setNotificationMessage("PAPERLESS GATEWAY ACTIVITES");
-//            template.setMessage(message);
-//            template.setRpName(rpName);
-//            template.setVcEnabled(Boolean.parseBoolean(codeEnable));
-//            template.setAcEnabled(true);
-//
-//            HashAlgorithmOID hashAlgo = HashAlgorithmOID.SHA_256;
-//            DocumentDigests doc = new DocumentDigests();
-//            doc.hashAlgorithmOID = hashAlgo;
-//            doc.hashes = new ArrayList<>();
-//            doc.hashes.add(Utils.base64Decode(hashList.get(0)));
-//
-//            if (Boolean.parseBoolean(codeEnable)) {
-//                List<byte[]> list = new ArrayList<>();
-//                list.add(Base64.getMimeDecoder().decode(hashList.get(0)));
-//                String codeVC = CommonFunction.computeVC(list);
-//                vcStoringService.store(requestID, codeVC);
-//            }
-//
-//
-//            String sad = crt.authorize(connectorLogRequest, lang, credentialID, 1, doc, null, template);
-//
-//            commonRepository.connectorLog(connectorLogRequest);
-//
-//            SignAlgo signAlgo = SignAlgo.RSA;
-//            List<byte[]> signatures = crt.signHash(connectorLogRequest, lang, credentialID, doc, signAlgo, sad);
-//
-//            commonRepository.connectorLog(connectorLogRequest);
-//
-//            byte[] pdfSigned = null;
-//
-//            for (byte[] s : signatures) {
-//                List<String> signature = new ArrayList<>();
-//                signature.add(Utils.base64Encode(s));
-//
-//                pdfSigned = commonRepository.packFile(certChain, signature, credentialID);
-//            }
-//
-//            Date signTime = CommonFunction.getSigningTime(pdfSigned);
-//            Timestamp tsTimeSigned = null;
-//
-//            if (signTime != null) {
-//                tsTimeSigned = new Timestamp(signTime.getTime());
-////                System.out.println("tsTimeSigned: " + tsTimeSigned);
-//            }
-//
-//            CallBackLogRequest callBackLogRequest = new CallBackLogRequest();
-//            callBackLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
-//            callBackLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
-//
-//            commonRepository.postBack(callBackLogRequest, rsParticipant, pdfSigned, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, tsTimeSigned, rsWFList, sFileID_Last, certChain, codeNumber, signingOption, sType, request);
-//
-//            return "OK";
-//        } catch (Exception e) {
-//            commonRepository.connectorLog(connectorLogRequest);
-//            throw new Exception(e.getMessage());
-//        } finally {
-//            vcStoringService.remove(requestID);
-//        }
-//
-//    }
 
 }

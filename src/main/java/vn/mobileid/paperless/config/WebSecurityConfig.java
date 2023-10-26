@@ -6,11 +6,14 @@
 package vn.mobileid.paperless.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.header.HeaderWriter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
 /**
  *
@@ -54,6 +57,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .frameOptions()
                 .sameOrigin();
+//                .addHeaderWriter(createReferrerPolicyHeaderWriter())
+//                .addHeaderWriter(createPermissionsPolicyHeaderWriter());
+
     }
 
     // cấu hình xác thực người dùng
@@ -64,4 +70,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("admin").password("{noop}1").roles("ADMIN");
         // noop là mật khẩu chưa mã hoá.
     }
+
+//    @Bean
+//    public HeaderWriter createReferrerPolicyHeaderWriter() {
+//        String referrerPolicyValue = "same-origin";
+//        return new StaticHeadersWriter("Referrer-Policy", referrerPolicyValue);
+//    }
+//
+//    @Bean
+//    public HeaderWriter createPermissionsPolicyHeaderWriter() {
+//        String permissionsPolicyValue = "geolocation=(), camera=(), microphone=()";
+//        return new StaticHeadersWriter("Permissions-Policy", permissionsPolicyValue);
+//    }
 }

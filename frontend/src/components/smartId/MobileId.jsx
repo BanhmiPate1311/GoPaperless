@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import "../../assets/styles/fieldSmartId.css";
 import { api } from "../../constants/api";
+import { smartIdService } from "../../services/smartid";
 import {
   apiControllerManagerActions,
   useApiControllerManager,
@@ -16,8 +17,6 @@ import InputField from "../form/input_field";
 import PhoneInputField from "../form/phone_input_field";
 import Notice from "./Notice";
 import ModalField from "./modal_field";
-import { useSearchParams } from "react-router-dom";
-import { smartIdService } from "../../services/smartid";
 
 const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
   const { t } = useTranslation();
@@ -25,7 +24,7 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
 
   const { signaturePrepare } = useApiControllerManager();
   const signature = signaturePrepare.find(
-    (item) => item.signerToken === workFlow.signerToken
+    (item) => item.field_name === workFlow.signerToken
   );
   console.log("signature: ", signature);
 
@@ -295,8 +294,10 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
       prefixCode: content.prefixCode,
       relyingParty: content.relyingParty,
       codeEnable: content.codeEnable,
-      signature: signature ? signature : {},
+      fieldName: signature ? signature.field_name : "",
       type: value,
+      documentId: workFlow.documentId,
+      lastFileId: workFlow.lastFileId,
     };
     // const formData = new FormData();
     // formData.append("lang", lang);
@@ -325,7 +326,7 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
     // formData.append("type", value);
     try {
       smartIdService
-        .sign(data)
+        .sign(data, signFileController.signal)
         .then((response) => {
           // const messageHome = {
           //   message: "Document signed successfully.",
@@ -350,6 +351,7 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
             element.style.pointerEvents = "all";
             element.style.cursor = "pointer";
           });
+
           if (axios.isCancel(error)) {
             //handle cancel
           } else {
@@ -457,16 +459,18 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
           )}
         </Box>
 
-        <Box width={300}>
-          <ComboBoxField
-            data={prefix}
-            value={value}
-            handleMenuItemChange={handleMenuItemClick}
-            disabled={isFetching}
-            valueExtractorValue={(item) => item.prefix}
-            valueExtractorText={(item) => item.remark}
-          />
-        </Box>
+        {prefix.length !== 0 && (
+          <Box width={300}>
+            <ComboBoxField
+              data={prefix}
+              value={value}
+              handleMenuItemChange={handleMenuItemClick}
+              disabled={isFetching}
+              valueExtractorValue={(item) => item.prefix}
+              valueExtractorText={(item) => item.remark}
+            />
+          </Box>
+        )}
       </Stack>
 
       <Stack spacing={6} direction="row" useFlexGap flexWrap="wrap" pt={4}>

@@ -6,17 +6,28 @@ import {
   Box,
   Divider,
   Drawer,
+  Stack,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { ReactComponent as IconChipWhite } from "../../assets/images/icon_Chip_White.svg";
 import { ReactComponent as DocumentDetail } from "../../assets/images/detail_document.svg";
-import { formatPeriodTime, formatTime } from "../../ultis/commonFunction";
+import {
+  createValidSubTitle,
+  createValidTitle,
+  formatPeriodTime,
+  formatTime,
+} from "../../ultis/commonFunction";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useTranslation } from "react-i18next";
 
 const ShowSignature = ({ sig, sign, signType }) => {
-  console.log("sig: ", sig);
+  const { t } = useTranslation();
+
+  const signTitle = signType + " is valid";
+  const subTitle = "Electronic " + signType;
+
   const [isOpen, setIsOpen] = useState(false);
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
@@ -28,48 +39,46 @@ const ShowSignature = ({ sig, sign, signType }) => {
   const signature = {
     signing: [
       {
-        title: "Signing reason",
-        subtitle: `${sig.signing_reason}`,
+        title: t("validation.sigReason"),
+        subtitle: sig.signing_reason ? sig.signing_reason : null,
       },
       {
-        title: "Signing time",
-        subtitle: `${formatTime(sig.signing_time)}`,
+        title: t("validation.sigTime"),
+        subtitle: sig.signing_time ? formatTime(sig.signing_time) : null,
       },
       {
-        title: "Qualified timestamp",
-        subtitle: `${sig.qualified_timestamp}`,
+        title: t("validation.sigTimestamp"),
+        subtitle: sig.qualified_timestamp ? sig.qualified_timestamp : null,
       },
       {
-        title: "Signature format",
-        subtitle: `${sig.signature_format}`,
+        title: t("validation.sigFormat"),
+        subtitle: sig.signature_format ? sig.signature_format : null,
       },
       {
-        title: "Signature scope",
-        subtitle: `${sig.signature_scope}`,
+        title: t("validation.sigScope"),
+        subtitle: sig.signature_scope ? sig.signature_scope : null,
       },
-    ],
+    ].filter((item) => item.subtitle !== null),
     certificated: [
       {
-        title: "Certificated owner",
-        subtitle: `${sig.certificate_owner}`,
-      },
-      // {
-      //   title: "Unique ID number",
-      //   subtitle: "38003160158",
-      // },
-      {
-        title: "Certificate issuer",
-        subtitle: `${sig.certificate_issuer}`,
+        title: t("validation.sigOwner"),
+        subtitle: sig.certificate_owner ? sig.certificate_owner : null,
       },
       {
-        title: "Certificate validity period",
-        subtitle: `${formatPeriodTime(sig.certificate_validity_period)}`,
+        title: t("validation.sigIssuer"),
+        subtitle: sig.certificate_issuer ? sig.certificate_issuer : null,
       },
       {
-        title: "Certificate type",
-        subtitle: `${sig.certificate_type}`,
+        title: t("validation.sigPeriod"),
+        subtitle: sig.certificate_validity_period
+          ? formatPeriodTime(sig.certificate_validity_period)
+          : null,
       },
-    ],
+      {
+        title: t("validation.sigType"),
+        subtitle: sig.certificate_type ? sig.certificate_type : null,
+      },
+    ].filter((item) => item.subtitle !== null),
   };
 
   const [expanded, setExpanded] = useState("panel");
@@ -124,13 +133,22 @@ const ShowSignature = ({ sig, sign, signType }) => {
           >
             <Box sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
               {/* <img src="/logo_signing/icon_Chip_White.svg" alt="" /> */}
-              {sign.icon}
+              <Stack
+                direction="row"
+                justifyContent="center"
+                bgcolor="rgb(255, 240, 226)"
+                borderRadius="50px"
+              >
+                {sign.icon}
+              </Stack>
               <Box width="100%">
-                <Typography>{sig.certificate_owner}</Typography>
+                <Typography variant="h5">{sig.certificate_owner}</Typography>
                 <Box>
-                  <Typography>{sign.title}</Typography>
+                  <Typography variant="h5">{sign.title}</Typography>
                   {sign.name === "valid" && (
-                    <Typography>{formatTime(sig.signing_time)}</Typography>
+                    <Typography variant="h5">
+                      {formatTime(sig.signing_time)}
+                    </Typography>
                   )}
                 </Box>
               </Box>
@@ -141,33 +159,32 @@ const ShowSignature = ({ sig, sign, signType }) => {
         </Box>
       </div>
 
-      <div>
+      <Box>
         <Drawer
           open={isOpen}
           onClose={toggleDrawer}
           anchor="right"
           style={{ width: "350px", wordWrap: "break-word" }}
         >
-          <div style={{ width: "350px", wordWrap: "break-word" }}>
+          <Box style={{ width: "350px", wordWrap: "break-word" }}>
             {/* ----------------------------Privacy preference center----------------------------------*/}
-            <div className="header-cookie d-flex align-items-center">
-              <div className="col-10 p-4">
+            <Box className="header-cookie d-flex align-items-center">
+              <Box className="col-10 p-4">
                 {/* <Title sx={{ textTransform: "uppercase" }}>
                   xuân khánh pham
                 </Title> */}
-                <div
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "550",
-                    textTransform: "uppercase",
-                  }}
+                <Typography
+                  variant="h5"
+                  fontSize="14px"
+                  fontWeight="550"
+                  textTransform="uppercase"
                 >
                   {sig.certificate_owner}
-                </div>
+                </Typography>
 
                 {/* <Typography>38003160158</Typography> */}
-              </div>
-              <div className="col-2 d-flex">
+              </Box>
+              <Box className="col-2 d-flex">
                 <button
                   className=" border-0 bg-transparent close"
                   aria-label="Close"
@@ -175,10 +192,10 @@ const ShowSignature = ({ sig, sign, signType }) => {
                 >
                   <CloseIcon />
                 </button>
-              </div>
-            </div>
+              </Box>
+            </Box>
 
-            <div>
+            <Box>
               <Box sx={{ borderBottom: "1px solid #e9e9e9", p: 3 }}>
                 <Box
                   sx={{
@@ -207,31 +224,23 @@ const ShowSignature = ({ sig, sign, signType }) => {
                       {sign.name === "valid" ? (
                         <Box>
                           {/* <Title>Signature is valid</Title> */}
-                          <div
-                            style={{
-                              fontSize: "14px",
-                              fontWeight: "550",
-                            }}
-                          >
-                            {signType} is valid
-                          </div>
+                          <Typography variant="h5" fontWeight={550}>
+                            {createValidTitle(signTitle)}
+                          </Typography>
                           <Box>
-                            <Typography>{sign.title}</Typography>
+                            <Typography variant="h5">{sign.title}</Typography>
                           </Box>
                         </Box>
                       ) : (
                         <Box>
                           {/* <Title>Signature is valid</Title> */}
-                          <div
-                            style={{
-                              fontSize: "14px",
-                              fontWeight: "550",
-                            }}
-                          >
+                          <Typography variant="h5" fontWeight={550}>
                             {sign.title}
-                          </div>
+                          </Typography>
                           <Box>
-                            <Typography>Electronic Signature</Typography>
+                            <Typography variant="h5">
+                              {createValidSubTitle(subTitle)}
+                            </Typography>
                           </Box>
                         </Box>
                       )}
@@ -261,8 +270,11 @@ const ShowSignature = ({ sig, sign, signType }) => {
                       paddingLeft: "24px",
                     }}
                   >
-                    <Typography sx={{ width: "90%", flexShrink: 0 }}>
-                      Signatures errors
+                    <Typography
+                      variant="h6"
+                      sx={{ width: "90%", flexShrink: 0 }}
+                    >
+                      {t("validation.sigErrors")}
                     </Typography>
                   </AccordionSummary>
                   {sig.errors.map((val, i) => {
@@ -270,6 +282,7 @@ const ShowSignature = ({ sig, sign, signType }) => {
                       <Box key={i}>
                         <AccordionDetails
                           sx={{
+                            fontSize: "13px",
                             padding: "15px 24px",
                             width: "100%",
                             // borderBottom: "1px solid #ccc",
@@ -291,26 +304,30 @@ const ShowSignature = ({ sig, sign, signType }) => {
                 </Accordion>
               )}
 
-              <div className="content-signature" id="cookieSetting">
+              <Box className="content-signature" id="cookieSetting">
                 {/* Khi nhấn vào tắt Switch hiển thị  button Allow all*/}
                 {/* --------------------------------------------------------------*/}
                 {signature.signing.map((step, index) => (
-                  <div key={step.title}>
-                    <Typography className="font-title">{step.title}</Typography>
-                    <Typography>{step.subtitle}</Typography>
-                  </div>
+                  <Box key={index}>
+                    <Typography variant="h6" className="font-title">
+                      {step.title}
+                    </Typography>
+                    <Typography variant="h5">{step.subtitle}</Typography>
+                  </Box>
                 ))}
                 {signature.certificated.map((step, index) => (
-                  <div key={step.title}>
-                    <Typography className="font-title">{step.title}</Typography>
-                    <Typography>{step.subtitle}</Typography>
-                  </div>
+                  <Box key={index}>
+                    <Typography variant="h6" className="font-title">
+                      {step.title}
+                    </Typography>
+                    <Typography variant="h5">{step.subtitle}</Typography>
+                  </Box>
                 ))}
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
+          </Box>
         </Drawer>
-      </div>
+      </Box>
     </div>
   );
 };

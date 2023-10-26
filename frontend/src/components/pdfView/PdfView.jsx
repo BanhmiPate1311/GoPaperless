@@ -13,33 +13,30 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { ReactComponent as Search } from "../../assets/images/pdf/search.svg";
-import { ReactComponent as ZoomIn } from "../../assets/images/pdf/zoom_in.svg";
-import { ReactComponent as ZoomOut } from "../../assets/images/pdf/zoom_out.svg";
-import { ReactComponent as FullScreen } from "../../assets/images/pdf/full_screen.svg";
-import { ReactComponent as Print } from "../../assets/images/pdf/print.svg";
-import { ReactComponent as DownLoad } from "../../assets/images/pdf/download.svg";
-import { ReactComponent as ThumbNail } from "../../assets/images/pdf/thumbnail.svg";
-import { ReactComponent as Bookmark } from "../../assets/images/pdf/bookmark.svg";
-import { ReactComponent as Attachment } from "../../assets/images/pdf/attachment.svg";
-import { useState } from "react";
-import { useEffect } from "react";
-import { fpsService } from "../../services/fpsService";
-import Document from "./Document";
+import React, { useEffect, useRef, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useRef } from "react";
-import ContextMenu from "../ContextMenu";
-import { v4 as uuidv4 } from "uuid";
-import { useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
+import { ReactComponent as Attachment } from "../../assets/images/pdf/attachment.svg";
+import { ReactComponent as Bookmark } from "../../assets/images/pdf/bookmark.svg";
+import { ReactComponent as DownLoad } from "../../assets/images/pdf/download.svg";
+import { ReactComponent as FullScreen } from "../../assets/images/pdf/full_screen.svg";
+import { ReactComponent as Print } from "../../assets/images/pdf/print.svg";
+import { ReactComponent as Search } from "../../assets/images/pdf/search.svg";
+import { ReactComponent as ThumbNail } from "../../assets/images/pdf/thumbnail.svg";
+import { ReactComponent as ZoomIn } from "../../assets/images/pdf/zoom_in.svg";
+import { ReactComponent as ZoomOut } from "../../assets/images/pdf/zoom_out.svg";
+import { fpsService } from "../../services/fpsService";
 import { apiControllerManagerActions } from "../../store/apiControllerManager";
+import ContextMenu from "../ContextMenu";
+import Document from "./Document";
 
 const PdfView = ({ workFlow }) => {
   const dispatch = useDispatch();
   const menuRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
     x: 0,
@@ -51,6 +48,7 @@ const PdfView = ({ workFlow }) => {
   const [pdfPages, setPdfPages] = useState([]); // list of all pdf pages
 
   const [pdfInfo, setPdfInfo] = useState(null); // pdf info
+  // console.log("pdfInfo: ", pdfInfo);
   const [zoom, setZoom] = useState(1);
   const [previousViewPageIndex, setPreviousViewPageIndex] = useState(0);
 
@@ -129,6 +127,36 @@ const PdfView = ({ workFlow }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const pdfPagesContainer = document.getElementById("pdf-view");
+
+    function handleScroll() {
+      const scrollTop = pdfPagesContainer.scrollTop;
+      const pdfPagesEle = document.getElementsByClassName("pdf-page");
+
+      for (let i = 0; i < pdfPagesEle.length; i++) {
+        const pdfPage = pdfPagesEle[i];
+
+        if (
+          scrollTop >= pdfPage.offsetTop - pdfPagesContainer.offsetTop &&
+          scrollTop <=
+            pdfPage.offsetTop +
+              pdfPage.offsetHeight -
+              pdfPagesContainer.offsetTop
+        ) {
+          setPreviousViewPageIndex(i);
+          break;
+        }
+      }
+    }
+
+    pdfPagesContainer.addEventListener("scroll", handleScroll);
+
+    return () => {
+      pdfPagesContainer.removeEventListener("scroll", handleScroll);
+    };
+  }, [pdfPages]);
+
   const handleInitDocument = async (pdfInfo) => {
     try {
       const documentID = pdfInfo.document_id;
@@ -196,6 +224,7 @@ const PdfView = ({ workFlow }) => {
         documentId: documentID,
       });
       const verifiedSignatures = resVerification.data;
+
       verifiedSignatures.forEach((signatureVeriInfo) => {
         let signatureIndex = signatures.findIndex(
           (signature) => signature.field_name === signatureVeriInfo.field_name
@@ -221,8 +250,6 @@ const PdfView = ({ workFlow }) => {
       top: targetPage.offsetTop - pdfInfosContainer.offsetTop,
       behavior: "smooth",
     });
-    console.log(pdfInfosContainer);
-    console.log(targetPage);
     setPreviousViewPageIndex(index);
   };
 
@@ -259,7 +286,7 @@ const PdfView = ({ workFlow }) => {
   const handleMenuItemClick = (item, event) => {
     if (
       signatures.findIndex(
-        (item) => item.signerToken === workFlow.signerToken
+        (item) => item.field_name === workFlow.signerToken
       ) !== -1
     ) {
       handleCloseContextMenu();
@@ -272,7 +299,8 @@ const PdfView = ({ workFlow }) => {
 
     const newSignature = {
       type: String(item).toUpperCase(),
-      field_name: String(item).toUpperCase() + uuidv4(),
+      // field_name: String(item).toUpperCase() + uuidv4(),
+      field_name: workFlow.signerToken,
       page: pageNumber.page,
       dimension: {
         x: pageNumber.x,
@@ -281,7 +309,7 @@ const PdfView = ({ workFlow }) => {
         height: 5,
       },
       visible_enabled: true,
-      signerToken: workFlow.signerToken,
+      // signerToken: workFlow.signerToken,
     };
 
     setSignatures((prev) => [...prev, newSignature]);
@@ -356,6 +384,14 @@ const PdfView = ({ workFlow }) => {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
+    const checkStatus = workFlow.participants.findIndex(
+      (item) =>
+        item.signerToken === workFlow.signerToken && item.signerStatus === 2
+    );
+    if (checkStatus !== -1) {
+      return;
+    }
+
     // const menuWidth = menuRef.current.offsetWidth;
     // console.log("menuWidth: ", menuWidth);
     // const menuHeight = menuRef.current.offsetHeight;
@@ -365,9 +401,9 @@ const PdfView = ({ workFlow }) => {
     // 1: 880, 790
     // context menu width: 158
     const pageX = e.pageX;
-    console.log("pageX: ", pageX);
+    // console.log("pageX: ", pageX);
     const pageY = e.pageY;
-    console.log("pageY: ", pageY);
+    // console.log("pageY: ", pageY);
     // const maxX = window.innerWidth;
     // console.log("maxX: ", maxX);
     // const maxY = window.innerHeight;
@@ -467,7 +503,7 @@ const PdfView = ({ workFlow }) => {
           >
             <ZoomOut />
           </Button>
-
+          {/* {JSON.stringify(previousViewPageIndex)} */}
           <FormControl variant="standard" sx={{ minWidth: 60 }}>
             <Select
               disableUnderline={true}

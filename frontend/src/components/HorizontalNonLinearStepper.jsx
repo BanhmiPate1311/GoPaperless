@@ -1,23 +1,13 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Stack,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import ISPluginClient from "../assets/js/checkid";
 import loading from "../assets/images/ajax-loader.gif";
+import ISPluginClient from "../assets/js/checkid";
 
-import { api } from "../constants/api";
-
+import jwtDecode from "jwt-decode";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
+import { electronicService } from "../services/electronicService";
 import { apiControllerManagerActions } from "../store/apiControllerManager";
-import jwtDecode from "jwt-decode";
 import {
   Step1,
   Step2,
@@ -28,18 +18,12 @@ import {
   Step7,
   Step8,
 } from "./ElectronicId";
-import Step9 from "./ElectronicId/Step9";
 import Step10 from "./ElectronicId/Step10";
 import Step11 from "./ElectronicId/Step11";
+import Step11a from "./ElectronicId/Step11a";
 import Step12 from "./ElectronicId/Step12";
 import Step13 from "./ElectronicId/Step13";
-import Step11a from "./ElectronicId/Step11a";
-import {
-  checkUserIdentity,
-  electronicControllerManagerActions,
-  useElectronicControllerManager,
-} from "../store/electronicControllerManager";
-import { electronicService } from "../services/electronicService";
+import Step9 from "./ElectronicId/Step9";
 
 // const steps = [
 //   "Check Citizen Identity Card",

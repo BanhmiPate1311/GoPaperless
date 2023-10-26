@@ -11,7 +11,7 @@ const Routers = () => {
       element: <MainLayout />,
       children: [
         {
-          path: "/",
+          index: "/",
           element: <Home />,
         },
         {
@@ -43,7 +43,7 @@ const Routers = () => {
           element: <Open />,
         },
         {
-          path: "/signing/validation/:upload_token",
+          path: "/signing/validation/:upload_token/show",
           element: <Validation />,
         },
         {

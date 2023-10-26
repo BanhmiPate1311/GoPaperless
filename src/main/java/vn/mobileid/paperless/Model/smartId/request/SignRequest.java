@@ -12,9 +12,9 @@ import vn.mobileid.paperless.fps.request.HashFileRequest;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class SignRequest extends SigningBaseRequest {
     private String requestID;
+    private int lastFileId;
     private String fileName;
     private String signingOption;
     private String credentialID;
@@ -22,7 +22,8 @@ public class SignRequest extends SigningBaseRequest {
     private String certChain;
     private String prefixCode;
     private String relyingParty;
-    private String codeEnable;
-    private HashFileRequest signature;
+    private boolean codeEnable;
+    private String fieldName;
     private String type;
+    private int documentId;
 }

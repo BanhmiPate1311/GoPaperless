@@ -1,7 +1,7 @@
 import { api } from "../constants/api";
 
 export const smartIdService = {
-  sign: (data) => {
-    return api.post("/signFile", data);
+  sign: (data, signal) => {
+    return api.post("/signFile", data, { signal });
   },
 };

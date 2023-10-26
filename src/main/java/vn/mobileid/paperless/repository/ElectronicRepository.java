@@ -23,6 +23,7 @@ import java.util.*;
 
 @Repository
 public class ElectronicRepository {
+
     final private int timeOut = 5000;
     private String url;
     final private String contentType = "application/json";
@@ -65,7 +66,7 @@ public class ElectronicRepository {
 
     public String getToken() throws IOException {
         String sPropertiesFMS = "";
-        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONECTOR_NAME);
+        ArrayList<ConnectorName> connector = LoadParamSystem.getParamStart(Difinitions.CONFIG_LOAD_PARAM_CONNECTOR_NAME);
         if (connector.size() > 0) {
             for (int m = 0; m < connector.size(); m++) {
                 if (connector.get(m).CONNECTOR_NAME.equals("MOBILE_ID_IDENTITY")) {
@@ -277,7 +278,6 @@ public class ElectronicRepository {
                 bodyRequest);
         System.out.println("SubjectResponse: " + gson.toJson(response));
 
-
         return "OK";
     }
 
@@ -309,7 +309,6 @@ public class ElectronicRepository {
             claim_sources.put("JWT", jwt);
             request.put("claim_sources", claim_sources);
         }
-
 
         String bodyRequest = gson.toJson(request);
         System.out.println("bodyRequest: " + bodyRequest);
@@ -363,7 +362,6 @@ public class ElectronicRepository {
             identity_document.put("value", code);
             request.put("identity_document", identity_document);
         }
-
 
         request.put("subject_id", subject_id);
         request.put("process_id", process_id);
