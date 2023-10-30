@@ -24,10 +24,12 @@ public class FpsService {
 
     private String accessToken;
 
+    private final RestTemplate restTemplate = new RestTemplate();
+
     public void getAccessToken() {
         String authorizeUrl = "https://fps.mobile-id.vn/fps/v1/authenticate";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         // Tạo HttpHeaders để đặt các headers
         HttpHeaders headers = new HttpHeaders();
@@ -54,7 +56,7 @@ public class FpsService {
         String synchronizeUrl = "https://fps.mobile-id.vn/fps/v1/synchronize";
 //        String accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTgwNDE0MTY1NzEsImlhdCI6MTY5ODAzNzgxNjU3MSwiaXNzIjoiaHR0cHM6Ly9mcHMubW9iaWxlLWlkLnZuIiwiYXVkIjoiZW50ZXJwcmlzZSIsInN1YiI6IkZQUyIsInR5cCI6IkJlYXJlciIsInNjb3BlIjoiTUlfTW9iaWxlQXBwIiwic2lkIjoiMDkxMi01OTY0MS02MDg0OCIsImF6cCI6Ik1vYmlsZS1JRCBDb21wYW55IiwibW9iaWxlIjoiMTkwMCA2ODg0IiwiYWlkIjozLCJpY2kiOjF9.QqT0AxiTUgJLTT59tP7qeS_sTD5pwR6uEQVar_n1oiEIq5H-sr_xTDX7RAsmcUFhporNj3-liBGahFGgtBRKOANMAHXwxfTsPx0WWw-JukKMsnvwruDedASmgiUsV8SGS609rHjXC-y8IgHFnrXA7s8EzECLAvc6NyoRbVuBRsW-m3-A0hQUJo1b-Hy61Un4xnrQ_y2guyN7AEn1Obb4y1MMuZFXf8z0x9jthO8bFJLpr0vAi_moNqOX31QWa9TxSaBQWoz5ob-l3TwiC4JRBA7BjBd132FRT9FGUXRwDAx31lwAorC9ufHF8RzgTQ1j1M20MBjbYwVk-lfzUotj9w";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -94,7 +96,7 @@ public class FpsService {
 
         String getImageBasse64Url = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/images/" + page;
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -117,11 +119,36 @@ public class FpsService {
         }
     }
 
+    public byte[] getImagePdf(int documentId) throws Exception {
+
+        String getImageBasse64Url = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+
+        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<byte[]> response = restTemplate.exchange(getImageBasse64Url, HttpMethod.GET, httpEntity, byte[].class);
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            HttpStatus statusCode = e.getStatusCode();
+            System.out.println("HTTP Status Code: " + statusCode.value());
+            if (statusCode.value() == 401) {
+                getAccessToken();
+                return getImagePdf(documentId);
+            } else {
+                throw new Exception(e.getMessage());
+            }
+        }
+    }
+
     public String getFields(int documentId) throws Exception {
 
         String getImageBasse64Url = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -149,7 +176,7 @@ public class FpsService {
 
         String getDocumentDetailsUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/details";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -178,7 +205,7 @@ public class FpsService {
         }
         String verificationUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/verification";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -207,7 +234,7 @@ public class FpsService {
     public String addSignature(int documentId, String field, @NotNull BasicFieldAttribute data) throws Exception {
         String addSignatureUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields/" + field;
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -247,7 +274,7 @@ public class FpsService {
     public String putSignature(int documentId, String field, @NotNull BasicFieldAttribute data) throws Exception {
         String putSignatureUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields/" + field;
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -285,7 +312,7 @@ public class FpsService {
     public String deleteSignatue(int documentId, String field_name) throws Exception {
         String deleteSignatureUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -319,7 +346,7 @@ public class FpsService {
     public String hashSignatureField(int documentId, HashFileRequest data) throws Exception {
         String hashSignatureFieldUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields/hash";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -364,7 +391,7 @@ public class FpsService {
     public String signDocument(int documentId, FpsSignRequest data) throws Exception {
         String signDocumentUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/sign";
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

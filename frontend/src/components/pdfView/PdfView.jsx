@@ -425,6 +425,11 @@ const PdfView = ({ workFlow }) => {
     setContextMenuVisible(true);
   };
 
+  const handleFullScreen = () => {
+    const elem = document.getElementById("pdfPages-container");
+    elem.requestFullscreen();
+  };
+
   return (
     <Box height="100%">
       <Stack
@@ -528,7 +533,10 @@ const PdfView = ({ workFlow }) => {
           </Button>
         </Stack>
         <Stack direction="row" alignItems="center">
-          <Button sx={{ width: "30px", minWidth: "0", mx: "4px", paddingX: 0 }}>
+          <Button
+            sx={{ width: "30px", minWidth: "0", mx: "4px", paddingX: 0 }}
+            onClick={handleFullScreen}
+          >
             <FullScreen />
           </Button>
           <Button sx={{ width: "30px", minWidth: "0", mx: "4px", paddingX: 0 }}>

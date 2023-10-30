@@ -13,10 +13,13 @@ import org.springframework.stereotype.Component;
 import vn.mobileid.exsig.*;
 import vn.mobileid.paperless.API.SigningMethodAsyncImp;
 import vn.mobileid.paperless.entity.SignPosition;
+import vn.mobileid.paperless.fps.BasicFieldAttribute;
+import vn.mobileid.paperless.fps.Dimension;
 import vn.mobileid.paperless.fps.request.HashFileRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 import vn.mobileid.paperless.service.FileJRBService;
+import vn.mobileid.paperless.service.FpsService;
 import vn.mobileid.paperless.utils.CommonFunction;
 import vn.mobileid.paperless.utils.Difinitions;
 
@@ -38,6 +41,9 @@ public class CommonRepository {
 
     @Autowired
     private process connect;
+
+    @Autowired
+    private FpsService fpsService;
 
     @Value("${dev.mode}")
     private boolean devMode;
@@ -296,7 +302,13 @@ public class CommonRepository {
         }
     }
 
-    public List<String> createHashList(String signerToken, String signingToken, String certChain, String cerId, String signName, String sSignature_id) throws Exception {
+    public String createHashList(
+            String signerToken,
+            String signingToken,
+            String certChain,
+            String cerId,
+            String signName,
+            String sSignature_id) throws Exception {
         // get UUID of last file
 
         // get participant to check signer status
@@ -435,7 +447,7 @@ public class CommonRepository {
                     signInit.saveTemporalData(cerId, temporalData);
                     List<String> hashList = signInit.hashList;
 
-                    return hashList;
+                    return hashList.get(0);
 //                        return Hex.encodeHexString(decoded);
                 }
                 if (type.equals("image")) {
@@ -489,7 +501,7 @@ public class CommonRepository {
                     signInit.saveTemporalData(cerId, temporalData);
                     List<String> hashList = signInit.hashList;
 
-                    return hashList;
+                    return hashList.get(0);
                 }
             } else {
                 return null;
@@ -499,37 +511,118 @@ public class CommonRepository {
         return null;
     }
 
-    public HashFileRequest getMetaData(String signerToken) throws Exception {
+    public String addSign(
+            int pageHeight,
+            int pageWidth,
+            String signingToken,
+            String certChain,
+            String cerId,
+            String signName,
+            String sSignature_id, String meta, int documentId, String signerToken) throws Exception {
+
+        BasicFieldAttribute data = new BasicFieldAttribute();
+
+        //<editor-fold defaultstate="collapsed" desc="### COUNTER SIGN GET">
+        int count = 0;
+        int[] pSIGNED_COUNTER = new int[1];
+        String sGetCounter = connect.USP_GW_PPL_WORKFLOW_GET_SIGNED_COUNTER(pSIGNED_COUNTER, signingToken);
+        if ("1".equals(sGetCounter)) {
+            count = pSIGNED_COUNTER[0];
+        }
+        //</editor-fold>
+
+        JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
+
+        String page = "1";
+        String top = null;
+        String left = null;
+        String width = "135";
+        String height = "39";
+        String text = "Sample text";
+        String type = "image";
+
+//                    JsonElement pdfElement = jsonObject.get("pdf");
+        if (jsonObject != null && jsonObject.has("pdf")) {
+            JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
+
+            JsonElement annotationElement = pdfObject.get("annotation");
+            if (annotationElement != null) {
+                JsonObject annotationObject = annotationElement.getAsJsonObject();
+                if (annotationObject.has("page")) {
+                    page = annotationObject.get("page").getAsString();
+                }
+                if (annotationObject.has("top")) {
+                    top = annotationObject.get("top").getAsString();
+                }
+                if (annotationObject.has("left")) {
+                    left = annotationObject.get("left").getAsString();
+                }
+                if (annotationObject.has("width")) {
+                    width = annotationObject.get("width").getAsString();
+                }
+                if (annotationObject.has("height")) {
+                    height = annotationObject.get("height").getAsString();
+                }
+                if (annotationObject.has("text")) {
+                    text = annotationObject.get("text").getAsString();
+                }
+                if (annotationObject.has("type")) {
+                    type = annotationObject.get("type").getAsString();
+                }
+            }
+
+        }
+
+        data.setFieldName(signerToken);
+        data.setPage(Integer.parseInt(page));
+        data.setVisibleEnabled(true);
+
+        Dimension dimension = new Dimension();
+
+        SignPosition signPosition = null;
+        if (top == null || left == null) {
+            signPosition = new SignPosition(data.getPage(), count, pageHeight, pageWidth);
+
+        } else {
+            signPosition = new SignPosition(page, Integer.parseInt(top), Integer.parseInt(left), pageHeight);
+        }
+
+        dimension.setX(signPosition.getX1());
+        dimension.setY(signPosition.getY1());
+        dimension.setWidth(Integer.parseInt(width));
+        dimension.setHeight(Integer.parseInt(height));
+        data.setDimension(dimension);
+
+        fpsService.addSignature(documentId, "signature",data);
+        return null;
+    }
+
+    public HashFileRequest getMetaData(String signerToken, String meta) throws Exception {
         HashFileRequest data = new HashFileRequest();
-        Participants[][] rsParticipant = new Participants[1][];
-        connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
-        if (rsParticipant[0] != null && rsParticipant[0].length > 0) {
-            String meta = rsParticipant[0][0].META_INFORMATION;
-            JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
+        JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
 
 //                    JsonElement signingPurposeElement = jsonObject.get("signing_purpose");
-            String signingPurpose = "Signature";
-            String location = "vn";
+        String signingPurpose = "Signature";
+        String location = "vn";
 
-            if (jsonObject != null && jsonObject.has("signing_purpose")) {
-                signingPurpose = jsonObject.get("signing_purpose").getAsString();
-                // Tiếp tục xử lý dữ liệu trong signingPurposeElement
-            }
-            if (jsonObject != null && jsonObject.has("country")) {
-                location = jsonObject.get("country").getAsString();
-                // Tiếp tục xử lý dữ liệu trong signingPurposeElement
-            }
+        if (jsonObject != null && jsonObject.has("signing_purpose")) {
+            signingPurpose = jsonObject.get("signing_purpose").getAsString();
+            // Tiếp tục xử lý dữ liệu trong signingPurposeElement
+        }
+        if (jsonObject != null && jsonObject.has("country")) {
+            location = jsonObject.get("country").getAsString();
+            // Tiếp tục xử lý dữ liệu trong signingPurposeElement
+        }
 
 
-            data.setSigningReason("Purpose: " + signingPurpose);
-            data.setSignatureAlgorithm("RSA");
-            data.setSignedHash("SHA256");
-            data.setSigningLocation(location);
-            if (jsonObject != null && jsonObject.has("pdf")) {
-                JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
-                if (pdfObject.has("reason")) {
-                    data.setSigningReason(pdfObject.get("reason").getAsString());
-                }
+        data.setSigningReason("Purpose: " + signingPurpose);
+        data.setSignatureAlgorithm("RSA");
+        data.setSignedHash("SHA256");
+        data.setSigningLocation(location);
+        if (jsonObject != null && jsonObject.has("pdf")) {
+            JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
+            if (pdfObject.has("reason")) {
+                data.setSigningReason(pdfObject.get("reason").getAsString());
             }
         }
         return data;

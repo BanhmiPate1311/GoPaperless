@@ -146,7 +146,7 @@ public class RSSPController {
             @RequestBody SignRequest signRequest,
             HttpServletRequest request)
             throws Throwable {
-        String result = rsspService.signFile(signRequest, request);
+        String result = rsspService.signFileFps(signRequest, request);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

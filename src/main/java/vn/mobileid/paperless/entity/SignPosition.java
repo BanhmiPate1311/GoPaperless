@@ -18,6 +18,18 @@ public class SignPosition {
         this.pos = x1 + "," + y1 + "," + (x1 + width) + "," + (y1 + height);
     }
 
+    public SignPosition(int page, int count, int pageHeight, int pageWidth) {
+        int limit = 0;
+        if(pageWidth /(width + distance) >=4){
+            limit = 4;
+        } else {
+            limit = 3;
+        }
+        this.x1 = (width + distance) * (count % limit) + distance;
+        this.y1 = (pageHeight - distance - height) - (height + distance) * (count / limit);
+        this.pos = x1 + "," + y1 + "," + (x1 + width) + "," + (y1 + height);
+    }
+
     public SignPosition(String page, int top, int left, int width, int height, int pageHeight) {
         this.pageNumber = page;
         this.pos = left + "," + (pageHeight - top - height) + "," + (left + width) + "," + (pageHeight - top);
