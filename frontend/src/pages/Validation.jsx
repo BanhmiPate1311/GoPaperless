@@ -19,6 +19,7 @@ import PDFViewer from "../components/validate/PDFViewer";
 import TabDocument from "../components/validate/TabDocument";
 import { api } from "../constants/api";
 import { useTranslation } from "react-i18next";
+import i18n from "../ultis/language/i18n";
 
 const CustomButton = styled(Button)`
   text-transform: none; /* Đặt textTransform thành none để bỏ chữ in hoa */
@@ -43,6 +44,26 @@ const Validation = () => {
   // const [infoFile, setInfoFile] = useState({});
   const [validFile, setValidFile] = useState({});
 
+  const [lang, setLang] = useState("English");
+
+  useEffect(() => {
+    if (lang) {
+      // setLanguage(lang);
+      switch (lang) {
+        case "en":
+          i18n.changeLanguage("0");
+          localStorage.setItem("language", "EngLish");
+          break;
+        case "vi":
+          i18n.changeLanguage("1");
+          localStorage.setItem("language", "Vietnamese");
+          break;
+        default:
+          break;
+      }
+    }
+  }, [lang]);
+
   // const getFirstFileFromUploadToken = async (upload_token) => {
   //   setIsFetching(true);
   //   try {
@@ -64,6 +85,7 @@ const Validation = () => {
       });
 
       setValidFile(response.data);
+      setLang(response.data.lang);
       setIsFetching(false);
       // setInfoFile(response.data);
     } catch (error) {

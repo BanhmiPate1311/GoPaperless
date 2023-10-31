@@ -163,7 +163,7 @@ const UsbModalField2 = ({
                 onChange={handlePIN}
                 onKeyDown={(e) => {
                   if (checkLength && e.key === "Enter") {
-                    handleModalClick();
+                    handleModalClick(data);
                   }
                 }}
               />

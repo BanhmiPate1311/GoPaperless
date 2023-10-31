@@ -48,7 +48,7 @@ public class FpsController {
     @PostMapping("/{documentId}/{field}/addSignature")
     public ResponseEntity<?> addSignature(@PathVariable int documentId, @PathVariable String field, @RequestBody BasicFieldAttribute data) throws Exception {
 
-        String response = fpsService.addSignature(documentId, field, data);
+        String response = fpsService.addSignature(documentId, field, data, true);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

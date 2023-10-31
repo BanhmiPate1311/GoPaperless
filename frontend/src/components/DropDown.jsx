@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Button, Menu, MenuItem } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import i18n from "i18next";
+import { useLocation } from "react-router-dom";
 
 function Dropdown({ color }) {
+  const location = useLocation();
+  const isValidationPath = location.pathname.includes("/validation");
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -84,6 +88,7 @@ function Dropdown({ color }) {
         onClick={handleClick}
         endIcon={<ArrowDropDownIcon />}
         style={{ color: color, zIndex: "2" }}
+        disabled={isValidationPath}
       >
         {lang}
       </Button>

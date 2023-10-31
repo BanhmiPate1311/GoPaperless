@@ -231,7 +231,7 @@ public class FpsService {
         }
     }
 
-    public String addSignature(int documentId, String field, @NotNull BasicFieldAttribute data) throws Exception {
+    public String addSignature(int documentId, String field, @NotNull BasicFieldAttribute data, boolean drag) throws Exception {
         String addSignatureUrl = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId + "/fields/" + field;
 
 //        RestTemplate restTemplate = new RestTemplate();
@@ -239,7 +239,9 @@ public class FpsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
-        headers.set("x-dimension-unit", "percentage");
+        if (drag) {
+            headers.set("x-dimension-unit", "percentage");
+        }
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("field_name", data.getFieldName());
@@ -247,8 +249,8 @@ public class FpsService {
         requestData.put("dimension", data.getDimension());
         requestData.put("visible_enabled", data.getVisibleEnabled());
 
-        Gson gson = new Gson();
-        System.out.println("Request Data: " + gson.toJson(requestData));
+//        Gson gson = new Gson();
+//        System.out.println("Request Data: " + gson.toJson(requestData));
 
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
 
@@ -260,11 +262,12 @@ public class FpsService {
 
             return response.getBody();
         } catch (HttpClientErrorException e) {
+            System.out.println("Error  đây: ");
             HttpStatus statusCode = e.getStatusCode();
             System.out.println("HTTP Status Code: " + statusCode.value());
             if (statusCode.value() == 401) {
                 getAccessToken();
-                return addSignature(documentId, field, data);
+                return addSignature(documentId, field, data, drag);
             } else {
                 throw new Exception(e.getMessage());
             }
@@ -359,6 +362,9 @@ public class FpsService {
         requestData.put("signing_reason", data.getSigningReason());
         requestData.put("signing_location", data.getSigningLocation());
         requestData.put("certificate_chain", data.getCertificateChain());
+
+//        Gson gson = new Gson();
+//        System.out.println("Request Data: " + gson.toJson(requestData));
 
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
 

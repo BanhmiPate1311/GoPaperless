@@ -511,7 +511,7 @@ public class CommonRepository {
         return null;
     }
 
-    public String addSign(
+    public void addSign(
             int pageHeight,
             int pageWidth,
             String signingToken,
@@ -593,8 +593,8 @@ public class CommonRepository {
         dimension.setHeight(Integer.parseInt(height));
         data.setDimension(dimension);
 
-        fpsService.addSignature(documentId, "signature",data);
-        return null;
+        fpsService.addSignature(documentId, "signature", data, false);
+
     }
 
     public HashFileRequest getMetaData(String signerToken, String meta) throws Exception {
