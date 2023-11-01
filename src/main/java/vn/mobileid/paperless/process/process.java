@@ -181,7 +181,7 @@ public class process {
         String convrtr = "1";
         try {
             conns = OpenDatabase();
-            proc_stmt = conns.prepareCall("{ call USP_PPL_WORKFLOW_PARTICIPANTS_GET(?,?) }");
+            proc_stmt = conns.prepareCall("{ call USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(?,?) }");
             proc_stmt.setString(1, pSIGNER_TOKEN);
 
             proc_stmt.registerOutParameter(2, java.sql.Types.NVARCHAR);

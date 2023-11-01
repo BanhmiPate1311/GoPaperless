@@ -44,6 +44,8 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
   const workFlowIdList = [];
   const enterpriseIdList = [];
   const signerIdList = [];
+  const documentIdList = [];
+  const lastFileIdList = [];
 
   if (Array.isArray(workFlow) && workFlow.length > 0) {
     let signerId = null;
@@ -53,6 +55,8 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
       fileNameList.push(workFlow[i].fileName);
       workFlowIdList.push(workFlow[i].workFlowId);
       enterpriseIdList.push(workFlow[i].enterpriseId);
+      documentIdList.push(workFlow[i].documentId);
+      lastFileIdList.push(workFlow[i].lastFileId);
 
       signerId = workFlow[i].participants.find(
         (item) => item.signerToken === workFlow[i].signerToken
@@ -65,6 +69,8 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
     fileNameList.push(workFlow?.fileName);
     workFlowIdList.push(workFlow.workFlowId);
     enterpriseIdList.push(workFlow.enterpriseId);
+    documentIdList.push(workFlow.documentId);
+    lastFileIdList.push(workFlow.lastFileId);
 
     const signerId = workFlow?.participants.find(
       (item) => item.signerToken === workFlow?.signerToken
@@ -251,17 +257,20 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
         // });
         const data = {
           fieldName: signature ? signature.field_name : "",
-          signerToken: workFlow.signerToken,
+          signerToken: signerTokenList[i],
           connectorName,
-          documentId: workFlow.documentId,
+          documentId: documentIdList[i],
           certChain: cer.value,
-          signingToken: workFlow.signingToken,
+          signingToken: signingTokenList[i],
           credentialID: cer.id,
         };
-        response[i] = isPluginService.getHash(data);
+
+        response[i] = await isPluginService.getHash(data);
+        console.log("response[i]: ", response[i]);
         const temp = {};
-        temp.dtbsHash = response[i].data.hash;
+        temp.dtbsHash = response[i].data.hashPG;
         temp.algorithm = "SHA256";
+        hashList.push(response[i].data.hash);
         signatureId.push(response[i].data.signatureId);
         signObjects.push(temp);
       }
@@ -277,31 +286,40 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
           // setShowModal3(true);
 
           for (let i = 0; i < signingTokenList.length; i++) {
-            const formData = new FormData(); // Tạo FormData mới trong mỗi vòng lặp
-            formData.append("signingToken", signingTokenList[i]);
-            formData.append("cerId", cer.id);
-            formData.append("signerId", signerIdList[i]);
-            formData.append("certEncode", cer.value);
-            formData.append("signatures", response.signatures[i]);
-            formData.append("signatureId", signatureId[i]);
-            formData.append("fileName", fileNameList[i]);
-            formData.append("connectorName", connectorName);
-            formData.append("serialNumber", cer.subject.serialNumber);
-            formData.append("signingOption", "usbtoken");
-            formData.append("signerToken", signerTokenList[i]);
-            formData.append("enterpriseId", enterpriseIdList[i]);
-            formData.append("workFlowId", workFlowIdList[i]);
+            // const formData = new FormData(); // Tạo FormData mới trong mỗi vòng lặp
+            // formData.append("signingToken", signingTokenList[i]);
+            // formData.append("cerId", cer.id);
+            // formData.append("signerId", signerIdList[i]);
+            // formData.append("certEncode", cer.value);
+            // formData.append("signatures", response.signatures[i]);
+            // formData.append("signatureId", signatureId[i]);
+            // formData.append("fileName", fileNameList[i]);
+            // formData.append("connectorName", connectorName);
+            // formData.append("serialNumber", cer.subject.serialNumber);
+            // formData.append("signingOption", "usbtoken");
+            // formData.append("signerToken", signerTokenList[i]);
+            // formData.append("enterpriseId", enterpriseIdList[i]);
+            // formData.append("workFlowId", workFlowIdList[i]);
 
             const data = {
+              fieldName: signature ? signature.field_name : "",
               signature: response.signatures[i],
+              hashList: hashList[i],
+              documentId: documentIdList[i],
+              signingToken: signingTokenList[i],
+              signerToken: signerTokenList[i],
+              certChain: cer.value,
+              enterpriseId: enterpriseIdList[i],
+              workFlowId: workFlowIdList[i],
+              signerId: signerIdList[i],
+              fileName: fileNameList[i],
+              signatureId: signatureId[i],
+              lastFileId: lastFileIdList[i],
+              serialNumber: cer.subject.serialNumber,
             };
 
-            await api
-              .post("/is/signUsbToken", formData, {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              })
+            await isPluginService
+              .signUsbTokenFps(data)
               .then((response) => {
                 window.parent.postMessage(
                   { data: response.data, status: "Success" },

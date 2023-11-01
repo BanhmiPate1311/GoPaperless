@@ -632,7 +632,6 @@ public class CommonRepository {
             CallBackLogRequest callBackLogRequest,
             int isSetPosition,
             String signerId,
-//            byte[] pdfSigned,
             String fileName,
             String signingToken,
             String pDMS_PROPERTY,
@@ -650,7 +649,6 @@ public class CommonRepository {
             String digest,
             String signedHash,
             String pSIGNATURE_VALUE,
-            int pPPL_FILE_SIGNED_ID,
             HttpServletRequest request
     ) throws Exception {
         String pLAST_MODIFIED_BY = "CoreGateway";
@@ -749,7 +747,7 @@ public class CommonRepository {
                 }
                 String signedType = "NORMAL";
                 connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_UPDATE(signerToken,
-                        signedType, sDateSign, sSignature_id, signedHash, sJsonCertResult, SIGNATURE_TYPE, signingOption, sDateSign, pSIGNATURE_VALUE, pPPL_FILE_SIGNED_ID, pLAST_MODIFIED_BY);
+                        signedType, sDateSign, sSignature_id, signedHash, sJsonCertResult, SIGNATURE_TYPE, signingOption, sDateSign, pSIGNATURE_VALUE, sFileID_Last, pLAST_MODIFIED_BY);
                 if (rsWFList[0] != null && rsWFList[0].length > 0) {
                     if (rsWFList[0][0].WORKFLOW_STATUS != Difinitions.CONFIG_PPL_WORKFLOW_STATUS_PENDING) {
                         connect.USP_GW_PPL_WORKFLOW_UPDATE_STATUS(signingToken, Difinitions.CONFIG_PPL_WORKFLOW_STATUS_COMPLETED, "");

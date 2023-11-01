@@ -463,7 +463,7 @@ public class RSSPService {
                 callBackLogRequest.setpWORKFLOW_ID(workFlowId);
 
 //                String fileName = "abc"; // tạm thời
-                commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, lastFileId, request);
+                commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, request);
                 return responseSign;
             }
 
@@ -708,7 +708,7 @@ public class RSSPService {
             callBackLogRequest.setpWORKFLOW_ID(workFlowId);
 
 //                String fileName = "abc"; // tạm thời
-            commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, lastFileId, request);
+            commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, request);
             return responseSign;
 
         } catch (Exception e) {
