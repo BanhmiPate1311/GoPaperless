@@ -1533,4 +1533,72 @@ public class process {
 //            CloseDatabase(temp_connection);
 //        }
 //    }
+
+    public String USP_GW_PPL_FILE_VALIDATION_UPDATE_POSTBACK_STATUS(int pFILE_VALIDATION_ID, int pPOSTBACK_STATUS, String pLAST_MODIFIED_BY) throws Exception {
+        String convrtr = "1";
+        Connection conns = null;
+        CallableStatement proc_stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            conns = OpenDatabase();
+            proc_stmt = conns.prepareCall("{ call USP_GW_PPL_FILE_VALIDATION_UPDATE_POSTBACK_STATUS(?,?,?,?) }");
+            proc_stmt.setInt("pFILE_VALIDATION_ID", pFILE_VALIDATION_ID);
+            proc_stmt.setInt("pPOSTBACK_STATUS", pPOSTBACK_STATUS);
+            proc_stmt.setString("pLAST_MODIFIED_BY", pLAST_MODIFIED_BY);
+            proc_stmt.registerOutParameter("pRESPONSE_CODE", java.sql.Types.NVARCHAR);
+
+            proc_stmt.execute();
+            convrtr = proc_stmt.getString("pRESPONSE_CODE");
+
+            rs = proc_stmt.executeQuery();
+
+            return convrtr;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        } finally {
+            if (proc_stmt != null) {
+                proc_stmt.close();
+            }
+            Connection[] temp_connection = new Connection[]{conns};
+            CloseDatabase(temp_connection);
+        }
+    }
+
+    public int USP_GW_PPL_FILE_VALIDATION_GET_POSTBACK_STATUS(int pFILE_VALIDATION_ID) throws Exception {
+        String convrtr = "1";
+        Connection conns = null;
+        CallableStatement proc_stmt = null;
+        ResultSet rs = null;
+        int val = 1;
+
+        try {
+
+            conns = OpenDatabase();
+            proc_stmt = conns.prepareCall("{ call USP_GW_PPL_FILE_VALIDATION_GET_POSTBACK_STATUS(?,?) }");
+            proc_stmt.setInt("pFILE_VALIDATION_ID", pFILE_VALIDATION_ID);
+
+            proc_stmt.registerOutParameter("pRESPONSE_CODE", java.sql.Types.NVARCHAR);
+
+            proc_stmt.execute();
+            convrtr = proc_stmt.getString("pRESPONSE_CODE");
+
+            rs = proc_stmt.executeQuery();
+            while (rs.next()) {
+
+                val = rs.getInt("POSTBACK_STATUS");
+            }
+            return val;
+
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        } finally {
+            if (proc_stmt != null) {
+                proc_stmt.close();
+            }
+            Connection[] temp_connection = new Connection[]{conns};
+            CloseDatabase(temp_connection);
+        }
+    }
 }

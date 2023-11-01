@@ -1,5 +1,7 @@
 package vn.mobileid.paperless.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,11 +22,15 @@ import vn.mobileid.exsig.PdfProfileCMS;
 import vn.mobileid.exsig.VerifyResult;
 import vn.mobileid.fms.client.JCRFile;
 import vn.mobileid.paperless.API.GatewayAPI;
+import vn.mobileid.paperless.Model.smartId.request.SignRequest;
+import vn.mobileid.paperless.fps.request.FpsSignRequest;
+import vn.mobileid.paperless.fps.request.HashFileRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 import vn.mobileid.paperless.API.SigningMethodAsyncImp;
 import vn.mobileid.paperless.repository.CommonRepository;
 import vn.mobileid.paperless.service.FileJRBService;
+import vn.mobileid.paperless.service.FpsService;
 import vn.mobileid.paperless.service.RSSPService;
 import vn.mobileid.paperless.utils.CommonFunction;
 import vn.mobileid.paperless.utils.CommonHash;
@@ -55,6 +61,9 @@ public class ISController {
 
     @Autowired
     private GatewayAPI gatewayAPI;
+
+    @Autowired
+    private FpsService fpsService;
 
     @PostMapping("/getHashFile")
     public String getHashFile(@RequestParam String signingToken) throws Exception {
@@ -135,10 +144,74 @@ public class ISController {
         return response;
     }
 
-//
+    @PostMapping("/getHashFileFps")
+    public ResponseEntity<?> getHashFileFps(
+            SignRequest signRequest) throws Exception {
+        String field_name = signRequest.getFieldName();
+        String signerToken = signRequest.getSignerToken();
+        String connectorName = signRequest.getConnectorName();
+        int documentId = signRequest.getDocumentId();
+        String certChain = signRequest.getCertChain();
+        String signingToken = signRequest.getSigningToken();
+        String credentialID = signRequest.getCredentialID();
+
+        // check workflow participant
+
+        Participants[][] rsParticipant = new Participants[1][];
+        connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
+        if (rsParticipant[0] == null || rsParticipant[0].length == 0 || rsParticipant[0][0].SIGNER_STATUS != Difinitions.CONFIG_WORKFLOW_PARTICIPANTS_SIGNER_STATUS_ID_PENDING) {
+
+            return new ResponseEntity<>("The document has already been signed", HttpStatus.OK);
+        }
+
+        String meta = rsParticipant[0][0].META_INFORMATION;
+
+        String[] sResultConnector = new String[2];
+        connect.getIdentierConnector(connectorName, sResultConnector);
+        String prefixCode = sResultConnector[1];
+
+        long millis = System.currentTimeMillis();
+        String sSignatureHash = signerToken + millis;
+        String sSignature_id = prefixCode + "-" + CommonHash.toHexString(CommonHash.hashPass(sSignatureHash)).toUpperCase();
+
+        String documentDetails = fpsService.getDocumentDetails(documentId);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(documentDetails);
+        JsonNode documentNode = jsonNode.get(0);
+
+        int pageHeight = 0;
+        int pageWidth = 0;
+        if (documentNode != null) {
+            pageHeight = documentNode.get("document_height").asInt();
+            pageWidth = documentNode.get("document_width").asInt();
+        }
+
+        List<String> listCertChain = new ArrayList<>();
+        listCertChain.add(certChain);
+
+        HashFileRequest hashFileRequest = commonRepository.getMetaData(signRequest.getSignerToken(), meta);
+        hashFileRequest.setCertificateChain(listCertChain);
+
+        if (field_name == null || field_name.isEmpty()) {
+            System.out.println("kiem tra:");
+            commonRepository.addSign(pageHeight, pageWidth, signingToken, certChain, credentialID, "", sSignature_id, meta, documentId, signerToken);
+//                hashFileRequest.setFieldName(signerToken);
+        }
+        hashFileRequest.setFieldName(!signRequest.getFieldName().isEmpty() ? signRequest.getFieldName() : signerToken);
+        String hashList = fpsService.hashSignatureField(signRequest.getDocumentId(), hashFileRequest);
+
+        byte[] decoded = Base64.decodeBase64(hashList);
+        String hash = Hex.encodeHexString(decoded);
+        Map<String, String> response = new HashMap<>();
+        response.put("hash", hash);
+        response.put("signatureId", sSignature_id);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PostMapping("/signUsbToken")
-    public ResponseEntity<String> signUsbToken(
+    public ResponseEntity<?> signUsbToken(
             @RequestParam List<String> signatures,
             @RequestParam String certEncode,
             @RequestParam String cerId,
@@ -210,6 +283,58 @@ public class ISController {
 //            commonRepository.postBack(callBackLogRequest,rsParticipant,pdfSigned,fileName, signingToken,pDMS_PROPERTY,signatureId, signerToken,tsTimeSigned,rsWFList,sFileID_Last,certEncode,serialNumber,signingOption,sType,request);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/signUsbTokenFps")
+    public ResponseEntity<?> signUsbTokenFps(
+            SignRequest signRequest,
+            HttpServletRequest request) throws Exception {
+
+        try {
+            WorkFlowList[][] rsWFList = new WorkFlowList[1][];
+            connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
+            String sResult = "0";
+
+            // check workflow status
+            if (rsWFList[0] == null || rsWFList[0].length == 0 || rsWFList[0][0].WORKFLOW_STATUS != Difinitions.CONFIG_PPL_WORKFLOW_STATUS_PENDING) {
+
+                sResult = "Signer Status invalid";// trạng thái không hợp lệ
+                throw new Exception(sResult);
+            }
+
+            // check workflow participant
+            Participants[][] rsParticipant = new Participants[1][];
+            connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
+            if (rsParticipant[0] == null || rsParticipant[0].length == 0 || rsParticipant[0][0].SIGNER_STATUS != Difinitions.CONFIG_WORKFLOW_PARTICIPANTS_SIGNER_STATUS_ID_PENDING) {
+
+                return new ResponseEntity<>("The document has already been signed", HttpStatus.OK);
+            }
+
+            String meta = rsParticipant[0][0].META_INFORMATION;
+            JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
+
+            List<String> listCertChain = new ArrayList<>();
+            listCertChain.add(certChain);
+            FpsSignRequest fpsSignRequest = new FpsSignRequest();
+            fpsSignRequest.setFieldName(!signRequest.getFieldName().isEmpty() ? signRequest.getFieldName() : signerToken);
+            fpsSignRequest.setHashValue(hashList);
+            fpsSignRequest.setSignatureValue(signature);
+
+            fpsSignRequest.setCertificateChain(listCertChain);
+
+            String responseSign = fpsService.signDocument(signRequest.getDocumentId(), fpsSignRequest);
+
+            CallBackLogRequest callBackLogRequest = new CallBackLogRequest();
+            callBackLogRequest.setpENTERPRISE_ID(enterpriseId);
+            callBackLogRequest.setpWORKFLOW_ID(workFlowId);
+
+//                String fileName = "abc"; // tạm thời
+            commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, lastFileId, request);
+            return responseSign;
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

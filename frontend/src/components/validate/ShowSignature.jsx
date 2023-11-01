@@ -44,7 +44,7 @@ const ShowSignature = ({ sig, sign, signType }) => {
       },
       {
         title: t("validation.sigTime"),
-        subtitle: sig.signing_time ? formatTime(sig.signing_time) : null,
+        subtitle: sig.signing_time ? sig.signing_time : null,
       },
       {
         title: t("validation.sigTimestamp"),
@@ -71,7 +71,7 @@ const ShowSignature = ({ sig, sign, signType }) => {
       {
         title: t("validation.sigPeriod"),
         subtitle: sig.certificate_validity_period
-          ? formatPeriodTime(sig.certificate_validity_period)
+          ? sig.certificate_validity_period
           : null,
       },
       {
@@ -142,13 +142,13 @@ const ShowSignature = ({ sig, sign, signType }) => {
                 {sign.icon}
               </Stack>
               <Box width="100%">
-                <Typography variant="h5">{sig.certificate_owner}</Typography>
+                <Typography variant="h5" fontWeight="bold">
+                  {sig.certificate_owner}
+                </Typography>
                 <Box>
                   <Typography variant="h5">{sign.title}</Typography>
                   {sign.name === "valid" && (
-                    <Typography variant="h5">
-                      {formatTime(sig.signing_time)}
-                    </Typography>
+                    <Typography variant="h5">{sig.signing_time}</Typography>
                   )}
                 </Box>
               </Box>
@@ -159,175 +159,172 @@ const ShowSignature = ({ sig, sign, signType }) => {
         </Box>
       </div>
 
-      <Box>
-        <Drawer
-          open={isOpen}
-          onClose={toggleDrawer}
-          anchor="right"
-          style={{ width: "350px", wordWrap: "break-word" }}
-        >
-          <Box style={{ width: "350px", wordWrap: "break-word" }}>
-            {/* ----------------------------Privacy preference center----------------------------------*/}
-            <Box className="header-cookie d-flex align-items-center">
-              <Box className="col-10 p-4">
-                {/* <Title sx={{ textTransform: "uppercase" }}>
+      <Drawer
+        open={isOpen}
+        onClose={toggleDrawer}
+        anchor="right"
+        sx={{
+          "& .MuiDrawer-paper": {
+            borderRadius: "10px",
+          },
+        }}
+      >
+        <Box style={{ width: "350px", wordWrap: "break-word" }}>
+          {/* ----------------------------Privacy preference center----------------------------------*/}
+          <Box className="header-cookie d-flex align-items-center">
+            <Box className="col-10 p-4">
+              {/* <Title sx={{ textTransform: "uppercase" }}>
                   xuân khánh pham
                 </Title> */}
-                <Typography
-                  variant="h5"
-                  fontSize="14px"
-                  fontWeight="550"
-                  textTransform="uppercase"
-                >
-                  {sig.certificate_owner}
-                </Typography>
+              <Typography
+                variant="h5"
+                fontSize="18px"
+                fontWeight="550"
+                textTransform="uppercase"
+              >
+                {sig.certificate_owner}
+              </Typography>
 
-                {/* <Typography>38003160158</Typography> */}
-              </Box>
-              <Box className="col-2 d-flex">
-                <button
-                  className=" border-0 bg-transparent close"
-                  aria-label="Close"
-                  onClick={handleClose}
-                >
-                  <CloseIcon />
-                </button>
-              </Box>
+              {/* <Typography>38003160158</Typography> */}
             </Box>
+            <Box className="col-2 d-flex">
+              <button
+                className=" border-0 bg-transparent close"
+                aria-label="Close"
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </button>
+            </Box>
+          </Box>
 
-            <Box>
-              <Box sx={{ borderBottom: "1px solid #e9e9e9", p: 3 }}>
+          <Box mb={3}>
+            <Box sx={{ borderBottom: "1px solid #e9e9e9", p: 3 }}>
+              <Box
+                sx={{
+                  display: "block",
+                  overflow: "hidden",
+                  borderRadius: "12px",
+                  alignItems: "center",
+                }}
+              >
                 <Box
                   sx={{
-                    display: "block",
-                    overflow: "hidden",
-                    borderRadius: "12px",
-                    alignItems: "center",
+                    display: "flex",
+                    gap: "10px",
+                    justifyContent: "space-between",
+                    p: 1,
+                    background: "rgb(232, 235, 240)",
+                    borderRadius: "10px",
                   }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: "10px",
-                      justifyContent: "space-between",
-                      p: 1,
-                      background: "rgb(232, 235, 240)",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", gap: "10px" }}>
-                      <Avatar
-                        sx={{ bgcolor: "#00CCFF", width: 32, height: 32 }}
-                      >
-                        {sign.icon}
-                      </Avatar>
-                      {sign.name === "valid" ? (
+                  <Box sx={{ display: "flex", gap: "10px" }}>
+                    <Avatar sx={{ bgcolor: "#00CCFF", width: 32, height: 32 }}>
+                      {sign.icon}
+                    </Avatar>
+                    {sign.name === "valid" ? (
+                      <Box>
+                        {/* <Title>Signature is valid</Title> */}
+                        <Typography variant="h5" fontWeight={550}>
+                          {createValidTitle(signTitle)}
+                        </Typography>
                         <Box>
-                          {/* <Title>Signature is valid</Title> */}
-                          <Typography variant="h5" fontWeight={550}>
-                            {createValidTitle(signTitle)}
-                          </Typography>
-                          <Box>
-                            <Typography variant="h5">{sign.title}</Typography>
-                          </Box>
+                          <Typography variant="h5">{sign.title}</Typography>
                         </Box>
-                      ) : (
+                      </Box>
+                    ) : (
+                      <Box>
+                        {/* <Title>Signature is valid</Title> */}
+                        <Typography variant="h5" fontWeight={550}>
+                          {sign.title}
+                        </Typography>
                         <Box>
-                          {/* <Title>Signature is valid</Title> */}
-                          <Typography variant="h5" fontWeight={550}>
-                            {sign.title}
+                          <Typography variant="h5">
+                            {createValidSubTitle(subTitle)}
                           </Typography>
-                          <Box>
-                            <Typography variant="h5">
-                              {createValidSubTitle(subTitle)}
-                            </Typography>
-                          </Box>
                         </Box>
-                      )}
-                    </Box>
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </Box>
+            </Box>
 
-              {sig.errors.length > 0 && (
-                <Accordion
-                  expanded={expanded === "panel"}
-                  onChange={handleChangeShow("panel")}
-                  sx={{ boxShadow: "none", borderBottom: "1px solid #ccc" }}
-                  style={{ margin: 0 }}
-                  // className="content-signature"
+            {sig.errors.length > 0 && (
+              <Accordion
+                expanded={expanded === "panel"}
+                onChange={handleChangeShow("panel")}
+                sx={{ boxShadow: "none", borderBottom: "1px solid #ccc" }}
+                style={{ margin: 0 }}
+                // className="content-signature"
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1bh-content"
+                  id="panel1bh-header"
+                  sx={{
+                    background: "rgb(232, 235, 240)",
+                    boxShadow: "none",
+                    minHeight: "unset !important",
+                    display: "flex",
+                    alignItems: "center",
+                    paddingLeft: "24px",
+                  }}
                 >
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1bh-content"
-                    id="panel1bh-header"
-                    sx={{
-                      background: "rgb(232, 235, 240)",
-                      boxShadow: "none",
-                      minHeight: "unset !important",
-                      display: "flex",
-                      alignItems: "center",
-                      paddingLeft: "24px",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{ width: "90%", flexShrink: 0 }}
-                    >
-                      {t("validation.sigErrors")}
-                    </Typography>
-                  </AccordionSummary>
-                  {sig.errors.map((val, i) => {
-                    return (
-                      <Box key={i}>
-                        <AccordionDetails
-                          sx={{
-                            fontSize: "13px",
-                            padding: "15px 24px",
-                            width: "100%",
-                            // borderBottom: "1px solid #ccc",
-                          }}
-                        >
-                          {val}
-                        </AccordionDetails>
-                        <Divider
-                          sx={{
-                            width: "calc(100% - 24px)",
-                            marginLeft: "auto",
-                            height: "2px",
-                            // bgcolor: "blueviolet",
-                          }}
-                        />
-                      </Box>
-                    );
-                  })}
-                </Accordion>
-              )}
+                  <Typography variant="h6" sx={{ width: "90%", flexShrink: 0 }}>
+                    {t("validation.sigErrors")}
+                  </Typography>
+                </AccordionSummary>
+                {sig.errors.map((val, i) => {
+                  return (
+                    <Box key={i}>
+                      <AccordionDetails
+                        sx={{
+                          fontSize: "13px",
+                          padding: "15px 24px",
+                          width: "100%",
+                          // borderBottom: "1px solid #ccc",
+                        }}
+                      >
+                        {val}
+                      </AccordionDetails>
+                      <Divider
+                        sx={{
+                          width: "calc(100% - 24px)",
+                          marginLeft: "auto",
+                          height: "2px",
+                          // bgcolor: "blueviolet",
+                        }}
+                      />
+                    </Box>
+                  );
+                })}
+              </Accordion>
+            )}
 
-              <Box className="content-signature" id="cookieSetting">
-                {/* Khi nhấn vào tắt Switch hiển thị  button Allow all*/}
-                {/* --------------------------------------------------------------*/}
-                {signature.signing.map((step, index) => (
-                  <Box key={index}>
-                    <Typography variant="h6" className="font-title">
-                      {step.title}
-                    </Typography>
-                    <Typography variant="h5">{step.subtitle}</Typography>
-                  </Box>
-                ))}
-                {signature.certificated.map((step, index) => (
-                  <Box key={index}>
-                    <Typography variant="h6" className="font-title">
-                      {step.title}
-                    </Typography>
-                    <Typography variant="h5">{step.subtitle}</Typography>
-                  </Box>
-                ))}
-              </Box>
+            <Box className="content-signature" id="cookieSetting">
+              {/* Khi nhấn vào tắt Switch hiển thị  button Allow all*/}
+              {/* --------------------------------------------------------------*/}
+              {signature.signing.map((step, index) => (
+                <Box key={index}>
+                  <Typography variant="h6" className="font-title">
+                    {step.title}
+                  </Typography>
+                  <Typography variant="h5">{step.subtitle}</Typography>
+                </Box>
+              ))}
+              {signature.certificated.map((step, index) => (
+                <Box key={index}>
+                  <Typography variant="h6" className="font-title">
+                    {step.title}
+                  </Typography>
+                  <Typography variant="h5">{step.subtitle}</Typography>
+                </Box>
+              ))}
             </Box>
           </Box>
-        </Drawer>
-      </Box>
+        </Box>
+      </Drawer>
     </div>
   );
 };

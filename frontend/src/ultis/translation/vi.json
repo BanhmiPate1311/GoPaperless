@@ -301,7 +301,7 @@
     "sigIssuer": "Nhà phát hành chứng thư số",
     "sigPeriod": "Thời hạn hiệu lực của chứng thư số",
     "sigType": "Loại chứng thư số",
-    "reportId": "ID báo cáo xác thực",
+    "reportId": "Mã báo cáo xác thực",
     "documentHash": "Xác thực băm tài liệu",
     "diadata": "Dữ liệu chẩn đoán",
     "downloadDia": "Tải xuống dữ liệu chẩn đoán",

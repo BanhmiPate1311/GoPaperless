@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.mobileid.paperless.aws.dto.ValidViewDto;
+import vn.mobileid.paperless.aws.request.ValidPostBackRequest;
 import vn.mobileid.paperless.aws.request.ValidationResquest;
 import vn.mobileid.paperless.service.ValidationService;
 
@@ -19,7 +20,21 @@ public class ValidationController {
 
     @PostMapping("/getView")
     public ResponseEntity<?> getView (@RequestBody ValidationResquest validationResquest){
-        ValidViewDto result = validationService.getView(validationResquest);
+        String result = validationService.getView(validationResquest);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/postback")
+    public ResponseEntity<?> postback (@RequestBody ValidPostBackRequest validPostBackRequest) throws Exception {
+
+        String result = validationService.postback(validPostBackRequest);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/checkStatus")
+    public ResponseEntity<?> checkStatus (@RequestBody ValidPostBackRequest validPostBackRequest) throws Exception {
+
+        int result = validationService.checkStatus(validPostBackRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

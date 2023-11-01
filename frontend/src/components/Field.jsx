@@ -165,7 +165,6 @@ const Field = ({ workFlow, signingOption, cards, classList }) => {
   const [isCardChecked, setIsCardChecked] = useState(null); // added
 
   const [connectorName, setConnectorName] = useState("");
-  console.log("connectorName: ", connectorName);
 
   return (
     <Fragment>

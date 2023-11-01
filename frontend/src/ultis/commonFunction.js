@@ -30,7 +30,6 @@ export function handleDocument(showDocument, setShowDocument) {
 
 export function checkStatus(status, signedType) {
   if (status === 1) {
-    // console.log("Waiting for signature");
     return (
       <div>
         <span
@@ -90,7 +89,6 @@ export function checkStatus(status, signedType) {
     );
   }
   if (status === 2 && signedType === "ESEAL") {
-    console.log("signing");
     return (
       <div className="d-flex align-items-center">
         <CheckCircleOutlineRoundedIcon
@@ -132,7 +130,6 @@ export function checkStatus(status, signedType) {
 
 export function checkStatusBatch(status, signedType) {
   if (status === 1) {
-    console.log("Waiting for signature");
     return (
       <div>
         <span
@@ -150,7 +147,6 @@ export function checkStatusBatch(status, signedType) {
     );
   }
   if (status === 2 && signedType === "NORMAL") {
-    console.log("signing");
     return (
       <div>
         <span
@@ -168,7 +164,6 @@ export function checkStatusBatch(status, signedType) {
     );
   }
   if (status === 2 && signedType === "ESEAL") {
-    console.log("signing");
     return (
       <div>
         <CheckCircleOutlineRoundedIcon
@@ -324,7 +319,6 @@ export const createValidLabel = (value) => {
 };
 
 export const createValidStatus = (value) => {
-  console.log("value: ", value);
   switch (value) {
     case "Valid":
       return i18n.t("validation.overviewStatus1");
@@ -338,7 +332,6 @@ export const createValidStatus = (value) => {
 };
 
 export const createValidName = (value) => {
-  console.log("value: ", value);
   switch (value) {
     case "valid Signature":
       return i18n.t("validation.validSig");
@@ -358,7 +351,6 @@ export const createValidName = (value) => {
 };
 
 export const createValidTitle = (value) => {
-  console.log("value: ", value);
   switch (value) {
     case "Signature is valid":
       return i18n.t("validation.sigValidTitle2");
@@ -370,7 +362,6 @@ export const createValidTitle = (value) => {
 };
 
 export const createValidSubTitle = (value) => {
-  console.log("value: ", value);
   switch (value) {
     case "Electronic Signature":
       return i18n.t("validation.signSubTitle");
@@ -406,7 +397,6 @@ export const formatTime = (time) => {
 export const formatPeriodTime = (time) => {
   // Tìm và cắt chuỗi múi giờ nếu có
   let timeFormatted = time.split(" - ");
-  console.log("timeFormatted 0: ", timeFormatted);
   timeFormatted =
     formatTime(timeFormatted[0]) + " - " + formatTime(timeFormatted[1]);
   return timeFormatted;

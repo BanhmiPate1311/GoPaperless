@@ -52,6 +52,19 @@ const PdfView = ({ workFlow }) => {
   const [zoom, setZoom] = useState(1);
   const [previousViewPageIndex, setPreviousViewPageIndex] = useState(0);
 
+  const [isSetPos, setIsSetPos] = useState(false);
+
+  useEffect(() => {
+    const signer = workFlow?.participants.find(
+      (item) => item.signerToken === workFlow.signerToken
+    );
+
+    const metaInf1 = JSON.parse(signer.metaInformation);
+    if (metaInf1.pdf) {
+      setIsSetPos(true);
+    }
+  }, [workFlow]);
+
   useEffect(() => {
     dispatch(apiControllerManagerActions.setSignaturePrepare(signatures));
   }, [signatures]);
@@ -388,7 +401,7 @@ const PdfView = ({ workFlow }) => {
       (item) =>
         item.signerToken === workFlow.signerToken && item.signerStatus === 2
     );
-    if (checkStatus !== -1) {
+    if (checkStatus !== -1 || isSetPos) {
       return;
     }
 

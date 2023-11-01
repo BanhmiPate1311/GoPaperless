@@ -56,7 +56,11 @@ const TabDocument = ({ validFile }) => {
   }, {});
 
   const tabName = Object.keys(filteredObject).filter(
-    (tab) => tab !== "file" && tab !== "lang"
+    (tab) =>
+      tab === "overview" ||
+      tab === "signatures" ||
+      tab === "seals" ||
+      tab === "details"
   );
 
   const [value, setValue] = useState(0);

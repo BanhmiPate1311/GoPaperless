@@ -12,7 +12,7 @@ import {
   styled,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { ReactComponent as Lock } from "../assets/images/lock_validate.svg";
 import "../assets/styles/validation.css";
 import PDFViewer from "../components/validate/PDFViewer";
@@ -20,6 +20,8 @@ import TabDocument from "../components/validate/TabDocument";
 import { api } from "../constants/api";
 import { useTranslation } from "react-i18next";
 import i18n from "../ultis/language/i18n";
+import { IosShareOutlined } from "@mui/icons-material";
+import { validationService } from "../services/validation";
 
 const CustomButton = styled(Button)`
   text-transform: none; /* Đặt textTransform thành none để bỏ chữ in hoa */
@@ -43,6 +45,7 @@ const Validation = () => {
 
   // const [infoFile, setInfoFile] = useState({});
   const [validFile, setValidFile] = useState({});
+  const [isFinish, setIsFinish] = useState(null);
 
   const [lang, setLang] = useState("English");
 
@@ -77,6 +80,12 @@ const Validation = () => {
   //   }
   // };
 
+  useEffect(() => {
+    if (validFile.ppl_file_validation_id) {
+      checkStatus();
+    }
+  }, [validFile]);
+
   const getValidView = async () => {
     setIsFetching(true);
     try {
@@ -90,6 +99,32 @@ const Validation = () => {
       // setInfoFile(response.data);
     } catch (error) {
       setIsFetching(false);
+      console.error(error);
+    }
+  };
+
+  const postback = async () => {
+    const data = {
+      postBackUrl: validFile.postback_url,
+      status: "OK",
+      uploadToken: upload_token,
+      fileValidationId: validFile.ppl_file_validation_id,
+    };
+    try {
+      await validationService.postBack(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const checkStatus = async () => {
+    const data = {
+      fileValidationId: validFile.ppl_file_validation_id,
+    };
+    try {
+      const response = await validationService.checkStatus(data);
+      setIsFinish(response.data);
+    } catch (error) {
       console.error(error);
     }
   };
@@ -207,16 +242,36 @@ const Validation = () => {
                     <DeleteOutlineIcon />
                   </Tooltip>
                 </IconButton> */}
-                {/* <IconButton
+                {validFile.postback_url && (
+                  <IconButton
                     size="large"
                     aria-label="show 17 new notifications"
                     color="#ccc"
+                    onClick={postback}
+                    disabled={isFinish === 1}
                   >
-                    <Tooltip title="Upload for signing">
-                      <IosShareOutlinedIcon />
+                    <Tooltip title="Finish">
+                      <IosShareOutlined />
                     </Tooltip>
-                  </IconButton> */}
-                <Button
+                  </IconButton>
+                )}
+
+                <a
+                  style={{ color: "white", textDecoration: "none" }}
+                  href={`${window.location.origin}/internalusage/api/validation/${upload_token}/download/report-pdf`}
+                >
+                  <CustomButton
+                    startIcon={<FileDownloadOutlinedIcon />}
+                    variant="contained"
+                    disabled={
+                      validFile?.signatures?.length === 0 &&
+                      validFile?.seals?.length === 0
+                    }
+                  >
+                    {t("validation.downloadReport")}
+                  </CustomButton>
+                </a>
+                {/* <Button
                   disabled={
                     validFile?.signatures?.length === 0 &&
                     validFile?.seals?.length === 0
@@ -233,7 +288,7 @@ const Validation = () => {
                       {t("validation.downloadReport")}
                     </CustomButton>
                   </a>
-                </Button>
+                </Button> */}
 
                 {/* <CustomButtonFill
                   // startIcon={<FileDownloadOutlinedIcon />}
@@ -294,7 +349,13 @@ const Validation = () => {
                             <Lock style={{ width: "100px" }} />
                             <Typography variant="h6">
                               {t("validation.val1")}
-                              <u>{t("validation.val2")}</u>{" "}
+                              <Link
+                                to="https://gopaperless.mobile-id.vn/compliance/signature-validation-service-practice-statement-and-policy"
+                                target="_blank"
+                              >
+                                {/* Privacy Policy */}
+                                {t("validation.val2")}
+                              </Link>{" "}
                               {t("validation.val3")}
                             </Typography>
                           </Box>

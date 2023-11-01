@@ -8,14 +8,25 @@ import imageLoading from "../assets/images/ajax-loader.gif";
 import ISPluginClient from "../assets/js/checkid";
 import "../assets/styles/usbtoken.css";
 import { api } from "../constants/api";
-import { apiControllerManagerActions } from "../store/apiControllerManager";
+import {
+  apiControllerManagerActions,
+  useApiControllerManager,
+} from "../store/apiControllerManager";
 import ButtonField from "./form/button_field";
 import UsbModalField2 from "./usbtoken/usb_modal2_field";
 import UsbModalField from "./usbtoken/usb_modal_field";
+import { isPluginService } from "../services/isPluginService";
 
 const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
+  console.log("workFlow: ", workFlow);
   const dispatch = useDispatch();
   const { t } = useTranslation();
+
+  const { signaturePrepare } = useApiControllerManager();
+  const signature = signaturePrepare.find(
+    (item) => item.field_name === workFlow.signerToken
+  );
+  console.log("signature: ", signature);
 
   let lang = localStorage.getItem("language");
   switch (lang) {
@@ -220,22 +231,34 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
       const response = [];
       const signObjects = [];
       const signatureId = [];
+      const hashList = [];
       for (let i = 0; i < signingTokenList.length; i++) {
-        const formData = new FormData(); // Tạo FormData mới trong mỗi vòng lặp
-        formData.append("signingToken", signingTokenList[i]);
-        formData.append("cerId", cer.id);
-        formData.append("signerId", signerIdList[i]);
-        formData.append("signerToken", signerTokenList[i]);
-        formData.append("signingOption", "usbtoken");
-        formData.append("certEncode", cer.value);
-        formData.append("signName", cer.subject.commonName);
-        formData.append("connectorName", connectorName);
+        // const formData = new FormData(); // Tạo FormData mới trong mỗi vòng lặp
+        // formData.append("signingToken", signingTokenList[i]);
+        // formData.append("cerId", cer.id); // credentialID
+        // formData.append("signerId", signerIdList[i]);
+        // formData.append("signerToken", signerTokenList[i]);
+        // formData.append("signingOption", "usbtoken");
+        // formData.append("certEncode", cer.value); // certChain
+        // formData.append("signName", cer.subject.commonName);
+        // formData.append("connectorName", connectorName);
+        // formData.append("documentId", workFlow.documentId);
 
-        response[i] = await api.post("/is/getHashFile2", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        // response[i] = await api.post("/is/getHashFile2", formData, {
+        //   headers: {
+        //     "Content-Type": "multipart/form-data",
+        //   },
+        // });
+        const data = {
+          fieldName: signature ? signature.field_name : "",
+          signerToken: workFlow.signerToken,
+          connectorName,
+          documentId: workFlow.documentId,
+          certChain: cer.value,
+          signingToken: workFlow.signingToken,
+          credentialID: cer.id,
+        };
+        response[i] = isPluginService.getHash(data);
         const temp = {};
         temp.dtbsHash = response[i].data.hash;
         temp.algorithm = "SHA256";
@@ -268,6 +291,10 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
             formData.append("signerToken", signerTokenList[i]);
             formData.append("enterpriseId", enterpriseIdList[i]);
             formData.append("workFlowId", workFlowIdList[i]);
+
+            const data = {
+              signature: response.signatures[i],
+            };
 
             await api
               .post("/is/signUsbToken", formData, {

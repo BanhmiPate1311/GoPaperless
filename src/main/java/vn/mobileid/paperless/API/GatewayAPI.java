@@ -2,6 +2,7 @@ package vn.mobileid.paperless.API;
 
 import com.google.gson.Gson;
 import org.springframework.http.*;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import vn.mobileid.paperless.aws.dto.ValidViewDto;
@@ -10,6 +11,7 @@ import vn.mobileid.paperless.object.PrepareSigningRequest;
 import vn.mobileid.paperless.object.PrepareSigningResponse;
 
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,13 +142,13 @@ Gson gson = new Gson();
         return responseEntity.getBody();
     }
 
-    public ValidViewDto ValidView(ValidationResquest validationResquest) {
+    public String ValidView(ValidationResquest validationResquest) {
         String getValidViewUrl = baseUrl + "/internalusage/api/validation/" + validationResquest.getUploadToken() + "/view.json";
         RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
-
-        ResponseEntity<ValidViewDto> responseEntity = null;
-        responseEntity = restTemplate.exchange(getValidViewUrl, HttpMethod.GET, null, ValidViewDto.class);
+        ResponseEntity<String> responseEntity = null;
+        responseEntity = restTemplate.exchange(getValidViewUrl, HttpMethod.GET, null, String.class);
 
         return responseEntity.getBody();
     }

@@ -12,10 +12,10 @@ const Overview = ({ validFile }) => {
   const { t } = useTranslation();
   const statusToIcon = {
     // Valid: <CheckCircleIcon sx={{ fontSize: "1.5rem", color: "#228B22" }} />,
-    "There are warnings": (
+    2: (
       <Error sx={{ color: "rgb(235, 106, 0)", fontSize: "18px", mt: "1px" }} />
     ),
-    "There are errors": (
+    0: (
       <Error sx={{ color: "rgb(216, 81, 63)", fontSize: "18px", mt: "1px" }} />
     ),
     // Thêm các ánh xạ khác nếu cần
@@ -51,16 +51,14 @@ const Overview = ({ validFile }) => {
             </Stack>
           ) : (
             <Box sx={{ display: "flex", gap: "10px" }}>
-              {statusToIcon[validFile.status] || (
+              {statusToIcon[validFile.status_code] || (
                 <CheckCircleIcon
                   sx={{ fontSize: "1.5rem", color: "#228B22" }}
                 />
               )}
               {/* {validFile.valid && ( */}
               <Box sx={{ display: "block" }}>
-                <Typography variant="h6">
-                  {createValidStatus(validFile.status)}
-                </Typography>
+                <Typography variant="h6">{validFile.status}</Typography>
                 <Box sx={{ display: "flex" }}>
                   <PeopleOutlinedIcon
                     fontSize="small"
@@ -93,7 +91,7 @@ const Overview = ({ validFile }) => {
           {t("validation.overview3")}
         </Typography>
         <Typography variant="h5" sx={{ pb: 2 }}>
-          {formatTime(validFile.validation_time)}
+          {validFile.validation_time}
         </Typography>
         <Alert
           severity="error"
