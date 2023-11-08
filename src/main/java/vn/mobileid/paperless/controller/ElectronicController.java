@@ -167,8 +167,8 @@ public class ElectronicController {
     public ResponseEntity<?> authorizeOTP(
             @RequestBody AuthorizeOTPRequest authorizeOTPRequest,
             HttpServletRequest request) throws Throwable {
-        System.out.println("authorizeOTP");
-        String response = electronicIdService.authorizeOTP(authorizeOTPRequest, request);
+        System.out.println("authorizeOTP ");
+        String response = electronicIdService.authorizeOTPFps(authorizeOTPRequest, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

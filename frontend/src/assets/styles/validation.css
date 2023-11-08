@@ -137,7 +137,7 @@
   height: auto;
   width: 480px;
   margin-top: 24px;
-  margin-bottom: 24px;
+  /* margin-bottom: 24px; */
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -154,7 +154,7 @@
 }
 .css-wnj41j {
   margin-top: 24px;
-  margin-bottom: 24px;
+  /* margin-bottom: 24px; */
   /* padding: 24px; */
 }
 .css-1nqdrf4 {
@@ -172,10 +172,10 @@
 }
 .css-19wcyhm {
   background: #e8ebf0;
-  position: fixed;
+  position: sticky;
   bottom: 31px;
   /* right: 24px; */
-  padding-bottom: 24px;
+  /* padding-bottom: 24px; */
   /* // z-index: 2; */
   -webkit-transition: box-shadow 0.3s, background 0.3s ease-in-out;
   transition: box-shadow 0.3s, background 0.3s ease-in-out;

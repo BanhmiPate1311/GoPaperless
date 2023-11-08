@@ -22,9 +22,13 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
+  const signerId = workFlow?.participants?.find(
+    (item) => item.signerToken === workFlow.signerToken
+  ).signerId;
+
   const { signaturePrepare } = useApiControllerManager();
   const signature = signaturePrepare.find(
-    (item) => item.field_name === workFlow.signerToken
+    (item) => item.field_name === signerId
   );
   console.log("signature: ", signature);
 

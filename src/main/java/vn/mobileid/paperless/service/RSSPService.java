@@ -83,8 +83,8 @@ public class RSSPService {
 
     public IServerSession handShake(String lang,
             String connectorName,
-            String enterpriseId,
-            String workFlowId) throws Exception {
+            int enterpriseId,
+            int workFlowId) throws Exception {
         boolean codeEnable = true;
         String baseUrl = "";
         String relyingParty = "";
@@ -131,8 +131,8 @@ public class RSSPService {
 //        logger.info("session: " + session.toString());
         ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
         connectorLogRequest.setpCONNECTOR_NAME(connectorName);
-        connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
-        connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
+        connectorLogRequest.setpENTERPRISE_ID(enterpriseId);
+        connectorLogRequest.setpWORKFLOW_ID(workFlowId);
 
         Property property = rsspConfig.loadRSSPConfig(baseUrl, relyingParty, relyingPartyUser, relyingPartyPassword,
                 relyingPartySignature, relyingPartyKeyStoreValue, relyingPartyKeyStorePassword);
@@ -613,20 +613,20 @@ public class RSSPService {
             List<String> listCertChain = new ArrayList<>();
             listCertChain.add(certChain);
 
-            HashFileRequest hashFileRequest = commonRepository.getMetaData(signRequest.getSignerToken(), meta);
+            HashFileRequest hashFileRequest = commonRepository.getMetaData(signerToken, meta);
             hashFileRequest.setCertificateChain(listCertChain);
 
             if (field_name == null || field_name.isEmpty()) {
                 System.out.println("kiem tra:");
-                commonRepository.addSign(pageHeight, pageWidth, signingToken, certChain, credentialID, "", sSignature_id, meta, documentId, signerToken);
+                commonRepository.addSign(pageHeight, pageWidth, signingToken, signerId, meta, documentId);
 //                hashFileRequest.setFieldName(signerToken);
             }
 //            else {
 //                hashFileRequest.setFieldName(signRequest.getFieldName());
 //            }
             System.out.println("kiem tra1:");
-            hashFileRequest.setFieldName(!signRequest.getFieldName().isEmpty() ? signRequest.getFieldName() : signerToken);
-            String hashList = fpsService.hashSignatureField(signRequest.getDocumentId(), hashFileRequest);
+            hashFileRequest.setFieldName(!field_name.isEmpty() ? field_name : signerId);
+            String hashList = fpsService.hashSignatureField(documentId, hashFileRequest);
 
             HashAlgorithmOID hashAlgo = HashAlgorithmOID.SHA_256;
             DocumentDigests doc = new DocumentDigests();
@@ -683,7 +683,7 @@ public class RSSPService {
 //                return responseSign;
 //            }
             FpsSignRequest fpsSignRequest = new FpsSignRequest();
-            fpsSignRequest.setFieldName(!signRequest.getFieldName().isEmpty() ? signRequest.getFieldName() : signerToken);
+            fpsSignRequest.setFieldName(!field_name.isEmpty() ? field_name : signerId);
             fpsSignRequest.setHashValue(hashList);
             fpsSignRequest.setSignatureValue(signature);
 
@@ -693,7 +693,7 @@ public class RSSPService {
 
             System.out.println("kiem tra progress: ");
 
-            String responseSign = fpsService.signDocument(signRequest.getDocumentId(), fpsSignRequest);
+            String responseSign = fpsService.signDocument(documentId, fpsSignRequest);
 
 //                ObjectMapper objectMapper = new ObjectMapper();
             JsonNode signNode = objectMapper.readTree(responseSign);

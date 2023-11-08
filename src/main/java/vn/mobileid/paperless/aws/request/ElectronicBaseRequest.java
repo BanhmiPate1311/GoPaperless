@@ -3,8 +3,8 @@ package vn.mobileid.paperless.aws.request;
 public class ElectronicBaseRequest {
     private String lang;
     private String connectorName;
-    private String enterpriseId;
-    private String workFlowId;
+    private int enterpriseId;
+    private int workFlowId;
 
     public String getLang() {
         return lang;
@@ -22,19 +22,19 @@ public class ElectronicBaseRequest {
         this.connectorName = connectorName;
     }
 
-    public String getEnterpriseId() {
+    public int getEnterpriseId() {
         return enterpriseId;
     }
 
-    public void setEnterpriseId(String enterpriseId) {
+    public void setEnterpriseId(int enterpriseId) {
         this.enterpriseId = enterpriseId;
     }
 
-    public String getWorkFlowId() {
+    public int getWorkFlowId() {
         return workFlowId;
     }
 
-    public void setWorkFlowId(String workFlowId) {
+    public void setWorkFlowId(int workFlowId) {
         this.workFlowId = workFlowId;
     }
 }

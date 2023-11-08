@@ -7,7 +7,10 @@ import jwtDecode from "jwt-decode";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { electronicService } from "../services/electronicService";
-import { apiControllerManagerActions } from "../store/apiControllerManager";
+import {
+  apiControllerManagerActions,
+  useApiControllerManager,
+} from "../store/apiControllerManager";
 import {
   Step1,
   Step2,
@@ -42,9 +45,10 @@ const HorizontalNonLinearStepper = ({
   workFlow,
   handleCloseModal1,
 }) => {
-  console.log("modal");
+  console.log("workFlow: ", workFlow);
   const { t } = useTranslation();
   const dispatch = useDispatch();
+
   let lang = localStorage.getItem("language");
   switch (lang) {
     case "Vietnamese":
@@ -54,6 +58,13 @@ const HorizontalNonLinearStepper = ({
       lang = "EN";
       break;
   }
+
+  const { signaturePrepare } = useApiControllerManager();
+  const signature = signaturePrepare.find(
+    (item) => item.field_name === workFlow.signerToken
+  );
+  console.log("signature: ", signature);
+
   const [subject, setSubject] = useState("");
   console.log("subject: ", subject);
   // const { subject, isIdentifyRegistered, personalInfomation, image } =
@@ -501,6 +512,7 @@ const HorizontalNonLinearStepper = ({
   };
 
   const credentialOTP = async () => {
+    setIsFetching(true);
     const data = {
       lang: lang,
       credentialID: certificate.credentialID,
@@ -512,10 +524,12 @@ const HorizontalNonLinearStepper = ({
       // const response = await api.post("/elec/credentialOTP", data);
       const response = await electronicService.credentialOTP(data);
       setRequestID(response.data);
+      setIsFetching(false);
       if (activeStep === 12) {
         handleNext();
       }
     } catch (error) {
+      setIsFetching(false);
       console.log("error", error);
     }
   };
@@ -548,6 +562,9 @@ const HorizontalNonLinearStepper = ({
       certChain: certificate.cert,
       enterpriseId: workFlow.enterpriseId,
       workFlowId: workFlow.workFlowId,
+      fieldName: signature ? signature.field_name : "",
+      lastFileId: workFlow.lastFileId,
+      documentId: workFlow.documentId,
     };
     try {
       // const response = await api.post("/elec/authorizeOTP", data);

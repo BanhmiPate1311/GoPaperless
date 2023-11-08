@@ -2,10 +2,7 @@ package vn.mobileid.paperless.service;
 
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -33,24 +30,29 @@ public class ValidationService {
     public String postback(ValidPostBackRequest validPostBackRequest) throws Exception {
 
         String postbackUrl = validPostBackRequest.getPostBackUrl();
+        System.out.println("postbackUrl: " + postbackUrl);
 
         RestTemplate restTemplate = new RestTemplate();
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("status", validPostBackRequest.getStatus());
-        requestData.put("upload_token ", validPostBackRequest.getUploadToken());
+        requestData.put("upload_token", validPostBackRequest.getUploadToken());
 
         Gson gson = new Gson();
+
         System.out.println("postback Data: " + gson.toJson(requestData));
 
-        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData);
+        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
 
         try {
 //            ResponseEntity<SynchronizeDto> responseEntity = restTemplate.exchange(addSignatureUrl, HttpMethod.POST, httpEntity, SynchronizeDto.class);
 //            return Objects.requireNonNull(responseEntity.getBody()).getDocument_id();
 
             ResponseEntity<String> response = restTemplate.exchange(postbackUrl, HttpMethod.POST, httpEntity, String.class);
-            connect.USP_GW_PPL_FILE_VALIDATION_UPDATE_POSTBACK_STATUS(validPostBackRequest.getFileValidationId(), 2, "GoPaperLess");
+            connect.USP_GW_PPL_FILE_VALIDATION_UPDATE_POSTBACK_STATUS(validPostBackRequest.getFileValidationId(), 1, "GoPaperLess");
 
             return response.getBody();
         } catch (HttpClientErrorException e) {

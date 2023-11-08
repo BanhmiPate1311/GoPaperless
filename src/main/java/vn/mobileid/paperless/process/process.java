@@ -585,6 +585,7 @@ public class process {
                 tempItem.setWORKFLOW_DOCUMENT_NAME(rs.getString("WORKFLOW_DOCUMENT_NAME"));
                 tempItem.setWORKFLOW_DOCUMENT_FORMAT(rs.getString("WORKFLOW_DOCUMENT_FORMAT"));
                 tempItem.setENTERPRISE_ID(rs.getInt("ENTERPRISE_ID"));
+                tempItem.setDOCUMENT_ID(rs.getInt("DOCUMENT_ID"));
 
                 tempList.add(tempItem);
             }

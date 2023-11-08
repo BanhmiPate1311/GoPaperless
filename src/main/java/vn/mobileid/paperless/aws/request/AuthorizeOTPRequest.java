@@ -12,6 +12,9 @@ public class AuthorizeOTPRequest extends ElectronicBaseRequest{
     private String codeNumber;
     private String type;
     private String certChain;
+    private String fieldName;
+    private int lastFileId;
+    private int documentId;
 
     public String getCredentialID() {
         return credentialID;
@@ -99,5 +102,29 @@ public class AuthorizeOTPRequest extends ElectronicBaseRequest{
 
     public void setCertChain(String certChain) {
         this.certChain = certChain;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public int getLastFileId() {
+        return lastFileId;
+    }
+
+    public void setLastFileId(int lastFileId) {
+        this.lastFileId = lastFileId;
+    }
+
+    public int getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(int documentId) {
+        this.documentId = documentId;
     }
 }

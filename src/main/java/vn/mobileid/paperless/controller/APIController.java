@@ -299,94 +299,82 @@ public class APIController {
             for (int i = 0; i < rsFile[0].length; i++) {
 
                 Participants[][] objectParticipants = new Participants[1][];
-                FirstFile[][] objectPPLFile = new FirstFile[1][];
+                LastFile[][] objectPPLFile = new LastFile[1][];
 
                 connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_LIST(objectParticipants, rsFile[0][i].SIGNING_TOKEN);
 
-                connect.USP_GW_PPL_WORKFLOW_GET_FIRST_FILE(objectPPLFile, rsFile[0][i].SIGNING_TOKEN);
+                connect.USP_GW_PPL_WORKFLOW_GET_LAST_FILE(objectPPLFile, rsFile[0][i].SIGNING_TOKEN);
                 if (objectPPLFile[0].length > 0) {
                     for (int j = 0; j < objectPPLFile[0].length; j++) {
-                        String sUUID = objectPPLFile[0][j].FILE_UUID;
-                        String uploadToken = objectPPLFile[0][j].UPLOAD_TOKEN;
-                        String signerToken = objectParticipants[0][j].SIGNER_TOKEN;
+                        int documentId = objectPPLFile[0][j].getDOCUMENT_ID();
 //                        byte[] jrbFile = FileJRBService.downloadFMS2(sUUID);
-                        byte[] jrbFile = gatewayAPI.getFileFromUploadToken(uploadToken);
-                        if (jrbFile != null) {
-//                            byte[] bytes = IOUtils.toByteArray(jrbFile.getStream());
-                            byte[] newBytes = Itext7CommonFunction.RemoveSignaturesFromDocument(jrbFile);
-                            String base64Encoded = Base64.getEncoder().encodeToString(newBytes);
-//                            String base64Encoded = jrbFile;
-                            int fileSize = Base64.getDecoder().decode(base64Encoded).length;
-                            String sFileSize = Integer.toString(fileSize);
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("fileId", objectPPLFile[0][j].getFIRST_PPL_FILE_SIGNED_ID());
+                        response.put("lastFileId", objectPPLFile[0][j].getLAST_PPL_FILE_SIGNED_ID());
+                        response.put("fileName", objectPPLFile[0][j].getLAST_PPL_FILE_NAME());
+                        response.put("fileSize", objectPPLFile[0][j].getFILE_SIZE());
+                        response.put("enterpriseId", objectPPLFile[0][j].getENTERPRISE_ID());
 
-                            Map<String, Object> response = new HashMap<>();
-                            response.put("fileId", objectPPLFile[0][j].FILE_ID);
-                            response.put("uuid", sUUID);
-                            response.put("base64", base64Encoded);
-                            response.put("fileName", objectPPLFile[0][j].FILE_NAME);
-                            response.put("fileSize", sFileSize);
-                            response.put("enterpriseId", objectPPLFile[0][j].ENTERPRISE_ID);
-                            response.put("documentName", objectPPLFile[0][j].WORKFLOW_DOCUMENT_NAME);
-                            response.put("workFlowId", objectPPLFile[0][j].WORKFLOW_ID);
-                            response.put("signingToken", rsFile[0][i].SIGNING_TOKEN);
-                            response.put("signerToken", rsFile[0][i].SIGNER_TOKEN);
+                        response.put("workFlowId", objectParticipants[0][j].PPL_WORKFLOW_ID);
+                        response.put("documentName", objectPPLFile[0][j].getWORKFLOW_DOCUMENT_NAME());
+                        response.put("signingToken", rsFile[0][i].SIGNING_TOKEN);
+                        response.put("signerToken", rsFile[0][i].SIGNER_TOKEN);
+                        response.put("documentId", documentId);
+                        List<Map<String, Object>> listParticipants = new ArrayList<>();
 
-                            List<Map<String, Object>> listParticipants = new ArrayList<>();
+                        if (objectParticipants[0].length > 0) {
+                            for (int k = 0; k < objectParticipants[0].length; k++) {
+                                Map<String, Object> participant = new HashMap<>();
+                                participant.put("id", objectParticipants[0][j].ID);
+                                participant.put("ppLWorkFlowId", objectParticipants[0][k].PPL_WORKFLOW_ID);
+                                participant.put("firstName", objectParticipants[0][k].FIRST_NAME);
+                                participant.put("lastName", objectParticipants[0][k].LAST_NAME);
+                                participant.put("signerToken", objectParticipants[0][k].SIGNER_TOKEN);
+                                participant.put("signingToken", rsFile[0][i].SIGNING_TOKEN);
+                                participant.put("signerStatus", objectParticipants[0][k].SIGNER_STATUS);
+                                participant.put("signedTime", objectParticipants[0][k].SIGNED_TIME == null ? null : new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(objectParticipants[0][k].SIGNED_TIME));
+                                participant.put("metaInformation", objectParticipants[0][k].META_INFORMATION);
+                                participant.put("signingPurpose", objectParticipants[0][k].SIGNING_PURPOSE);
+                                participant.put("signedType", objectParticipants[0][k].SIGNED_TYPE);
+                                participant.put("signingOptions", objectParticipants[0][k].SIGNING_OPTIONS);
+                                participant.put("signerId", objectParticipants[0][k].SIGNER_ID);
 
-                            if (objectParticipants[0].length > 0) {
-                                for (int k = 0; k < objectParticipants[0].length; k++) {
-                                    Map<String, Object> participant = new HashMap<>();
-                                    participant.put("id", objectParticipants[0][j].ID);
-                                    participant.put("ppLWorkFlowId", objectParticipants[0][k].PPL_WORKFLOW_ID);
-                                    participant.put("firstName", objectParticipants[0][k].FIRST_NAME);
-                                    participant.put("lastName", objectParticipants[0][k].LAST_NAME);
-                                    participant.put("signerToken", objectParticipants[0][k].SIGNER_TOKEN);
-                                    participant.put("signingToken", rsFile[0][i].SIGNING_TOKEN);
-                                    participant.put("signerStatus", objectParticipants[0][k].SIGNER_STATUS);
-                                    participant.put("signedTime", objectParticipants[0][k].SIGNED_TIME == null ? null : new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(objectParticipants[0][k].SIGNED_TIME));
-                                    participant.put("metaInformation", objectParticipants[0][k].META_INFORMATION);
-                                    participant.put("signingPurpose", objectParticipants[0][k].SIGNING_PURPOSE);
-                                    participant.put("signedType", objectParticipants[0][k].SIGNED_TYPE);
-                                    participant.put("signingOptions", objectParticipants[0][k].SIGNING_OPTIONS);
-                                    participant.put("signerId", objectParticipants[0][k].SIGNER_ID);
-
-                                    String sIssue = "";
-                                    String sOwner = "";
-                                    String sFrom = "";
-                                    String sTo = "";
-                                    String sCertificate = CommonFunction.CheckTextNull(objectParticipants[0][j].CERTIFICATE);
-                                    if (!"".equals(sCertificate)) {
-                                        ObjectMapper oMapperParse = new ObjectMapper();
-                                        CertificateJson itemParse = oMapperParse.readValue(sCertificate, CertificateJson.class);
-                                        if (itemParse != null) {
-                                            sIssue = CommonFunction.CheckTextNull(itemParse.signer_info.certificate.issuer);
-                                            sOwner = CommonFunction.CheckTextNull(itemParse.signer_info.certificate.subject);
-                                            sFrom = itemParse.signer_info.certificate.valid_from;
-                                            sTo = itemParse.signer_info.certificate.valid_to;
-                                        }
+                                String sIssue = "";
+                                String sOwner = "";
+                                String sFrom = "";
+                                String sTo = "";
+                                String sCertificate = CommonFunction.CheckTextNull(objectParticipants[0][j].CERTIFICATE);
+                                if (!"".equals(sCertificate)) {
+                                    ObjectMapper oMapperParse = new ObjectMapper();
+                                    CertificateJson itemParse = oMapperParse.readValue(sCertificate, CertificateJson.class);
+                                    if (itemParse != null) {
+                                        sIssue = CommonFunction.CheckTextNull(itemParse.signer_info.certificate.issuer);
+                                        sOwner = CommonFunction.CheckTextNull(itemParse.signer_info.certificate.subject);
+                                        sFrom = itemParse.signer_info.certificate.valid_from;
+                                        sTo = itemParse.signer_info.certificate.valid_to;
                                     }
-                                    if (!"".equals(sIssue)) {
-                                        sIssue = CommonFunction.getCommonNameInDN(sIssue);
-                                    }
-                                    if (!"".equals(sOwner)) {
-                                        sOwner = CommonFunction.getCommonNameInDN(sOwner);
-                                    }
+                                }
+                                if (!"".equals(sIssue)) {
+                                    sIssue = CommonFunction.getCommonNameInDN(sIssue);
+                                }
+                                if (!"".equals(sOwner)) {
+                                    sOwner = CommonFunction.getCommonNameInDN(sOwner);
+                                }
 //                            Map<String, Object> certificate = new HashMap<>();
-                                    participant.put("issuer", sIssue);
-                                    participant.put("owner", sOwner);
-                                    participant.put("validFrom", sFrom);
-                                    participant.put("validTo", sTo);
+                                participant.put("issuer", sIssue);
+                                participant.put("owner", sOwner);
+                                participant.put("validFrom", sFrom);
+                                participant.put("validTo", sTo);
 
 //                            listCertificate.add(certificate);
-                                    listParticipants.add(participant);
-                                }
+                                listParticipants.add(participant);
                             }
+                        }
 
 //                    response.put("certificates", listCertificate);
-                            response.put("participants", listParticipants);
+                        response.put("participants", listParticipants);
 
-                            workFlowList.add(response);
-                        }
+                        workFlowList.add(response);
                     }
                 }
             }
@@ -417,10 +405,9 @@ public class APIController {
 
         if (objectPPLFile[0].length > 0) {
             for (int i = 0; i < objectPPLFile[0].length; i++) {
-                String sUUID = objectPPLFile[0][i].getLAST_PPL_FILE_UUID();
-                String uploadToken = objectPPLFile[0][i].getUPLOAD_TOKEN();
 
-                int documentId = fpsService.getDocumentId(sUUID);
+//                int documentId = fpsService.getDocumentId(sUUID);
+                int documentId = objectPPLFile[0][i].getDOCUMENT_ID();
 
 //                byte[] jrbFile = FileJRBService.downloadFMS2(sUUID);
 //                byte[] jrbFile = gatewayAPI.getFileFromUploadToken(uploadToken);

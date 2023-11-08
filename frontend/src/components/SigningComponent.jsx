@@ -14,10 +14,10 @@ import {
   useApiControllerManager,
 } from "../store/apiControllerManager";
 // Import the styles
-import "@react-pdf-viewer/core/lib/styles/index.css";
+// import "@react-pdf-viewer/core/lib/styles/index.css";
 // default layout plugin
 // Import styles of default layout plugin
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+// import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { api } from "../constants/api";
 import {
   checkStatus,
@@ -443,8 +443,9 @@ export const SigningComponent = ({ workFlow, ischange }) => {
             <div>{t("single.notification")}</div>
 
             <a
-              style={{ color: "white", textDecoration: "none" }}
-              href={`${window.location.origin}${process.env.PUBLIC_URL}/${workFlow.signingToken}/download?access_token=${workFlow.signerToken}`}
+              // href={`${window.location.origin}${process.env.PUBLIC_URL}/${workFlow.signingToken}/download?access_token=${workFlow.signerToken}`}
+              href={`${window.location.origin}${process.env.PUBLIC_URL}/fps/download/${workFlow.documentId}`}
+              download
               // href={`http://localhost:8080/signing/${workFlow.signingToken}/download?access_token=${workFlow.signerToken}`}
             >
               <Button

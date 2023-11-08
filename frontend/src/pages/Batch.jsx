@@ -15,9 +15,9 @@ import { api } from "../constants/api";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 // default layout plugin
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+// import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 // Import styles of default layout plugin
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+// import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import NavTab from "../components/NavTab";
 import {
   apiControllerManagerActions,
@@ -25,9 +25,10 @@ import {
 } from "../store/apiControllerManager";
 import { useDispatch } from "react-redux";
 import { checkStatusBatch } from "../ultis/commonFunction";
+import PdfView from "../components/pdfView/PdfView";
 export const Batch = () => {
   const { t } = useTranslation();
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  // const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   // message when sign
   const { isSignSuccess } = useApiControllerManager("");
@@ -39,16 +40,6 @@ export const Batch = () => {
 
   const handleAlertClose = () => {
     setShowAlert(false);
-  };
-
-  const fieldStyle = {
-    background: isActive ? "#f5fbfe" : "white",
-  };
-
-  const commonStyles = {
-    color: "#e5e5e5",
-    width: "",
-    height: "6rem",
   };
 
   const { batch_token } = useParams();
@@ -222,6 +213,7 @@ export const Batch = () => {
                   </Alert>
                 </div>
               )}
+              <div style={{ borderBottom: "1px solid #e5e5e5" }}></div>
               {signers.map((signer, index) => (
                 <div key={index}>
                   <div
@@ -231,7 +223,6 @@ export const Batch = () => {
                       background: isActive[index] ? "#f5fbfe" : "white",
                     }}
                   >
-                    <div style={{ borderBottom: "1px solid #e5e5e5" }}></div>
                     <div className="d-flex align-items-center">
                       <IconButton
                         className="col-xs-1"
@@ -320,12 +311,11 @@ export const Batch = () => {
                           // onClick={handleInputClickName6}
                           onClick={() => handleShowPDF(index)}
                         >
-                          <IconButton style={{ color: "#009ede" }}>
-                            <Search />
-                          </IconButton>
-                          <div
-                            style={{ borderBottom: "1px solid #e5e5e5" }}
-                          ></div>
+                          <div style={{ borderBottom: "1px solid #e5e5e5" }}>
+                            <IconButton style={{ color: "#009ede" }}>
+                              <Search />
+                            </IconButton>
+                          </div>
                           <div
                             className="col-xs-4"
                             style={{ marginLeft: "2rem", marginTop: "-30px" }}
@@ -340,20 +330,20 @@ export const Batch = () => {
                         <Box sx={{ ...commonStyles, borderRight: 1 }} />
                       </div> */}
 
-                      <div className="col-sm-1">
+                      <div className="col-sm-2">
                         <div
                           style={{
-                            margin: "15px 10px 24px 18px",
-                            width: "100%",
+                            margin: "15px 0 15px 18px",
+                            // width: "100%",
                           }}
                         >
                           {t("batch.signers")}
                         </div>
                       </div>
-                      <div className="col-sm-6">
+                      <div className="col-sm-5">
                         <table
                           style={{
-                            margin: "15px 10px 24px 18px",
+                            margin: "15px 0 ",
                             width: "100%",
                           }}
                         >
@@ -363,10 +353,14 @@ export const Batch = () => {
                                 let signedType =
                                   e.is_seal === true ? "SEAL" : "NORMAL";
                                 const info = JSON.parse(e.value);
+                                console.log("info: ", info);
                                 return (
                                   <tr key={index}>
                                     <td>
-                                      {info.certificate.subject.common_name}
+                                      {
+                                        info.signature.certificate.subject
+                                          .common_name
+                                      }
                                     </td>
                                     <td
                                       className="text-color"
@@ -437,16 +431,17 @@ export const Batch = () => {
                       in={isShowPDF[index]}
                       direction="up"
                     >
-                      <div style={{ height: "400px" }}>
+                      {/* <div style={{ height: "400px" }}>
                         {signer.base64 && (
                           <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
                             <Viewer
                               fileUrl={`data:application/pdf;base64,${signer.base64}`}
-                              plugins={[defaultLayoutPluginInstance]}
+                              // plugins={[defaultLayoutPluginInstance]}
                             ></Viewer>
                           </Worker>
                         )}
-                      </div>
+                      </div> */}
+                      <PdfView workFlow={signer} />
                     </Collapse>
                   )}
                 </div>

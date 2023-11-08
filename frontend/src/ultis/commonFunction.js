@@ -401,3 +401,6 @@ export const formatPeriodTime = (time) => {
     formatTime(timeFormatted[0]) + " - " + formatTime(timeFormatted[1]);
   return timeFormatted;
 };
+
+export const formatSignerId = (value) =>
+  value.substring("YOUR_PROVIDED_".length);

@@ -581,7 +581,7 @@ export default class ISPluginClient {
         data: {
           certId,
           certPin,
-          currentDomain: "id.mobile-id.vn",
+          currentDomain: "id-dev.mobile-id.vn",
           signObjects,
         },
       });

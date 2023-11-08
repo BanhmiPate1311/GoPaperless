@@ -18,15 +18,20 @@ import UsbModalField from "./usbtoken/usb_modal_field";
 import { isPluginService } from "../services/isPluginService";
 
 const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
-  console.log("workFlow: ", workFlow);
+  // console.log("workFlow: ", workFlow);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const { signaturePrepare } = useApiControllerManager();
-  const signature = signaturePrepare.find(
-    (item) => item.field_name === workFlow.signerToken
-  );
-  console.log("signature: ", signature);
+  console.log("signaturePrepare: ", signaturePrepare);
+  // const signer = workFlow?.participants?.find(
+  //   (item) => item.signerToken === workFlow.signerToken
+  // );
+
+  // const signature = signaturePrepare.find(
+  //   (item) => item.field_name === signer.signerId
+  // );
+  // console.log("signature: ", signature);
 
   let lang = localStorage.getItem("language");
   switch (lang) {
@@ -46,6 +51,8 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
   const signerIdList = [];
   const documentIdList = [];
   const lastFileIdList = [];
+  const signatureList = [];
+  console.log("signatureList: ", signatureList);
 
   if (Array.isArray(workFlow) && workFlow.length > 0) {
     let signerId = null;
@@ -58,10 +65,18 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
       documentIdList.push(workFlow[i].documentId);
       lastFileIdList.push(workFlow[i].lastFileId);
 
-      signerId = workFlow[i].participants.find(
+      const signer = workFlow[i].participants.find(
         (item) => item.signerToken === workFlow[i].signerToken
-      )?.signerId;
+      );
+      signerId = signer.signerId;
       signerIdList.push(signerId);
+
+      const signature = signaturePrepare.find(
+        (item) =>
+          item.field_name === signer.signerId &&
+          item.workFlowId === workFlow[i].workFlowId
+      );
+      signatureList.push(signature);
     }
   } else {
     signingTokenList.push(workFlow?.signingToken);
@@ -72,10 +87,16 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
     documentIdList.push(workFlow.documentId);
     lastFileIdList.push(workFlow.lastFileId);
 
-    const signerId = workFlow?.participants.find(
+    const signer = workFlow?.participants.find(
       (item) => item.signerToken === workFlow?.signerToken
-    )?.signerId;
+    );
+    let signerId = signer.signerId;
     signerIdList.push(signerId);
+
+    const signature = signaturePrepare.find(
+      (item) => item.field_name === signer.signerId
+    );
+    signatureList.push(signature);
   }
 
   const currentURL = window.location.href;
@@ -256,13 +277,14 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
         //   },
         // });
         const data = {
-          fieldName: signature ? signature.field_name : "",
+          fieldName: signatureList[i] ? signatureList[i].field_name : "",
           signerToken: signerTokenList[i],
           connectorName,
           documentId: documentIdList[i],
           certChain: cer.value,
           signingToken: signingTokenList[i],
           credentialID: cer.id,
+          signerId: signerIdList[i],
         };
 
         response[i] = await isPluginService.getHash(data);
@@ -302,7 +324,7 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
             // formData.append("workFlowId", workFlowIdList[i]);
 
             const data = {
-              fieldName: signature ? signature.field_name : "",
+              fieldName: signatureList[i] ? signatureList[i].field_name : "",
               signature: response.signatures[i],
               hashList: hashList[i],
               documentId: documentIdList[i],

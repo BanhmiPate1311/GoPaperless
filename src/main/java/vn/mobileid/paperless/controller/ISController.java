@@ -152,8 +152,7 @@ public class ISController {
         String certChain = signRequest.getCertChain();
         String signingToken = signRequest.getSigningToken();
         String credentialID = signRequest.getCredentialID();
-
-
+        String signerId = signRequest.getSignerId();
 
         // check workflow participant
 
@@ -166,6 +165,8 @@ public class ISController {
         }
 
         String meta = rsParticipant[0][0].META_INFORMATION;
+
+        System.out.println("meta: " + meta);
 
         String[] sResultConnector = new String[2];
         connect.getIdentierConnector(connectorName, sResultConnector);
@@ -191,17 +192,18 @@ public class ISController {
         List<String> listCertChain = new ArrayList<>();
         listCertChain.add(certChain);
 
-        HashFileRequest hashFileRequest = commonRepository.getMetaData(signRequest.getSignerToken(), meta);
+        HashFileRequest hashFileRequest = commonRepository.getMetaData(signerToken, meta);
+        System.out.println("qua day:");
         hashFileRequest.setCertificateChain(listCertChain);
 
         if (field_name == null || field_name.isEmpty()) {
-            System.out.println("kiem tra:");
-            commonRepository.addSign(pageHeight, pageWidth, signingToken, certChain, credentialID, "", sSignature_id, meta, documentId, signerToken);
+            System.out.println("khong co field name:");
+            commonRepository.addSign(pageHeight, pageWidth, signingToken, signerId, meta, documentId);
 //                hashFileRequest.setFieldName(signerToken);
         }
-        hashFileRequest.setFieldName(!signRequest.getFieldName().isEmpty() ? signRequest.getFieldName() : signerToken);
-        String hashList = fpsService.hashSignatureField(signRequest.getDocumentId(), hashFileRequest);
-
+        hashFileRequest.setFieldName(!field_name.isEmpty() ? field_name : signerId);
+        String hashList = fpsService.hashSignatureField(documentId, hashFileRequest);
+        System.out.println("hash file xong:");
         byte[] decoded = Base64.decodeBase64(hashList);
         String hash = Hex.encodeHexString(decoded);
         Map<String, String> response = new HashMap<>();
@@ -357,7 +359,7 @@ public class ISController {
             List<String> listCertChain = new ArrayList<>();
             listCertChain.add(certChain);
             FpsSignRequest fpsSignRequest = new FpsSignRequest();
-            fpsSignRequest.setFieldName(!signRequest.getFieldName().isEmpty() ? signRequest.getFieldName() : signerToken);
+            fpsSignRequest.setFieldName(!signRequest.getFieldName().isEmpty() ? signRequest.getFieldName() : signerId);
             fpsSignRequest.setHashValue(hashList);
             fpsSignRequest.setSignatureValue(signature);
 

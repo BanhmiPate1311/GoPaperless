@@ -171,7 +171,15 @@ const ShowSignature = ({ sig, sign, signType }) => {
       >
         <Box style={{ width: "350px", wordWrap: "break-word" }}>
           {/* ----------------------------Privacy preference center----------------------------------*/}
-          <Box className="header-cookie d-flex align-items-center">
+          <Box
+            className="header-cookie d-flex align-items-center"
+            sx={{
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              backgroundColor: "#fff",
+            }}
+          >
             <Box className="col-10 p-4">
               {/* <Title sx={{ textTransform: "uppercase" }}>
                   xuân khánh pham

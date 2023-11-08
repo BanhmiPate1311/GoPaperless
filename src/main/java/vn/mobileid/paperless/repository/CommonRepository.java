@@ -515,10 +515,8 @@ public class CommonRepository {
             int pageHeight,
             int pageWidth,
             String signingToken,
-            String certChain,
-            String cerId,
-            String signName,
-            String sSignature_id, String meta, int documentId, String signerToken) throws Exception {
+            String signerId,
+            String meta, int documentId) throws Exception {
 
         BasicFieldAttribute data = new BasicFieldAttribute();
 
@@ -573,7 +571,7 @@ public class CommonRepository {
 
         }
 
-        data.setFieldName(signerToken);
+        data.setFieldName(signerId);
         data.setPage(Integer.parseInt(page));
         data.setVisibleEnabled(true);
 
@@ -600,20 +598,23 @@ public class CommonRepository {
     public HashFileRequest getMetaData(String signerToken, String meta) throws Exception {
         HashFileRequest data = new HashFileRequest();
         JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
-
 //                    JsonElement signingPurposeElement = jsonObject.get("signing_purpose");
         String signingPurpose = "Signature";
         String location = "vn";
 
-        if (jsonObject != null && jsonObject.has("signing_purpose")) {
-            signingPurpose = jsonObject.get("signing_purpose").getAsString();
-            // Tiếp tục xử lý dữ liệu trong signingPurposeElement
-        }
-        if (jsonObject != null && jsonObject.has("country")) {
-            location = jsonObject.get("country").getAsString();
-            // Tiếp tục xử lý dữ liệu trong signingPurposeElement
-        }
+//        if (jsonObject != null && jsonObject.has("signing_purpose")) {
+//            signingPurpose = jsonObject.get("signing_purpose").getAsString();
+//            // Tiếp tục xử lý dữ liệu trong signingPurposeElement
+//        }
+//        if (jsonObject != null && jsonObject.has("country")) {
+//            location = jsonObject.get("country").getAsString();
+//            // Tiếp tục xử lý dữ liệu trong signingPurposeElement
+//        }
 
+        if (jsonObject.has("country") && !jsonObject.get("country").isJsonNull()) {
+            // "country" key is present and its value is not null
+            location = jsonObject.get("country").getAsString();
+        }
 
         data.setSigningReason("Purpose: " + signingPurpose);
         data.setSignatureAlgorithm("RSA");

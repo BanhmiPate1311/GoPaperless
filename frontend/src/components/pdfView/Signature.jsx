@@ -1,9 +1,10 @@
 import { Close } from "@mui/icons-material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDrag } from "react-dnd";
 import { ResizableBox } from "react-resizable";
 import { fpsService } from "../../services/fpsService";
 import "../../assets/styles/react-resizable.css";
+import { formatSignerId } from "../../ultis/commonFunction";
 
 export default function Signature({
   useSignatureDataState = () => [null, () => {}],
@@ -12,17 +13,31 @@ export default function Signature({
   pdfPage,
   pdfInfo,
   handleValidateSignature,
+  workFlow,
 }) {
+  const signer = workFlow?.participants?.find(
+    (item) => item.signerToken === workFlow.signerToken
+  );
+  const signerId = signer.signerId;
+  const [isSetPos, setIsSetPos] = useState(false);
+
   const dragRef = useRef();
-  const [signatures, setSignatures] = useSignaturesState();
+  // const [signatures, setSignatures] = useSignaturesState();
   const [signatureData, setSignature] = useSignatureDataState();
   const [isShowModalSetting, setShowModalSetting] = useState(false);
-  const [isShowModalVefication, setShowModalVefication] = useState(false);
+  // const [isShowModalVefication, setShowModalVefication] = useState(false);
   const maxPosibleResizeWidth =
     (pdfPage.width * (100 - signatureData.dimension?.x)) / 100;
   const maxPosibleResizeHeight =
     (pdfPage.height * (100 - signatureData.dimension?.y)) / 100;
-  const [loadingSign, setLoadingSign] = useState(false);
+  // const [loadingSign, setLoadingSign] = useState(false);
+
+  useEffect(() => {
+    const metaInf1 = JSON.parse(signer.metaInformation);
+    if (metaInf1.pdf) {
+      setIsSetPos(true);
+    }
+  }, [signer]);
 
   const [{ isDragged }, drag] = useDrag({
     type: "Signature",
@@ -34,6 +49,7 @@ export default function Signature({
         height: signatureData.dimension?.height,
       },
     },
+    canDrag: signerId === signatureData.field_name && !isSetPos,
     end: (item, monitor) => {},
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -43,6 +59,7 @@ export default function Signature({
 
   const handleRemoveSignature = async () => {
     // alert("Lam dep trai");
+    if (isSetPos || signerId !== signatureData.field_name) return;
     fpsService.removeSignature(pdfInfo, signatureData.field_name);
     setSignature(null);
   };
@@ -173,13 +190,37 @@ export default function Signature({
             top: signatureData.dimension?.y + "%",
             left: signatureData.dimension?.x + "%",
           }}
+          // minConstraints={[
+          //   signatureData.dimension?.width * (pdfPage.width / 100),
+          //   signatureData.dimension?.height * (pdfPage.height / 100),
+          // ]}
+          // maxConstraints={[
+          //   signatureData.dimension?.width * (pdfPage.width / 100),
+          //   signatureData.dimension?.height * (pdfPage.height / 100),
+          // ]}
           minConstraints={[
-            pdfPage ? (pdfPage.width * 5) / 100 : 50,
-            pdfPage ? (pdfPage.height * 5) / 100 : 50,
+            isSetPos || signerId !== signatureData.field_name
+              ? signatureData.dimension?.width * (pdfPage.width / 100)
+              : pdfPage
+              ? (pdfPage.width * 5) / 100
+              : 50,
+            isSetPos || signerId !== signatureData.field_name
+              ? signatureData.dimension?.height * (pdfPage.height / 100)
+              : pdfPage
+              ? (pdfPage.height * 5) / 100
+              : 50,
           ]}
           maxConstraints={[
-            pdfPage ? maxPosibleResizeWidth : 200,
-            pdfPage ? maxPosibleResizeHeight : 200,
+            isSetPos || signerId !== signatureData.field_name
+              ? signatureData.dimension?.width * (pdfPage.width / 100)
+              : pdfPage
+              ? maxPosibleResizeWidth
+              : 200,
+            isSetPos || signerId !== signatureData.field_name
+              ? signatureData.dimension?.height * (pdfPage.height / 100)
+              : pdfPage
+              ? maxPosibleResizeHeight
+              : 200,
           ]}
           onResize={(e, { size }) => {
             setSignature({
@@ -218,7 +259,10 @@ export default function Signature({
             onMouseLeave={() => setShowTopBar(false)}
             className={`flex shadow-2xl border text-white hover:cursor-move mx-auto z-10 relative bg-opacity-80 hover:bg-opacity-50`}
             style={{
-              background: signatureData.signed ? "#4574da" : "#51d35a",
+              background:
+                signatureData.signed || signerId !== signatureData.field_name
+                  ? "#4574da"
+                  : "#51d35a",
               height: "100%",
               zIndex: 10,
             }}
@@ -239,7 +283,12 @@ export default function Signature({
               >
                 <TopBar signatureData={signatureData} />
               </div>
-              <p className="text-center">{/* {signatureData.field_name} */}</p>
+              <p
+                className="text-center"
+                style={{ overflowWrap: "break-word", fontSize: "10px" }}
+              >
+                {formatSignerId(signatureData.field_name)}
+              </p>
             </div>
           </div>
         </ResizableBox>

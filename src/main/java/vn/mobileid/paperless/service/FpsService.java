@@ -1,19 +1,23 @@
 package vn.mobileid.paperless.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import vn.mobileid.paperless.API.GatewayAPI;
 import vn.mobileid.paperless.fps.*;
 import vn.mobileid.paperless.fps.request.FpsSignRequest;
 import vn.mobileid.paperless.fps.request.HashFileRequest;
+import vn.mobileid.paperless.object.FirstFile;
+import vn.mobileid.paperless.process.process;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,12 @@ public class FpsService {
     private String accessToken;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private process connect;
+
+    @Autowired
+    private GatewayAPI gatewayAPI;
 
     public void getAccessToken() {
         String authorizeUrl = "https://fps.mobile-id.vn/fps/v1/authenticate";
@@ -119,7 +129,7 @@ public class FpsService {
         }
     }
 
-    public byte[] getImagePdf(int documentId) throws Exception {
+    public InputStream getImagePdf(int documentId) throws Exception {
 
         String getImageBasse64Url = "https://fps.mobile-id.vn/fps/v1/documents/" + documentId;
 
@@ -131,7 +141,14 @@ public class FpsService {
 
         try {
             ResponseEntity<byte[]> response = restTemplate.exchange(getImageBasse64Url, HttpMethod.GET, httpEntity, byte[].class);
-            return response.getBody();
+            InputStream inputStreamFile = null;
+
+
+            if (response.getBody() != null) {
+                inputStreamFile = new ByteArrayInputStream(response.getBody());
+            }
+
+            return inputStreamFile;
         } catch (HttpClientErrorException e) {
             HttpStatus statusCode = e.getStatusCode();
             System.out.println("HTTP Status Code: " + statusCode.value());

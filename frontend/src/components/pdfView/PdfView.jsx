@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   FormControl,
+  Link,
   MenuItem,
   Select,
   Stack,
@@ -34,6 +35,11 @@ import Document from "./Document";
 
 const PdfView = ({ workFlow }) => {
   const dispatch = useDispatch();
+
+  const signerId = workFlow?.participants?.find(
+    (item) => item.signerToken === workFlow.signerToken
+  ).signerId;
+
   const menuRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -65,8 +71,11 @@ const PdfView = ({ workFlow }) => {
     }
   }, [workFlow]);
 
+  console.log("signatures: ", signatures);
   useEffect(() => {
-    dispatch(apiControllerManagerActions.setSignaturePrepare(signatures));
+    if (signatures.length > 0) {
+      dispatch(apiControllerManagerActions.setSignaturePrepare(signatures[0]));
+    }
   }, [signatures]);
 
   useEffect(() => {
@@ -202,14 +211,14 @@ const PdfView = ({ workFlow }) => {
         .flat()
         .map((item) => {
           const { verification, ...repairedSignature } = item;
-          return repairedSignature;
+          return { ...repairedSignature, workFlowId: workFlow.workFlowId };
         });
-
+      console.log("signatures: ", signatures);
+      // this step to check if the signature is signed, then it will the another color
       signatures = await handleGetSignatureAfterVerify(documentID, [
         ...signatures,
       ]);
       setSignatures(signatures);
-      // console.log("signatures: ", signatures);
 
       for (let i = 1; i <= pagesNumber; i++) {
         fpsService
@@ -297,11 +306,7 @@ const PdfView = ({ workFlow }) => {
   };
 
   const handleMenuItemClick = (item, event) => {
-    if (
-      signatures.findIndex(
-        (item) => item.field_name === workFlow.signerToken
-      ) !== -1
-    ) {
+    if (signatures.findIndex((item) => item.field_name === signerId) !== -1) {
       handleCloseContextMenu();
       return alert("Signature Duplicated");
     }
@@ -313,7 +318,7 @@ const PdfView = ({ workFlow }) => {
     const newSignature = {
       type: String(item).toUpperCase(),
       // field_name: String(item).toUpperCase() + uuidv4(),
-      field_name: workFlow.signerToken,
+      field_name: signerId,
       page: pageNumber.page,
       dimension: {
         x: pageNumber.x,
@@ -322,6 +327,7 @@ const PdfView = ({ workFlow }) => {
         height: 5,
       },
       visible_enabled: true,
+      workFlowId: workFlow.workFlowId,
       // signerToken: workFlow.signerToken,
     };
 
@@ -552,9 +558,20 @@ const PdfView = ({ workFlow }) => {
           >
             <FullScreen />
           </Button>
-          <Button sx={{ width: "30px", minWidth: "0", mx: "4px", paddingX: 0 }}>
-            <DownLoad />
-          </Button>
+
+          <Link
+            style={{ color: "white", textDecoration: "none" }}
+            href={`${window.location.origin}${process.env.PUBLIC_URL}/fps/download/${workFlow.documentId}`}
+            download
+            // to={`http://localhost:8080/signing/${workFlow.signingToken}/download?access_token=${workFlow.signerToken}`}
+          >
+            <Button
+              sx={{ width: "30px", minWidth: "0", mx: "4px", paddingX: 0 }}
+            >
+              <DownLoad />
+            </Button>
+          </Link>
+
           <Button sx={{ width: "30px", minWidth: "0", mx: "4px", paddingX: 0 }}>
             <Print />
           </Button>
@@ -625,6 +642,7 @@ const PdfView = ({ workFlow }) => {
                   index={index}
                   key={index}
                   handlePdfPage={handlePdfPage}
+                  workFlow={workFlow}
                 />
               ))}
             </Box>

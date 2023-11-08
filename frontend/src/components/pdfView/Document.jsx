@@ -13,6 +13,7 @@ const Document = ({
   handleValidateSignature,
   index,
   handlePdfPage,
+  workFlow,
 }) => {
   const [signatures, setSignatures] = useSignaturesState();
   const dropSigRef = useRef();
@@ -189,6 +190,7 @@ const Document = ({
               pdfInfo={pdfInfo}
               pdfPage={pdfPage}
               handleValidateSignature={handleValidateSignature}
+              workFlow={workFlow}
             />
           );
         })}

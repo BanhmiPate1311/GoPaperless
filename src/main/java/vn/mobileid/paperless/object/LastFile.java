@@ -12,6 +12,7 @@ public class LastFile {
     private String WORKFLOW_DOCUMENT_FORMAT;
     private int PPL_WORKFLOW_ID;
     private int ENTERPRISE_ID;
+    private int DOCUMENT_ID;
 
     public int getFIRST_PPL_FILE_SIGNED_ID() {
         return FIRST_PPL_FILE_SIGNED_ID;
@@ -99,5 +100,13 @@ public class LastFile {
 
     public void setENTERPRISE_ID(int ENTERPRISE_ID) {
         this.ENTERPRISE_ID = ENTERPRISE_ID;
+    }
+
+    public int getDOCUMENT_ID() {
+        return DOCUMENT_ID;
+    }
+
+    public void setDOCUMENT_ID(int DOCUMENT_ID) {
+        this.DOCUMENT_ID = DOCUMENT_ID;
     }
 }

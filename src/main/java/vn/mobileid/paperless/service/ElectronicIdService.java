@@ -1,5 +1,7 @@
 package vn.mobileid.paperless.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
@@ -23,11 +25,14 @@ import vn.mobileid.paperless.aws.request.*;
 import vn.mobileid.paperless.aws.response.PerformResponse;
 import vn.mobileid.paperless.aws.response.SubjectResponse;
 import vn.mobileid.paperless.controller.ViettelCAController;
+import vn.mobileid.paperless.fps.request.FpsSignRequest;
+import vn.mobileid.paperless.fps.request.HashFileRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 import vn.mobileid.paperless.repository.CommonRepository;
 import vn.mobileid.paperless.repository.ElectronicRepository;
 import vn.mobileid.paperless.utils.CommonFunction;
+import vn.mobileid.paperless.utils.CommonHash;
 import vn.mobileid.paperless.utils.Difinitions;
 import vn.mobileid.paperless.utils.LoadParamSystem;
 
@@ -54,6 +59,9 @@ public class ElectronicIdService {
 
     @Autowired
     private GatewayAPI gatewayAPI;
+
+    @Autowired
+    private FpsService fpsService;
 
     private Logger logger = LoggerFactory.getLogger(ViettelCAController.class);
 
@@ -139,6 +147,7 @@ public class ElectronicIdService {
     public List<CertResponse> checkCertificate(CheckCertificateRequest checkCertificateRequest) throws Exception {
         SignedJWT jwt1 = (SignedJWT) JWTParser.parse(checkCertificateRequest.getJwt());
         Gson gson = new Gson();
+        System.out.println("checkCertificateRequest" + checkCertificateRequest.getEnterpriseId());
         JwtModel jwtModel = gson.fromJson(jwt1.getPayload().toString(), JwtModel.class);
 
 
@@ -161,8 +170,8 @@ public class ElectronicIdService {
 
         ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
         connectorLogRequest.setpCONNECTOR_NAME(checkCertificateRequest.getConnectorName());
-        connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(checkCertificateRequest.getEnterpriseId()));
-        connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(checkCertificateRequest.getWorkFlowId()));
+        connectorLogRequest.setpENTERPRISE_ID(checkCertificateRequest.getEnterpriseId());
+        connectorLogRequest.setpWORKFLOW_ID(checkCertificateRequest.getWorkFlowId());
 
         session.ownerCreate(connectorLogRequest, jwtModel, checkCertificateRequest.getLang());
         List<CertResponse> listCertificate = new ArrayList<>();
@@ -182,7 +191,7 @@ public class ElectronicIdService {
                 for (Certificate cert : listCert) {
                     String credentialID = cert.baseCredentialInfo().getCredentialID();
                     crt = session.certificateInfo(credentialID, connectorLogRequest, checkCertificateRequest.getLang());
-                    if(crt !=null){
+                    if (crt != null) {
                         String authMode = crt.credentialInfo().getAuthMode().toString();
                         String status = crt.baseCredentialInfo().getStatus();
 
@@ -254,8 +263,8 @@ public class ElectronicIdService {
 
         ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
         connectorLogRequest.setpCONNECTOR_NAME(checkCertificateRequest.getConnectorName());
-        connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(checkCertificateRequest.getEnterpriseId()));
-        connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(checkCertificateRequest.getWorkFlowId()));
+        connectorLogRequest.setpENTERPRISE_ID(checkCertificateRequest.getEnterpriseId());
+        connectorLogRequest.setpWORKFLOW_ID(checkCertificateRequest.getWorkFlowId());
 
 //        session.ownerCreate(connectorLogRequest, jwtModel, lang);
 //        List<ICertificate> list = session.listCertificates(jwtModel.getDocument_type() + ":" + jwtModel.getDocument_number(), connectorLogRequest, lang);
@@ -321,8 +330,8 @@ public class ElectronicIdService {
 
         ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
         connectorLogRequest.setpCONNECTOR_NAME(checkCertificateRequest.getConnectorName());
-        connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(checkCertificateRequest.getEnterpriseId()));
-        connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(checkCertificateRequest.getWorkFlowId()));
+        connectorLogRequest.setpENTERPRISE_ID(checkCertificateRequest.getEnterpriseId());
+        connectorLogRequest.setpWORKFLOW_ID(checkCertificateRequest.getWorkFlowId());
 
         String otpRequestID = crt.sendOTP(connectorLogRequest, checkCertificateRequest.getLang(), checkCertificateRequest.getCredentialID(), null, null); // truyền thêm số CCCD agreementUUID
         return otpRequestID;
@@ -331,8 +340,8 @@ public class ElectronicIdService {
     public String authorizeOTP(AuthorizeOTPRequest authorizeOTPRequest, HttpServletRequest request) throws Throwable {
         ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
         connectorLogRequest.setpCONNECTOR_NAME(authorizeOTPRequest.getConnectorName());
-        connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(authorizeOTPRequest.getEnterpriseId()));
-        connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(authorizeOTPRequest.getWorkFlowId()));
+        connectorLogRequest.setpENTERPRISE_ID(authorizeOTPRequest.getEnterpriseId());
+        connectorLogRequest.setpWORKFLOW_ID(authorizeOTPRequest.getWorkFlowId());
 
         try {
             boolean error = false;
@@ -431,6 +440,155 @@ public class ElectronicIdService {
 //            commonRepository.postBack(callBackLogRequest, rsParticipant, pdfSigned, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, tsTimeSigned, rsWFList, sFileID_Last, certChain, codeNumber, signingOption, type, request);
 
             return result;
+
+        } catch (Exception e) {
+//            commonRepository.connectorLog(connectorLogRequest);
+            throw new Exception(e.getMessage());
+        }
+
+//        return sad;
+    }
+
+    public String authorizeOTPFps(AuthorizeOTPRequest authorizeOTPRequest, HttpServletRequest request) throws Throwable {
+        String field_name = authorizeOTPRequest.getFieldName();
+        System.out.println("field_name: " + field_name);
+        String connectorName = authorizeOTPRequest.getConnectorName();
+        int enterpriseId = authorizeOTPRequest.getEnterpriseId();
+        int workFlowId = authorizeOTPRequest.getWorkFlowId();
+        String signingToken = authorizeOTPRequest.getSigningToken();
+        String signerToken = authorizeOTPRequest.getSignerToken();
+        String lang = authorizeOTPRequest.getLang();
+        String codeNumber = authorizeOTPRequest.getCodeNumber();
+        String credentialID = authorizeOTPRequest.getCredentialID();
+        String signingOption = authorizeOTPRequest.getSigningOption();
+        String signerId = authorizeOTPRequest.getSignerId();
+        String certChain = authorizeOTPRequest.getCertChain();
+        String fileName = authorizeOTPRequest.getFileName();
+        int lastFileId = authorizeOTPRequest.getLastFileId();
+        int documentId = authorizeOTPRequest.getDocumentId();
+
+        ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
+        connectorLogRequest.setpCONNECTOR_NAME(codeNumber);
+        connectorLogRequest.setpENTERPRISE_ID(enterpriseId);
+        connectorLogRequest.setpWORKFLOW_ID(workFlowId);
+
+        try {
+            boolean error = false;
+            WorkFlowList[][] rsWFList = new WorkFlowList[1][];
+            connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
+            String sResult = "0";
+
+            // check workflow status
+            if (rsWFList[0] == null || rsWFList[0].length == 0 || rsWFList[0][0].WORKFLOW_STATUS != Difinitions.CONFIG_PPL_WORKFLOW_STATUS_PENDING) {
+                error = true;
+                sResult = "Signer Status invalid";// trạng thái không hợp lệ
+                throw new Exception(sResult);
+            }
+
+            // check workflow participant
+            Participants[][] rsParticipant = new Participants[1][];
+            connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
+            if (rsParticipant[0] == null || rsParticipant[0].length == 0 || rsParticipant[0][0].SIGNER_STATUS != Difinitions.CONFIG_WORKFLOW_PARTICIPANTS_SIGNER_STATUS_ID_PENDING) {
+                sResult = "The document has already been signed";
+            }
+
+            String meta = rsParticipant[0][0].META_INFORMATION;
+            JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
+
+            int isSetPosition = 0;
+            if (field_name != null && !field_name.isEmpty()) {
+                isSetPosition = 1;
+            } else if (jsonObject != null && jsonObject.has("pdf")) {
+                JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
+
+                JsonElement annotationElement = pdfObject.get("annotation");
+                if (annotationElement != null) {
+                    JsonObject annotationObject = annotationElement.getAsJsonObject();
+                    if (annotationObject.has("top") && annotationObject.has("left")) {
+                        isSetPosition = 1;
+                    }
+                }
+            }
+
+            System.out.println("isSetPosition: " + isSetPosition);
+
+            String[] sResultConnector = new String[2];
+            connect.getIdentierConnector(connectorName, sResultConnector);
+            String prefixCode = sResultConnector[1];
+
+            long millis = System.currentTimeMillis();
+            String sSignatureHash = signerToken + millis;
+            String sSignature_id = prefixCode + "-" + CommonHash.toHexString(CommonHash.hashPass(sSignatureHash)).toUpperCase();
+
+            String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
+
+            String documentDetails = fpsService.getDocumentDetails(documentId);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(documentDetails);
+            JsonNode documentNode = jsonNode.get(0);
+
+//            System.out.println("documentDetails: " + jsonNode.get(0).get("document_height").asInt());
+            int pageHeight = 0;
+            int pageWidth = 0;
+            if (documentNode != null) {
+                pageHeight = documentNode.get("document_height").asInt();
+                pageWidth = documentNode.get("document_width").asInt();
+            }
+
+            List<String> listCertChain = new ArrayList<>();
+            listCertChain.add(certChain);
+
+            HashFileRequest hashFileRequest = commonRepository.getMetaData(signingToken, meta);
+            hashFileRequest.setCertificateChain(listCertChain);
+
+            if (field_name == null || field_name.isEmpty()) {
+                System.out.println("kiem tra:");
+                commonRepository.addSign(pageHeight, pageWidth, signingToken, signerId, meta, documentId);
+            }
+
+            hashFileRequest.setFieldName(!field_name.isEmpty() ? field_name : signerToken);
+            String hashList = fpsService.hashSignatureField(documentId, hashFileRequest);
+
+
+            System.out.println("PrepareSign finish");
+            HashAlgorithmOID hashAlgo = HashAlgorithmOID.SHA_256;
+            DocumentDigests doc = new DocumentDigests();
+            doc.hashAlgorithmOID = hashAlgo;
+            doc.hashes = new ArrayList<>();
+            doc.hashes.add(Utils.base64Decode(hashList));
+
+            String sad = crt.authorize(connectorLogRequest, lang, credentialID, 1, null, null, authorizeOTPRequest.getRequestID(), authorizeOTPRequest.getOtp());
+
+//            commonRepository.connectorLog(connectorLogRequest);
+            SignAlgo signAlgo = SignAlgo.RSA;
+            List<byte[]> signatures = crt.signHash(connectorLogRequest, lang, credentialID, doc, signAlgo, sad);
+//            commonRepository.connectorLog(connectorLogRequest);
+
+            String signature = Base64.getEncoder().encodeToString(signatures.get(0));
+            System.out.println("kiem tra lần 2: ");
+
+            FpsSignRequest fpsSignRequest = new FpsSignRequest();
+            fpsSignRequest.setFieldName(!field_name.isEmpty() ? field_name : signerToken);
+            fpsSignRequest.setHashValue(hashList);
+            fpsSignRequest.setSignatureValue(signature);
+            fpsSignRequest.setCertificateChain(listCertChain);
+
+            String responseSign = fpsService.signDocument(documentId, fpsSignRequest);
+
+            JsonNode signNode = objectMapper.readTree(responseSign);
+            String uuid = signNode.get("uuid").asText();
+            int fileSize = signNode.get("file_size").asInt();
+            String digest = signNode.get("digest").asText();
+            String signedHash = signNode.get("signed_hash").asText();
+            String signedTime = signNode.get("signed_time").asText();
+
+            CallBackLogRequest callBackLogRequest = new CallBackLogRequest();
+            callBackLogRequest.setpENTERPRISE_ID(enterpriseId);
+            callBackLogRequest.setpWORKFLOW_ID(workFlowId);
+
+            commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, request);
+            return responseSign;
 
         } catch (Exception e) {
 //            commonRepository.connectorLog(connectorLogRequest);

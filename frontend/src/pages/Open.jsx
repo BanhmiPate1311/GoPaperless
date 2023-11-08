@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 // default layout plugin
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+// import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 // Import styles of default layout plugin
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+// import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { useParams } from "react-router-dom";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { Alert, Collapse, IconButton } from "@mui/material";
@@ -15,7 +15,7 @@ import FileSigned from "../components/FileSigned";
 
 export const Open = () => {
   const { t } = useTranslation();
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  // const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const [showAlert, setShowAlert] = useState(true);
   const [showDocument, setShowDocument] = useState(true);
@@ -162,7 +162,7 @@ export const Open = () => {
                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
                   <Viewer
                     fileUrl={`data:application/pdf;base64,${originalFile?.base64}`}
-                    plugins={[defaultLayoutPluginInstance]}
+                    // plugins={[defaultLayoutPluginInstance]}
                   ></Viewer>
                 </Worker>
               )}

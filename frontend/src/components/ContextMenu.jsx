@@ -65,6 +65,7 @@ const ContextMenu = ({ x, y, onClose, onMenuItemClick }) => {
         left: x,
         top: y,
         color: "#1F2937",
+        overflow: "auto",
       }}
       className="context-menu"
     >

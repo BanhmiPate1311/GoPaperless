@@ -1,4 +1,3 @@
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import {
   AppBar,
@@ -112,6 +111,7 @@ const Validation = () => {
     };
     try {
       await validationService.postBack(data);
+      checkStatus();
     } catch (error) {
       console.error(error);
     }
