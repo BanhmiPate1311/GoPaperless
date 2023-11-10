@@ -493,22 +493,7 @@ public class ElectronicIdService {
             }
 
             String meta = rsParticipant[0][0].META_INFORMATION;
-            JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
-
-            int isSetPosition = 0;
-            if (field_name != null && !field_name.isEmpty()) {
-                isSetPosition = 1;
-            } else if (jsonObject != null && jsonObject.has("pdf")) {
-                JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
-
-                JsonElement annotationElement = pdfObject.get("annotation");
-                if (annotationElement != null) {
-                    JsonObject annotationObject = annotationElement.getAsJsonObject();
-                    if (annotationObject.has("top") && annotationObject.has("left")) {
-                        isSetPosition = 1;
-                    }
-                }
-            }
+            int isSetPosition =  CommonFunction.checkIsSetPosition(field_name, meta);
 
             System.out.println("isSetPosition: " + isSetPosition);
 
@@ -547,7 +532,7 @@ public class ElectronicIdService {
                 commonRepository.addSign(pageHeight, pageWidth, signingToken, signerId, meta, documentId);
             }
 
-            hashFileRequest.setFieldName(!field_name.isEmpty() ? field_name : signerToken);
+            hashFileRequest.setFieldName(!field_name.isEmpty() ? field_name : signerId);
             String hashList = fpsService.hashSignatureField(documentId, hashFileRequest);
 
 
@@ -569,7 +554,7 @@ public class ElectronicIdService {
             System.out.println("kiem tra lần 2: ");
 
             FpsSignRequest fpsSignRequest = new FpsSignRequest();
-            fpsSignRequest.setFieldName(!field_name.isEmpty() ? field_name : signerToken);
+            fpsSignRequest.setFieldName(!field_name.isEmpty() ? field_name : signerId);
             fpsSignRequest.setHashValue(hashList);
             fpsSignRequest.setSignatureValue(signature);
             fpsSignRequest.setCertificateChain(listCertChain);

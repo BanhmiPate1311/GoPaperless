@@ -431,7 +431,7 @@ export const SigningComponent = ({ workFlow, ischange }) => {
           direction="up"
           style={{ paddingTop: "2px" }}
         >
-          <PdfView workFlow={workFlow} />
+          <PdfView workFlow={workFlow} index={ischange} />
         </Collapse>
 
         {workFlow?.participants?.length !== 0 &&

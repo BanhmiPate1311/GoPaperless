@@ -9,7 +9,6 @@ import {
   createLabel,
 } from "../ultis/commonFunction";
 import { useTranslation } from "react-i18next";
-import jwt_decode from "jwt-decode";
 import { api } from "../constants/api";
 
 function TabPanel(props) {

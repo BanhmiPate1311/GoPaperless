@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import ua_parser.Client;
 import ua_parser.Parser;
 import vn.mobileid.paperless.API.*;
@@ -28,6 +29,7 @@ import vn.mobileid.paperless.Model.Enum.SignAlgo;
 import vn.mobileid.paperless.Model.Request.DocumentDigests;
 import vn.mobileid.paperless.Model.Response.BaseCertificateInfo;
 import vn.mobileid.paperless.Model.smartId.request.SignRequest;
+import vn.mobileid.paperless.Model.smartId.request.SigningBaseRequest;
 import vn.mobileid.paperless.aws.dto.CertResponse;
 import vn.mobileid.paperless.config.RSSPConfig;
 import vn.mobileid.paperless.fps.request.FpsSignRequest;
@@ -82,9 +84,9 @@ public class RSSPService {
     private boolean devMode;
 
     public IServerSession handShake(String lang,
-            String connectorName,
-            int enterpriseId,
-            int workFlowId) throws Exception {
+                                    String connectorName,
+                                    int enterpriseId,
+                                    int workFlowId) throws Exception {
         boolean codeEnable = true;
         String baseUrl = "";
         String relyingParty = "";
@@ -143,13 +145,13 @@ public class RSSPService {
         return session;
     }
 
-    public Map<String, Object> getCertificate(
-            String lang,
-            String connectorName,
-            String codeNumber,
-            String enterpriseId,
-            String workFlowId
-    ) throws Exception {
+    public Map<String, Object> getCertificate(SigningBaseRequest request) throws Exception {
+        String connectorName = request.getConnectorName();
+        int enterpriseId = request.getEnterpriseId();
+        int workFlowId = request.getWorkFlowId();
+        String lang = request.getLang();
+        String codeNumber = request.getCodeNumber();
+
         boolean codeEnable = true;
         String baseUrl = "";
         String relyingParty = "";
@@ -208,8 +210,8 @@ public class RSSPService {
 
         ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
         connectorLogRequest.setpCONNECTOR_NAME(connectorName);
-        connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
-        connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
+        connectorLogRequest.setpENTERPRISE_ID(enterpriseId);
+        connectorLogRequest.setpWORKFLOW_ID(workFlowId);
 
         Property property = rsspConfig.loadRSSPConfig(baseUrl, relyingParty, relyingPartyUser, relyingPartyPassword,
                 relyingPartySignature, relyingPartyKeyStoreValue, relyingPartyKeyStorePassword);
@@ -358,7 +360,7 @@ public class RSSPService {
 //            String sSignature_id = prefixCode + "-" + CommonHash.hashPass(sSignatureHash.getBytes());
             String sSignature_id = prefixCode + "-" + CommonHash.toHexString(CommonHash.hashPass(sSignatureHash)).toUpperCase();
 
-            System.out.println("credentialID: " + credentialID);
+//            System.out.println("credentialID: " + credentialID);
 
 //            List<String> hashList = commonRepository.createHashList(signerToken, signingToken, certChain, credentialID, "", sSignature_id);
 //            Gson gson = new GsonBuilder().create();
@@ -552,22 +554,23 @@ public class RSSPService {
             }
 
             String meta = rsParticipant[0][0].META_INFORMATION;
-            JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
 
-            int isSetPosition = 0;
-            if (field_name != null && !field_name.isEmpty()) {
-                isSetPosition = 1;
-            } else if (jsonObject != null && jsonObject.has("pdf")) {
-                JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
+//            int isSetPosition = 0;
+//            if (field_name != null && !field_name.isEmpty()) {
+//                isSetPosition = 1;
+//            } else if (jsonObject != null && jsonObject.has("pdf") && !jsonObject.get("pdf").isJsonNull()) {
+//                JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
+//
+//                JsonElement annotationElement = pdfObject.get("annotation");
+//                if (!annotationElement.isJsonNull()) {
+//                    JsonObject annotationObject = annotationElement.getAsJsonObject();
+//                    if (annotationObject.has("top") && annotationObject.has("left")) {
+//                        isSetPosition = 1;
+//                    }
+//                }
+//            }
 
-                JsonElement annotationElement = pdfObject.get("annotation");
-                if (annotationElement != null) {
-                    JsonObject annotationObject = annotationElement.getAsJsonObject();
-                    if (annotationObject.has("top") && annotationObject.has("left")) {
-                        isSetPosition = 1;
-                    }
-                }
-            }
+            int isSetPosition = CommonFunction.checkIsSetPosition(field_name, meta);
 
             System.out.println("isSetPosition: " + isSetPosition);
 

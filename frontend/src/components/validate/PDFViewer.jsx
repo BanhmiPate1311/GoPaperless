@@ -94,7 +94,7 @@ const PDFViewer = ({ base64 }) => {
     // console.log("pageIndex: ", props.pageIndex);
     return (
       <div
-        className={`cuong-page-${props.pageIndex + 1}`}
+        className={`lam-page-${props.pageIndex + 1}`}
         onContextMenu={(e) => handleContextMenu(e, props.pageIndex + 1)}
         ref={menuRef}
         style={{
@@ -102,6 +102,7 @@ const PDFViewer = ({ base64 }) => {
           // height: "400px",
           // overflowY: "auto",
           width: "100%",
+          height: "100%",
         }}
         id="pdf-view"
       >
@@ -153,6 +154,9 @@ const PDFViewer = ({ base64 }) => {
       height: size.height + 30,
       width: size.width + 30,
     }),
+    buildPageStyles: ({ numPages, pageIndex }) => ({
+      zIndex: numPages - pageIndex,
+    }),
   };
 
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -163,7 +167,7 @@ const PDFViewer = ({ base64 }) => {
           fileUrl={`data:application/pdf;base64,${base64}`}
           plugins={[defaultLayoutPluginInstance]}
           renderPage={renderPage}
-          // pageLayout={pageLayout}
+          pageLayout={pageLayout}
           onDocumentLoad={handleLoadSuccess}
           onPageChange={handlePageChange}
         />

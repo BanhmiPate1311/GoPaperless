@@ -443,7 +443,8 @@ video {
   background-color: #f0f0f0;
 }
 
-.cursor {
+.cursor-0,
+.cursor-1 {
   /* background-color: #111; */
   /* height: 32px; */
   /* width: 32px; */

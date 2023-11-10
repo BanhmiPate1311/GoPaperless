@@ -4,11 +4,16 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { api } from "../../constants/api";
-import { apiControllerManagerActions } from "../../store/apiControllerManager";
+import {
+  apiControllerManagerActions,
+  useApiControllerManager,
+} from "../../store/apiControllerManager";
 import ButtonField from "../form/button_field";
 import InputField from "../form/input_field";
 import Notice from "./Notice";
 import ViettelModalField from "./viettel_modal_field";
+import { vtCAService } from "../../services/vtCAService";
+import { getSignature, getSignerId } from "../../ultis/commonFunction";
 
 const ViettelCA = ({ isCardChecked, connectorName, workFlow }) => {
   const { t } = useTranslation();
@@ -20,6 +25,19 @@ const ViettelCA = ({ isCardChecked, connectorName, workFlow }) => {
   const [signTimeout, setSignTimeout] = useState(180);
 
   const [messageError, setMessageError] = useState("");
+
+  // const signerId = workFlow?.participants?.find(
+  //   (item) => item.signerToken === workFlow.signerToken
+  // ).signerId;
+
+  const signerId = getSignerId(workFlow);
+
+  const { signaturePrepare } = useApiControllerManager();
+  // const signature = signaturePrepare.find(
+  //   (item) => item.field_name === signerId
+  // );
+  const signature = getSignature(signaturePrepare, signerId);
+  console.log("signature: ", signature);
 
   useEffect(() => {
     if (!isFetching) return;
@@ -76,29 +94,23 @@ const ViettelCA = ({ isCardChecked, connectorName, workFlow }) => {
     setCerSelected(data);
   };
 
-  const [signerID, setSignerID] = useState(null);
-  useEffect(() => {
-    const signerId = workFlow.participants.find(
-      (item) => item.signerToken === workFlow.signerToken
-    )?.signerId;
-    setSignerID(signerId);
-  }, [workFlow]);
-
   const getCertificate = async () => {
     try {
       setMessageError("");
       setIsFecthing(true);
       dispatch(apiControllerManagerActions.clearsetMessageError());
-      const formData = new FormData();
-      formData.append("userId", userId);
-      formData.append("connectorName", connectorName);
-      formData.append("enterpriseId", workFlow.enterpriseId);
-      formData.append("workFlowId", workFlow.workFlowId);
-      const response = await api.post("/viettel-ca/getCertificate", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // const formData = new FormData();
+      // formData.append("userId", userId);
+      // formData.append("connectorName", connectorName);
+      // formData.append("enterpriseId", workFlow.enterpriseId);
+      // formData.append("workFlowId", workFlow.workFlowId);
+      const data = {
+        userId: userId,
+        connectorName: connectorName,
+        enterpriseId: workFlow.enterpriseId,
+        workFlowId: workFlow.workFlowId,
+      };
+      const response = await vtCAService.getCertificate(data);
       // setIsFecthing(false);
       setOpen(true);
       setContent(response.data);
@@ -118,31 +130,53 @@ const ViettelCA = ({ isCardChecked, connectorName, workFlow }) => {
       setSignTimeout(181);
       setOpen(false);
       setIsFecthing(true);
-      const formData = new FormData();
-      formData.append("credentialID", content.data[cerSelected].credential_id);
-      formData.append("signingToken", workFlow.signingToken);
-      formData.append("signerToken", workFlow.signerToken);
-      formData.append("signerId", signerID);
-      formData.append(
-        "certChain",
-        content.data[cerSelected].cert.certificates[0]
+      // const formData = new FormData();
+      // formData.append("credentialID", content.data[cerSelected].credential_id);
+      // formData.append("signingToken", workFlow.signingToken);
+      // formData.append("signerToken", workFlow.signerToken);
+      // formData.append("signerId", signerID);
+      // formData.append(
+      //   "certChain",
+      //   content.data[cerSelected].cert.certificates[0]
+      // );
+      // formData.append("connectorName", connectorName);
+      // formData.append("enterpriseId", workFlow.enterpriseId);
+      // formData.append("workFlowId", workFlow.workFlowId);
+      // formData.append("accessToken", content.access_token);
+      // formData.append("fileName", workFlow.fileName);
+      // formData.append(
+      //   "serialNumber",
+      //   content.data[cerSelected].cert.serialNumber
+      // );
+      // formData.append("signingOption", "smartid");
+
+      const data = {
+        fieldName: signature ? signature.field_name : "",
+        credentialID: content.data[cerSelected].credential_id,
+        signingToken: workFlow.signingToken,
+        signerToken: workFlow.signerToken,
+        signerId: signerId,
+        certChain: content.data[cerSelected].cert.certificates[0],
+        connectorName: connectorName,
+        enterpriseId: workFlow.enterpriseId,
+        workFlowId: workFlow.workFlowId,
+        accessToken: content.access_token,
+        fileName: workFlow.fileName,
+        codeNumber: userId,
+        signingOption: "smartid",
+        lastFileId: workFlow.lastFileId,
+        documentId: workFlow.documentId,
+      };
+      const response = await vtCAService.signHash(
+        data,
+        signFileController.signal
       );
-      formData.append("connectorName", connectorName);
-      formData.append("enterpriseId", workFlow.enterpriseId);
-      formData.append("workFlowId", workFlow.workFlowId);
-      formData.append("accessToken", content.access_token);
-      formData.append("fileName", workFlow.fileName);
-      formData.append(
-        "serialNumber",
-        content.data[cerSelected].cert.serialNumber
-      );
-      formData.append("signingOption", "smartid");
-      const response = await api.post("/viettel-ca/signHash", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        signal: signFileController.signal,
-      });
+      // const response = await api.post("/viettel-ca/signHash", formData, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      //   signal: signFileController.signal,
+      // });
       window.parent.postMessage(
         { data: response.data, status: "Success" },
         "*"

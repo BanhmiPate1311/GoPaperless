@@ -27,6 +27,7 @@ import Step11a from "./ElectronicId/Step11a";
 import Step12 from "./ElectronicId/Step12";
 import Step13 from "./ElectronicId/Step13";
 import Step9 from "./ElectronicId/Step9";
+import { getSignature, getSignerId } from "../ultis/commonFunction";
 
 // const steps = [
 //   "Check Citizen Identity Card",
@@ -59,10 +60,10 @@ const HorizontalNonLinearStepper = ({
       break;
   }
 
+  const signerId = getSignerId(workFlow);
+
   const { signaturePrepare } = useApiControllerManager();
-  const signature = signaturePrepare.find(
-    (item) => item.field_name === workFlow.signerToken
-  );
+  const signature = getSignature(signaturePrepare, signerId);
   console.log("signature: ", signature);
 
   const [subject, setSubject] = useState("");
@@ -534,14 +535,6 @@ const HorizontalNonLinearStepper = ({
     }
   };
 
-  const [signerID, setSignerID] = useState(null);
-  useEffect(() => {
-    const signerId = workFlow.participants.find(
-      (item) => item.signerToken === workFlow.signerToken
-    )?.signerId;
-    setSignerID(signerId);
-  }, [workFlow]);
-
   const authorizeOTP = async (otp) => {
     console.log("authorizeOTP");
     setIsFetching(true);
@@ -551,7 +544,7 @@ const HorizontalNonLinearStepper = ({
       credentialID: certificate.credentialID,
       requestID: requestID,
       otp: otp,
-      signerId: signerID,
+      signerId: signerId,
       signingToken: workFlow.signingToken,
       fileName: workFlow.fileName,
       signerToken: workFlow.signerToken,

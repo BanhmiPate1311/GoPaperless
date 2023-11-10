@@ -129,7 +129,7 @@ public class ISController {
         );
         String hashList = gatewayAPI.PrepareSign(prepareSigningRequest);
 
-        if(hashList == null) {
+        if (hashList == null) {
             return null;
         }
 
@@ -316,7 +316,6 @@ public class ISController {
             String signingOption = signRequest.getSigningOption();
 
 
-
             WorkFlowList[][] rsWFList = new WorkFlowList[1][];
             connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
             String sResult = "0";
@@ -339,22 +338,7 @@ public class ISController {
             String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
 
             String meta = rsParticipant[0][0].META_INFORMATION;
-            JsonObject jsonObject = new Gson().fromJson(meta, JsonObject.class);
-
-            int isSetPosition = 0;
-            if (field_name != null && !field_name.isEmpty()) {
-                isSetPosition = 1;
-            } else if (jsonObject != null && jsonObject.has("pdf")) {
-                JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
-
-                JsonElement annotationElement = pdfObject.get("annotation");
-                if (annotationElement != null) {
-                    JsonObject annotationObject = annotationElement.getAsJsonObject();
-                    if (annotationObject.has("top") && annotationObject.has("left")) {
-                        isSetPosition = 1;
-                    }
-                }
-            }
+            int isSetPosition =  CommonFunction.checkIsSetPosition(field_name, meta);
 
             List<String> listCertChain = new ArrayList<>();
             listCertChain.add(certChain);
@@ -443,7 +427,7 @@ public class ISController {
             // download first file
             String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
 
-            byte[] pdfSigned = commonRepository.packFile(certEncode,signatures,cerId);
+            byte[] pdfSigned = commonRepository.packFile(certEncode, signatures, cerId);
 
             Date signTime = CommonFunction.getSigningTime(pdfSigned);
 
@@ -458,7 +442,7 @@ public class ISController {
             callBackLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
             callBackLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
 
-            commonRepository.postBack(callBackLogRequest,rsParticipant,pdfSigned,fileName, signingToken,pDMS_PROPERTY,signatureId, signerToken,tsTimeSigned,rsWFList,sFileID_Last,certEncode,serialNumber,signingOption,sType,request);
+            commonRepository.postBack(callBackLogRequest, rsParticipant, pdfSigned, fileName, signingToken, pDMS_PROPERTY, signatureId, signerToken, tsTimeSigned, rsWFList, sFileID_Last, certEncode, serialNumber, signingOption, sType, request);
 
             return new ResponseEntity<>("OK", HttpStatus.OK);
         } catch (Exception e) {

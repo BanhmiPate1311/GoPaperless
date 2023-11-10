@@ -404,3 +404,13 @@ export const formatPeriodTime = (time) => {
 
 export const formatSignerId = (value) =>
   value.substring("YOUR_PROVIDED_".length);
+
+export const getSignerId = (value) => {
+  return value?.participants?.find(
+    (item) => item.signerToken === value.signerToken
+  ).signerId;
+};
+
+export const getSignature = (value, signerId) => {
+  return value.find((item) => item.field_name === signerId);
+};

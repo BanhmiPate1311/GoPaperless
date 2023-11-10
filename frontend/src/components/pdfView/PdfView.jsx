@@ -18,7 +18,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
 import { ReactComponent as Attachment } from "../../assets/images/pdf/attachment.svg";
 import { ReactComponent as Bookmark } from "../../assets/images/pdf/bookmark.svg";
 import { ReactComponent as DownLoad } from "../../assets/images/pdf/download.svg";
@@ -29,16 +28,20 @@ import { ReactComponent as ThumbNail } from "../../assets/images/pdf/thumbnail.s
 import { ReactComponent as ZoomIn } from "../../assets/images/pdf/zoom_in.svg";
 import { ReactComponent as ZoomOut } from "../../assets/images/pdf/zoom_out.svg";
 import { fpsService } from "../../services/fpsService";
-import { apiControllerManagerActions } from "../../store/apiControllerManager";
+import {
+  apiControllerManagerActions,
+  useApiControllerManager,
+} from "../../store/apiControllerManager";
+import { getSignerId } from "../../ultis/commonFunction";
 import ContextMenu from "../ContextMenu";
 import Document from "./Document";
 
-const PdfView = ({ workFlow }) => {
+const PdfView = ({ workFlow, index = 0 }) => {
   const dispatch = useDispatch();
 
-  const signerId = workFlow?.participants?.find(
-    (item) => item.signerToken === workFlow.signerToken
-  ).signerId;
+  const { isSignSuccess } = useApiControllerManager("");
+
+  const signerId = getSignerId(workFlow);
 
   const menuRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -61,7 +64,7 @@ const PdfView = ({ workFlow }) => {
   const [isSetPos, setIsSetPos] = useState(false);
 
   useEffect(() => {
-    const signer = workFlow?.participants.find(
+    const signer = workFlow?.participants?.find(
       (item) => item.signerToken === workFlow.signerToken
     );
 
@@ -71,7 +74,6 @@ const PdfView = ({ workFlow }) => {
     }
   }, [workFlow]);
 
-  console.log("signatures: ", signatures);
   useEffect(() => {
     if (signatures.length > 0) {
       dispatch(apiControllerManagerActions.setSignaturePrepare(signatures[0]));
@@ -92,12 +94,14 @@ const PdfView = ({ workFlow }) => {
     };
 
     getDocumentDetails();
-  }, []);
+  }, [isSignSuccess, index]);
 
+  const pdfRange = [];
+  const cursor = [];
   useEffect(() => {
     // nghe sự kiện bên trong file pdf
-    const pdfRange = document.getElementById("pdf-view");
-    const cursor = document.querySelector(".cursor");
+    pdfRange[index] = document.getElementById(`pdf-view-${index}`);
+    cursor[index] = document.querySelector(`.cursor-${index}`);
 
     const mouseMove = (e) => {
       if (
@@ -105,35 +109,36 @@ const PdfView = ({ workFlow }) => {
         e.target.className.includes("MuiListItemText-primary") ||
         e.target.className.includes("MuiListItemButton-root")
       ) {
-        cursor.style.display = "none";
+        cursor[index].style.display = "none";
       } else {
-        pdfRange.style.cursor = "none";
+        pdfRange[index].style.cursor = "none";
         setMousePosition({
           x: e.clientX,
           y: e.clientY,
         });
-        cursor.style.display = "block";
+        cursor[index].style.display = "block";
       }
     };
 
     const mouseOut = () => {
-      cursor.style.display = "none";
+      cursor[index].style.display = "none";
     };
 
-    pdfRange.addEventListener("mousemove", mouseMove);
+    pdfRange[index].addEventListener("mousemove", mouseMove);
 
-    pdfRange.addEventListener("mouseleave", mouseOut);
+    pdfRange[index].addEventListener("mouseleave", mouseOut);
 
     // Trình nghe sự kiện click và mousedown toàn bộ trang
     const handleGlobalClickAndMouseDown = (e) => {
       // console.log("e: ", e);
-      if (
-        (menuRef.current.contains(e.target) &&
-          e.target.className?.includes("pdf-page")) ||
-        !menuRef.current.contains(e.target)
-      ) {
-        handleCloseContextMenu();
-      }
+      // if (
+      //   (menuRef.current.contains(e.target) &&
+      //     e.target.className?.includes("pdf-page")) ||
+      //   !menuRef.current.contains(e.target)
+      // ) {
+      //   handleCloseContextMenu();
+      // }
+      handleCloseContextMenu();
     };
 
     // Đăng ký trình nghe sự kiện click và mousedown
@@ -144,13 +149,13 @@ const PdfView = ({ workFlow }) => {
       // Hủy đăng ký trình nghe sự kiện khi component unmount
       window.removeEventListener("click", handleGlobalClickAndMouseDown);
       // window.removeEventListener("mousedown", handleGlobalClickAndMouseDown);
-      pdfRange.removeEventListener("mousemove", mouseMove);
-      pdfRange.removeEventListener("mouseleave", mouseOut);
+      pdfRange[index].removeEventListener("mousemove", mouseMove);
+      pdfRange[index].removeEventListener("mouseleave", mouseOut);
     };
   }, []);
 
   useEffect(() => {
-    const pdfPagesContainer = document.getElementById("pdf-view");
+    const pdfPagesContainer = document.getElementById(`pdf-view-${index}`);
 
     function handleScroll() {
       const scrollTop = pdfPagesContainer.scrollTop;
@@ -213,7 +218,7 @@ const PdfView = ({ workFlow }) => {
           const { verification, ...repairedSignature } = item;
           return { ...repairedSignature, workFlowId: workFlow.workFlowId };
         });
-      console.log("signatures: ", signatures);
+      // console.log("signatures: ", signatures);
       // this step to check if the signature is signed, then it will the another color
       signatures = await handleGetSignatureAfterVerify(documentID, [
         ...signatures,
@@ -266,7 +271,7 @@ const PdfView = ({ workFlow }) => {
   };
 
   const handleMoveToIndexPage = (index) => {
-    const pdfInfosContainer = document.getElementById("pdf-view");
+    const pdfInfosContainer = document.getElementById(`pdf-view-${index}`);
     const targetPage = document.getElementById(`page-${index}`);
     pdfInfosContainer.scrollTo({
       top: targetPage.offsetTop - pdfInfosContainer.offsetTop,
@@ -607,10 +612,10 @@ const PdfView = ({ workFlow }) => {
               height: "400px",
               overflowY: "auto",
             }}
-            id="pdf-view"
+            id={`pdf-view-${index}`}
           >
             <div
-              className="cursor"
+              className={`cursor-${index}`}
               style={{
                 top: mousePosition.y,
                 left: mousePosition.x,

@@ -11,14 +11,14 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import Dropdown from "../DropDown";
 import { styled } from "@mui/material/styles";
-import { ReactComponent as PostCard } from "../../assets/images/modal/post_card.svg";
+import moment from "moment";
+import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ReactComponent as Card } from "../../assets/images/modal/card.svg";
 import { ReactComponent as NextArrow } from "../../assets/images/modal/next_arrow.svg";
-import moment from "moment";
+import { ReactComponent as PostCard } from "../../assets/images/modal/post_card.svg";
+import Dropdown from "../DropDown";
 
 const ToggleButtonStyle = styled(ToggleButton)({
   "&.Mui-selected, &.Mui-selected:hover": {
@@ -75,6 +75,7 @@ const UsbModalField = ({
         },
       }}
       open={open}
+      keepMounted
       onClose={handleClose}
       scroll={scroll}
       aria-labelledby="scroll-dialog-title"

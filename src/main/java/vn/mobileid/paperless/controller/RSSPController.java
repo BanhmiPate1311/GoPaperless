@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.mobileid.paperless.API.GatewayAPI;
 import vn.mobileid.paperless.Model.smartId.request.SignRequest;
+import vn.mobileid.paperless.Model.smartId.request.SigningBaseRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 
@@ -129,13 +130,9 @@ public class RSSPController {
 
     @PostMapping("/getCertificate")
     public ResponseEntity<?> getCertificate(
-            @RequestParam String lang,
-            @RequestParam String connectorName,
-            @RequestParam String codeNumber,
-            @RequestParam String enterpriseId,
-            @RequestParam String workFlowId) throws Exception {
-        System.out.println("codeNumber123: " + codeNumber);
-        Map<String, Object> certificate = rsspService.getCertificate(lang, connectorName, codeNumber, enterpriseId, workFlowId);
+            @RequestBody SigningBaseRequest request) throws Exception {
+        System.out.println("codeNumber: " + request.getCodeNumber());
+        Map<String, Object> certificate = rsspService.getCertificate(request);
 
         return new ResponseEntity<>(certificate, HttpStatus.OK);
 

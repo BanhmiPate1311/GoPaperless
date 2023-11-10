@@ -540,31 +540,31 @@ public class CommonRepository {
         String type = "image";
 
 //                    JsonElement pdfElement = jsonObject.get("pdf");
-        if (jsonObject != null && jsonObject.has("pdf")) {
+        if (jsonObject != null && jsonObject.has("pdf") && !jsonObject.get("pdf").isJsonNull()) {
             JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
 
             JsonElement annotationElement = pdfObject.get("annotation");
-            if (annotationElement != null) {
+            if (!annotationElement.isJsonNull()) {
                 JsonObject annotationObject = annotationElement.getAsJsonObject();
-                if (annotationObject.has("page")) {
+                if (annotationObject.has("page") && !annotationObject.get("page").isJsonNull()) {
                     page = annotationObject.get("page").getAsString();
                 }
-                if (annotationObject.has("top")) {
+                if (annotationObject.has("top") && !annotationObject.get("top").isJsonNull()) {
                     top = annotationObject.get("top").getAsString();
                 }
-                if (annotationObject.has("left")) {
+                if (annotationObject.has("left") && !annotationObject.get("left").isJsonNull()) {
                     left = annotationObject.get("left").getAsString();
                 }
-                if (annotationObject.has("width")) {
+                if (annotationObject.has("width") && !annotationObject.get("width").isJsonNull()) {
                     width = annotationObject.get("width").getAsString();
                 }
-                if (annotationObject.has("height")) {
+                if (annotationObject.has("height") && !annotationObject.get("height").isJsonNull()) {
                     height = annotationObject.get("height").getAsString();
                 }
-                if (annotationObject.has("text")) {
+                if (annotationObject.has("text") && !annotationObject.get("text").isJsonNull()) {
                     text = annotationObject.get("text").getAsString();
                 }
-                if (annotationObject.has("type")) {
+                if (annotationObject.has("type") && !annotationObject.get("type").isJsonNull()) {
                     type = annotationObject.get("type").getAsString();
                 }
             }
@@ -611,16 +611,14 @@ public class CommonRepository {
 //            // Tiếp tục xử lý dữ liệu trong signingPurposeElement
 //        }
 
-        if (jsonObject.has("country") && !jsonObject.get("country").isJsonNull()) {
-            // "country" key is present and its value is not null
-            location = jsonObject.get("country").getAsString();
-        }
+        signingPurpose = CommonFunction.getValueFromJson("signing_purpose", meta, "Signature");
+        location = CommonFunction.getValueFromJson("country", meta, "vn");
 
         data.setSigningReason("Purpose: " + signingPurpose);
         data.setSignatureAlgorithm("RSA");
         data.setSignedHash("SHA256");
         data.setSigningLocation(location);
-        if (jsonObject != null && jsonObject.has("pdf")) {
+        if (jsonObject.has("pdf") && !jsonObject.get("pdf").isJsonNull()) {
             JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
             if (pdfObject.has("reason")) {
                 data.setSigningReason(pdfObject.get("reason").getAsString());
@@ -729,8 +727,9 @@ public class CommonRepository {
                 Date date = inputFormat.parse(signedTime);
                 String sDateSign = outputFormat.format(date);
                 System.out.println(sDateSign);
-//                rsWFList = new WorkFlowList[1][];
-//                connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
+                // call again to get the latest status
+                rsWFList = new WorkFlowList[1][];
+                connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
                 // khởi tạo request
                 String protocol = request.getHeader("X-Forwarded-Proto");
                 if (protocol == null) {

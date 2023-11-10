@@ -9,8 +9,6 @@ import {
 import React, { Fragment, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
-import { api } from "../constants/api";
-import { checkClassName, createCard } from "../ultis/commonFunction";
 import FieldElecId from "./FieldElecId";
 import FieldSmartId from "./FieldSmartId";
 import FieldUsbToken from "./FieldUsbToken";
@@ -19,6 +17,7 @@ const Field = ({ workFlow, signingOption, cards, classList }) => {
   const { t } = useTranslation();
 
   const [cardList, setCardList] = useState(cards);
+  // console.log("cardList: ", cardList);
   useEffect(() => {
     setCardList(cards);
   }, [cards]);
@@ -121,6 +120,7 @@ const Field = ({ workFlow, signingOption, cards, classList }) => {
   }, [signingOption]);
 
   const handleCardClick = (id, code) => {
+    console.log("kiem tra");
     setConnectorName(code);
     const updatedCardList = cardList.map((card) => {
       if (card.id === id) {

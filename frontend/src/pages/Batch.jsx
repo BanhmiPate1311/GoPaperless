@@ -1,31 +1,30 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { Button, Collapse, IconButton, Tab, Tabs } from "@mui/material";
+import { Search } from "@mui/icons-material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import Alert from "@mui/material/Alert";
-import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Button, Collapse, IconButton, Tab, Tabs } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
-import { Search } from "@mui/icons-material";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import React, { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { api } from "../constants/api";
-import { Viewer, Worker } from "@react-pdf-viewer/core";
-import "@react-pdf-viewer/core/lib/styles/index.css";
 // default layout plugin
 // import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 // Import styles of default layout plugin
 // import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import { useDispatch } from "react-redux";
 import NavTab from "../components/NavTab";
+import PdfView from "../components/pdfView/PdfView";
 import {
   apiControllerManagerActions,
   useApiControllerManager,
 } from "../store/apiControllerManager";
-import { useDispatch } from "react-redux";
 import { checkStatusBatch } from "../ultis/commonFunction";
-import PdfView from "../components/pdfView/PdfView";
 export const Batch = () => {
   const { t } = useTranslation();
   // const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -441,7 +440,7 @@ export const Batch = () => {
                           </Worker>
                         )}
                       </div> */}
-                      <PdfView workFlow={signer} />
+                      <PdfView workFlow={signer} index={index} />
                     </Collapse>
                   )}
                 </div>
@@ -502,10 +501,7 @@ export const Batch = () => {
                   </Box>
                 </React.Fragment>
               ) : (
-                <NavTab
-                  workFlow={signers}
-                  signingOptions={signingOptions}
-                ></NavTab>
+                <NavTab workFlow={signers} signingOptions={signingOptions} />
               )}
             </div>
           )}

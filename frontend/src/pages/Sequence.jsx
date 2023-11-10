@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import {
   Alert,
   Box,
@@ -9,12 +9,13 @@ import {
   IconButton,
   LinearProgress,
 } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import SigningComponent from "../components/SigningComponent";
-import { useApiControllerManager } from "../store/apiControllerManager";
+import SequenceButtonField from "../components/form/sequence_button_field";
 import { api } from "../constants/api";
+import { useApiControllerManager } from "../store/apiControllerManager";
 
 export const Sequence = () => {
   const { t } = useTranslation();
@@ -98,88 +99,46 @@ export const Sequence = () => {
   const checkIndex = (index) => {
     if (index === 0) {
       return (
-        <Box sx={{ "& button": { m: 1 } }}>
-          <div>
-            <Button
-              className="next"
-              size="large"
-              style={{
-                width: "155px",
-                height: "46px",
-                textTransform: "capitalize",
-              }}
-              variant="contained"
-              onClick={() => {
-                // setMessageData(null);
-                setIndex(index < workFlows.length - 1 ? index + 1 : 0);
-              }}
-            >
-              {t("sequence.next")}
-            </Button>
-          </div>
+        <Box width={155} sx={{ "& button": { m: 1 } }}>
+          <SequenceButtonField
+            handleButtonClick={() =>
+              setIndex(index < workFlows.length - 1 ? index + 1 : 0)
+            }
+            text={t("sequence.next")}
+          />
         </Box>
       );
     } else if (index === workFlows.length - 1) {
       return (
-        <Box sx={{ "& button": { m: 1 } }}>
-          <div>
-            <Button
-              className="pre"
-              size="large"
-              style={{
-                width: "155px",
-                height: "46px",
-                textTransform: "capitalize",
-              }}
-              variant="contained"
-              onClick={() => {
-                // setMessageData(null);
-                setIndex(index > 0 ? index - 1 : workFlows.length - 1);
-              }}
-            >
-              {t("sequence.previous")}
-            </Button>
-          </div>
+        <Box width={155} sx={{ "& button": { m: 1 } }}>
+          <SequenceButtonField
+            handleButtonClick={() =>
+              setIndex(index > 0 ? index - 1 : workFlows.length - 1)
+            }
+            text={t("sequence.previous")}
+          />
         </Box>
       );
     } else {
       return (
-        <Box sx={{ "& button": { m: 1 } }}>
-          <div>
-            <Button
-              className="pre"
-              size="large"
-              style={{
-                width: "155px",
-                height: "46px",
-                textTransform: "capitalize",
-              }}
-              variant="contained"
-              onClick={() => {
-                // setMessageData(null);
-                setIndex(index > 0 ? index - 1 : workFlows.length - 1);
-              }}
-            >
-              {t("sequence.previous")}
-            </Button>
+        <Box>
+          <Box width={155} sx={{ "& button": { m: 1 } }}>
+            <SequenceButtonField
+              handleButtonClick={() =>
+                setIndex(index > 0 ? index - 1 : workFlows.length - 1)
+              }
+              text={t("sequence.previous")}
+            />
+          </Box>
 
-            <Button
-              className="next"
-              size="large"
-              style={{
-                width: "155px",
-                height: "46px",
-                textTransform: "capitalize",
-              }}
-              variant="contained"
-              onClick={() => {
-                // setMessageData(null);
-                setIndex(index < workFlows.length - 1 ? index + 1 : 0);
-              }}
-            >
-              {t("sequence.next")}
-            </Button>
-          </div>
+          <Box width={155} sx={{ "& button": { m: 1 } }}>
+            <SequenceButtonField
+              handleButtonClick={() =>
+                setIndex(index < workFlows.length - 1 ? index + 1 : 0)
+              }
+              text={t("sequence.next")}
+            />
+          </Box>
         </Box>
       );
     }
@@ -323,7 +282,9 @@ export const Sequence = () => {
             </Collapse>
           </div>
           {/* Document Information */}
-          <SigningComponent workFlow={workFlows[index]} ischange={index} />
+          {workFlows.length > 0 && (
+            <SigningComponent workFlow={workFlows[index]} ischange={index} />
+          )}
         </div>
       </div>
     </main>

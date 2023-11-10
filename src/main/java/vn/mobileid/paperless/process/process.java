@@ -696,7 +696,7 @@ public class process {
         String convrtr = "1";
         try {
             conns = OpenDatabase();
-            proc_stmt = conns.prepareCall("{ call USP_PPL_WORKFLOW_PARTICIPANTS_LIST(?,?) }");
+            proc_stmt = conns.prepareCall("{ call USP_GW_PPL_WORKFLOW_PARTICIPANTS_LIST(?,?) }");
             proc_stmt.setString("pSIGNING_TOKEN", pSIGNING_TOKEN);
 
             proc_stmt.registerOutParameter("pRESPONSE_CODE", java.sql.Types.NVARCHAR);

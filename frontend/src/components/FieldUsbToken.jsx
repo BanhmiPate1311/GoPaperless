@@ -18,12 +18,13 @@ import UsbModalField from "./usbtoken/usb_modal_field";
 import { isPluginService } from "../services/isPluginService";
 
 const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
+  // console.log("isCardChecked: ", isCardChecked);
   // console.log("workFlow: ", workFlow);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const { signaturePrepare } = useApiControllerManager();
-  console.log("signaturePrepare: ", signaturePrepare);
+  // console.log("signaturePrepare: ", signaturePrepare);
   // const signer = workFlow?.participants?.find(
   //   (item) => item.signerToken === workFlow.signerToken
   // );
@@ -52,7 +53,7 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
   const documentIdList = [];
   const lastFileIdList = [];
   const signatureList = [];
-  console.log("signatureList: ", signatureList);
+  // console.log("signatureList: ", signatureList);
 
   if (Array.isArray(workFlow) && workFlow.length > 0) {
     let signerId = null;

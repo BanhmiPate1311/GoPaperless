@@ -17,19 +17,16 @@ import InputField from "../form/input_field";
 import PhoneInputField from "../form/phone_input_field";
 import Notice from "./Notice";
 import ModalField from "./modal_field";
+import { getSignature, getSignerId } from "../../ultis/commonFunction";
 
 const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const signerId = workFlow?.participants?.find(
-    (item) => item.signerToken === workFlow.signerToken
-  ).signerId;
+  const signerId = getSignerId(workFlow);
 
   const { signaturePrepare } = useApiControllerManager();
-  const signature = signaturePrepare.find(
-    (item) => item.field_name === signerId
-  );
+  const signature = getSignature(signaturePrepare, signerId);
   console.log("signature: ", signature);
 
   const [isFetching, setIsFecthing] = useState(false);
@@ -216,17 +213,20 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
       if (personalCode) {
         codeNumber = value + ":" + personalCode.trim();
       }
-      const formData = new FormData();
-      formData.append("lang", lang);
-      formData.append("connectorName", connectorName);
-      formData.append("codeNumber", codeNumber);
-      formData.append("enterpriseId", workFlow.enterpriseId);
-      formData.append("workFlowId", workFlow.workFlowId);
-      const response = await api.post("/getCertificate", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // const formData = new FormData();
+      // formData.append("lang", lang);
+      // formData.append("connectorName", connectorName);
+      // formData.append("codeNumber", codeNumber);
+      // formData.append("enterpriseId", workFlow.enterpriseId);
+      // formData.append("workFlowId", workFlow.workFlowId);
+      const data = {
+        lang: lang,
+        connectorName: connectorName,
+        codeNumber: codeNumber,
+        enterpriseId: workFlow.enterpriseId,
+        workFlowId: workFlow.workFlowId,
+      };
+      const response = await smartIdService.getCertificate(data);
       // setShowModal1(true);
       setContent(response.data);
       // setIsFecthing(false);

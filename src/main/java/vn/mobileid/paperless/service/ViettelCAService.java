@@ -1,5 +1,7 @@
 package vn.mobileid.paperless.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,9 @@ import vn.mobileid.paperless.API.Utils;
 import vn.mobileid.paperless.Model.APIException;
 import vn.mobileid.paperless.Model.Enum.HashAlgorithmOID;
 import vn.mobileid.paperless.Model.Enum.SignAlgo;
+import vn.mobileid.paperless.Model.smartId.request.VtCASignHashRequest;
+import vn.mobileid.paperless.fps.request.FpsSignRequest;
+import vn.mobileid.paperless.fps.request.HashFileRequest;
 import vn.mobileid.paperless.object.*;
 import vn.mobileid.paperless.process.process;
 import vn.mobileid.paperless.repository.CommonRepository;
@@ -47,6 +52,9 @@ public class ViettelCAService {
 
     @Autowired
     private GatewayAPI gatewayAPI;
+
+    @Autowired
+    private FpsService fpsService;
 
     public String login(String userId, String connectorName, ConnectorLogRequest connectorLogRequest) throws Exception {
 
@@ -103,20 +111,23 @@ public class ViettelCAService {
     }
 
     public String signHash(
-            String credentialID,
-            String signingToken,
-            String signerToken,
-            String signerId,
-            String certChain,
-            String connectorName,
-            String accessToken,
-            String fileName,
-            String serialNumber,
-            String signingOption,
-            HttpServletRequest request,
-            @RequestParam String enterpriseId,
-            @RequestParam String workFlowId) throws Exception {
+            VtCASignHashRequest vtCASignHashRequest,
+            HttpServletRequest request) throws Exception {
         try {
+            String field_name = vtCASignHashRequest.getFieldName();
+            String connectorName = vtCASignHashRequest.getConnectorName();
+            int enterpriseId = vtCASignHashRequest.getEnterpriseId();
+            int workFlowId = vtCASignHashRequest.getWorkFlowId();
+            String signingToken = vtCASignHashRequest.getSigningToken();
+            String signerToken = vtCASignHashRequest.getSignerToken();
+            String codeNumber = vtCASignHashRequest.getCodeNumber();
+            String credentialID = vtCASignHashRequest.getCredentialID();
+            String signingOption = vtCASignHashRequest.getSigningOption();
+            String signerId = vtCASignHashRequest.getSignerId();
+            String certChain = vtCASignHashRequest.getCertChain();
+            String fileName = vtCASignHashRequest.getFileName();
+            String accessToken = vtCASignHashRequest.getAccessToken();
+            int documentId = vtCASignHashRequest.getDocumentId();
 
             boolean error = false;
 
@@ -138,21 +149,14 @@ public class ViettelCAService {
                 sResult = "The document has already been signed";
             }
 
-            String sUUID_Last = "";
-            int sFileID_Last = 0;
-            LastFile[][] rsFile = new LastFile[1][];
-            connect.USP_GW_PPL_WORKFLOW_GET_LAST_FILE(rsFile, signingToken);
-            if (rsFile[0].length > 0) {
-                sFileID_Last = rsFile[0][0].getLAST_PPL_FILE_SIGNED_ID();
-                sUUID_Last = rsFile[0][0].getLAST_PPL_FILE_UUID();
-            }
 
             // download first file
             String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
 
-            String document_name = rsWFList[0][0].WORKFLOW_DOCUMENT_NAME;
+            String meta = rsParticipant[0][0].META_INFORMATION;
+            int isSetPosition = CommonFunction.checkIsSetPosition(field_name, meta);
 
-            int document_id = rsFile[0][0].getLAST_PPL_FILE_SIGNED_ID();
+            String document_name = rsWFList[0][0].WORKFLOW_DOCUMENT_NAME;
 
             String[] sResultConnector = new String[2];
             String pIdentierConnector = connect.getIdentierConnector(connectorName, sResultConnector);
@@ -180,7 +184,7 @@ public class ViettelCAService {
 
             List<Map<String, Object>> documents = new ArrayList<>();
             Map<String, Object> docDetail = new HashMap<>();
-            docDetail.put("document_id", document_id);
+            docDetail.put("document_id", documentId);
             docDetail.put("document_name", docbasse64);
 
             documents.add(docDetail);
@@ -192,8 +196,8 @@ public class ViettelCAService {
 
             ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
             connectorLogRequest.setpCONNECTOR_NAME(connectorName);
-            connectorLogRequest.setpENTERPRISE_ID(Integer.parseInt(enterpriseId));
-            connectorLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
+            connectorLogRequest.setpENTERPRISE_ID(enterpriseId);
+            connectorLogRequest.setpWORKFLOW_ID(workFlowId);
 
             List<String> signatures = vtSession.signHash(credentialID, documents, hashRequest, accessToken, async, connectorLogRequest);
 
@@ -222,6 +226,161 @@ public class ViettelCAService {
 //            callBackLogRequest.setpWORKFLOW_ID(Integer.parseInt(workFlowId));
 //            commonRepository.postBack(callBackLogRequest, rsParticipant, pdfSigned, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, tsTimeSigned, rsWFList, sFileID_Last, certChain, serialNumber, signingOption, sType, request);
             return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public String signHashFps(
+            VtCASignHashRequest vtCASignHashRequest,
+            HttpServletRequest request) throws Exception {
+        try {
+            String field_name = vtCASignHashRequest.getFieldName();
+            String connectorName = vtCASignHashRequest.getConnectorName();
+            int enterpriseId = vtCASignHashRequest.getEnterpriseId();
+            int workFlowId = vtCASignHashRequest.getWorkFlowId();
+            String signingToken = vtCASignHashRequest.getSigningToken();
+            String signerToken = vtCASignHashRequest.getSignerToken();
+            String codeNumber = vtCASignHashRequest.getCodeNumber();
+            String credentialID = vtCASignHashRequest.getCredentialID();
+            String signingOption = vtCASignHashRequest.getSigningOption();
+            String signerId = vtCASignHashRequest.getSignerId();
+            String certChain = vtCASignHashRequest.getCertChain();
+            String fileName = vtCASignHashRequest.getFileName();
+            String accessToken = vtCASignHashRequest.getAccessToken();
+            int documentId = vtCASignHashRequest.getDocumentId();
+            int lastFileId = vtCASignHashRequest.getLastFileId();
+
+            boolean error = false;
+
+            WorkFlowList[][] rsWFList = new WorkFlowList[1][];
+            connect.USP_GW_PPL_WORKFLOW_GET(rsWFList, signingToken);
+            String sResult = "0";
+
+            // check workflow status
+            if (rsWFList[0] == null || rsWFList[0].length == 0 || rsWFList[0][0].WORKFLOW_STATUS != Difinitions.CONFIG_PPL_WORKFLOW_STATUS_PENDING) {
+                error = true;
+                sResult = "Signer Status invalid";// trạng thái không hợp lệ
+                throw new Exception(sResult);
+            }
+
+            // check workflow participant
+            Participants[][] rsParticipant = new Participants[1][];
+            connect.USP_GW_PPL_WORKFLOW_PARTICIPANTS_GET(rsParticipant, signerToken);
+            if (rsParticipant[0] == null || rsParticipant[0].length == 0 || rsParticipant[0][0].SIGNER_STATUS != Difinitions.CONFIG_WORKFLOW_PARTICIPANTS_SIGNER_STATUS_ID_PENDING) {
+                sResult = "The document has already been signed";
+            }
+
+
+            // download first file
+            String pDMS_PROPERTY = FileJRBService.getPropertiesFMS();
+
+            String meta = rsParticipant[0][0].META_INFORMATION;
+            int isSetPosition = CommonFunction.checkIsSetPosition(field_name, meta);
+
+            String document_name = rsWFList[0][0].WORKFLOW_DOCUMENT_NAME;
+
+            String[] sResultConnector = new String[2];
+            String pIdentierConnector = connect.getIdentierConnector(connectorName, sResultConnector);
+            String prefixCode = sResultConnector[1];
+
+            long millis = System.currentTimeMillis();
+            String sSignatureHash = signerToken + millis;
+            String sSignature_id = prefixCode + "-" + CommonHash.toHexString(CommonHash.hashPass(sSignatureHash)).toUpperCase();
+
+            String documentDetails = fpsService.getDocumentDetails(documentId);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(documentDetails);
+            JsonNode documentNode = jsonNode.get(0);
+
+//            System.out.println("documentDetails: " + jsonNode.get(0).get("document_height").asInt());
+            int pageHeight = 0;
+            int pageWidth = 0;
+            if (documentNode != null) {
+                pageHeight = documentNode.get("document_height").asInt();
+                pageWidth = documentNode.get("document_width").asInt();
+            }
+
+            List<String> listCertChain = new ArrayList<>();
+            listCertChain.add(certChain);
+
+            HashFileRequest hashFileRequest = commonRepository.getMetaData(signerToken, meta);
+            hashFileRequest.setCertificateChain(listCertChain);
+
+            if (field_name == null || field_name.isEmpty()) {
+                System.out.println("kiem tra:");
+                commonRepository.addSign(pageHeight, pageWidth, signingToken, signerId, meta, documentId);
+            }
+            System.out.println("kiem tra1:");
+            hashFileRequest.setFieldName(!field_name.isEmpty() ? field_name : signerId);
+            String hashList = fpsService.hashSignatureField(documentId, hashFileRequest);
+
+//            PrepareSigningRequest prepareSigningRequest = new PrepareSigningRequest(
+//                    signingToken,
+//                    signerToken,
+//                    signingOption,
+//                    signerId,
+//                    certChain,
+//                    connectorName,
+//                    null
+//            );
+//            String hashList = gatewayAPI.PrepareSign(prepareSigningRequest);
+
+            String docbasse64 = CommonFunction.convertBase64(document_name);
+
+            List<Map<String, Object>> documents = new ArrayList<>();
+            Map<String, Object> docDetail = new HashMap<>();
+            docDetail.put("document_id", documentId);
+            docDetail.put("document_name", docbasse64);
+
+            documents.add(docDetail);
+
+            List<String> hashRequest = new ArrayList<>();
+            hashRequest.add(hashList);
+
+            int async = 0;
+
+            ConnectorLogRequest connectorLogRequest = new ConnectorLogRequest();
+            connectorLogRequest.setpCONNECTOR_NAME(connectorName);
+            connectorLogRequest.setpENTERPRISE_ID(enterpriseId);
+            connectorLogRequest.setpWORKFLOW_ID(workFlowId);
+
+            List<String> signatures = vtSession.signHash(credentialID, documents, hashRequest, accessToken, async, connectorLogRequest);
+
+//            String signature = Base64.getEncoder().encodeToString(signatures.get(0));
+            String signature = signatures.get(0);
+            System.out.println("kiem tra lần 2: ");
+
+            FpsSignRequest fpsSignRequest = new FpsSignRequest();
+            fpsSignRequest.setFieldName(!field_name.isEmpty() ? field_name : signerId);
+            fpsSignRequest.setHashValue(hashList);
+            fpsSignRequest.setSignatureValue(signature);
+
+//                List<String> listCertChain = new ArrayList<>();
+//                listCertChain.add(certChain);
+            fpsSignRequest.setCertificateChain(listCertChain);
+
+            System.out.println("kiem tra progress: ");
+
+            String responseSign = fpsService.signDocument(documentId, fpsSignRequest);
+
+            JsonNode signNode = objectMapper.readTree(responseSign);
+            String uuid = signNode.get("uuid").asText();
+            int fileSize = signNode.get("file_size").asInt();
+            String digest = signNode.get("digest").asText();
+            String signedHash = signNode.get("signed_hash").asText();
+            String signedTime = signNode.get("signed_time").asText();
+
+            CallBackLogRequest callBackLogRequest = new CallBackLogRequest();
+            callBackLogRequest.setpENTERPRISE_ID(enterpriseId);
+            callBackLogRequest.setpWORKFLOW_ID(workFlowId);
+
+//                String fileName = "abc"; // tạm thời
+            commonRepository.postBack2(callBackLogRequest, isSetPosition, signerId, fileName, signingToken, pDMS_PROPERTY, sSignature_id, signerToken, signedTime, rsWFList, lastFileId, certChain, codeNumber, signingOption, uuid, fileSize, enterpriseId, digest, signedHash, signature, request);
+            return responseSign;
         } catch (Exception e) {
             e.printStackTrace();
 

@@ -128,14 +128,14 @@ public class VtSession {
         return signCloudResp;
     }
 
-    public List<String> signHash(String credentialID, List<Map<String, Object>> documents, List<String> hashRequest, String accessToken, int async,ConnectorLogRequest connectorLogRequest) throws Exception {
+    public List<String> signHash(String credentialID, List<Map<String, Object>> documents, List<String> hashRequestList, String accessToken, int async,ConnectorLogRequest connectorLogRequest) throws Exception {
         Map<String, Object> request = new HashMap<>();
         request.put("client_id", VariableLocal.client_id);
         request.put("client_secret", VariableLocal.client_secret);
         request.put("credentialID", credentialID);
         request.put("numSignatures", 1);
         request.put("documents", documents);
-        request.put("hash", hashRequest);
+        request.put("hash", hashRequestList);
         request.put("hashAlgo", HashAlgorithmOID.SHA_256);
         request.put("signAlgo", SignAlgo.RSA_SHA256);
         request.put("async", async);
@@ -148,7 +148,7 @@ public class VtSession {
         try {
             HttpResponse response = HttpUtils.invokeHttpRequest(baseURL + "/vtss/service/signHash", "POST", 183000,
                     headers, Utils.gsTmp.toJson(request));
-
+            System.out.println("response: " + response.getMsg());
             signCloudResp = Utils.gsTmp.fromJson(response.getMsg(), VTSignResponse.class);
 //            log.info("response: " + signCloudResp.getError());
             if (signCloudResp.getError() != 0) {

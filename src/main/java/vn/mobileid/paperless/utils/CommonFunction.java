@@ -5,6 +5,7 @@
  */
 package vn.mobileid.paperless.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -162,7 +163,8 @@ public class CommonFunction {
             int[] intRes = new int[1];
             CertificateObject certObj = null;
             SignerInfoJson signerJson = new SignerInfoJson();
-            VoidCertificateComponents(sCertificate, info, time, intRes);
+            String cert = cleanCertificate(sCertificate);
+            VoidCertificateComponents(cert, info, time, intRes);
             if (intRes[0] == 0) {
                 certObj = new CertificateObject();
                 certObj.subject = info[0].toString();
@@ -521,5 +523,49 @@ public class CommonFunction {
                     + Character.digit(hexString.charAt(i + 1), 16));
         }
         return byteArray;
+    }
+
+    public static String getValueFromJson(String key, String json,String defaultValue) {
+        try {
+            JsonNode jsonNode = new ObjectMapper().readTree(json);
+            return jsonNode.findValue(key).asText();
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    public static int checkIsSetPosition(String field_name, String json) {
+        if (field_name != null && !field_name.isEmpty()) {
+            return 1;
+        }
+
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+        if (jsonObject.has("pdf") && !jsonObject.get("pdf").isJsonNull()) {
+            JsonObject pdfObject = jsonObject.getAsJsonObject("pdf");
+
+            JsonElement annotationElement = pdfObject.get("annotation");
+            if (annotationElement != null && !annotationElement.isJsonNull()) {
+                JsonObject annotationObject = annotationElement.getAsJsonObject();
+                if (annotationObject.has("top") && annotationObject.has("left")) {
+                    return 1;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    public static String cleanCertificate(String base64EncodedCertificate) {
+        // Step 1: Decode Base64 string
+
+        // Step 2: Remove "\t", "\r", and "\n"
+        String cleanedCertificate = new String(base64EncodedCertificate)
+                .replaceAll("\t", "")
+                .replaceAll("\r", "")
+                .replaceAll("\n", "");
+
+        return cleanedCertificate;
     }
 }
