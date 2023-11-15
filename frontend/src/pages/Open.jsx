@@ -12,6 +12,7 @@ import { api } from "../constants/api";
 import { Search } from "@mui/icons-material";
 import iconPdf from "../assets/images/icon_pdf.png";
 import FileSigned from "../components/FileSigned";
+import PDFViewer from "../components/validate/PDFViewer";
 
 export const Open = () => {
   const { t } = useTranslation();
@@ -159,12 +160,7 @@ export const Open = () => {
           >
             <div style={{ height: "400px" }}>
               {originalFile?.base64 && (
-                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
-                  <Viewer
-                    fileUrl={`data:application/pdf;base64,${originalFile?.base64}`}
-                    // plugins={[defaultLayoutPluginInstance]}
-                  ></Viewer>
-                </Worker>
+                <PDFViewer base64={originalFile?.base64} />
               )}
             </div>
           </Collapse>

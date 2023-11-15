@@ -4,7 +4,6 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import {
   Alert,
   Box,
-  Button,
   Collapse,
   IconButton,
   LinearProgress,
@@ -19,12 +18,14 @@ import { useApiControllerManager } from "../store/apiControllerManager";
 
 export const Sequence = () => {
   const { t } = useTranslation();
+
   const { batch_token } = useParams();
 
   const [isFetching, setIsFetching] = useState(false);
 
   // message when sign
   const { isSignSuccess } = useApiControllerManager("");
+  console.log("isSignSuccess: ", isSignSuccess);
 
   //   const [headerVisible, setHeaderVisible] = useState(0);
   //   console.log("headerVisible: ", headerVisible);

@@ -32,7 +32,7 @@ import {
   apiControllerManagerActions,
   useApiControllerManager,
 } from "../../store/apiControllerManager";
-import { getSignerId } from "../../ultis/commonFunction";
+import { checkIsPosition, getSignerId } from "../../ultis/commonFunction";
 import ContextMenu from "../ContextMenu";
 import Document from "./Document";
 
@@ -61,24 +61,27 @@ const PdfView = ({ workFlow, index = 0 }) => {
   const [zoom, setZoom] = useState(1);
   const [previousViewPageIndex, setPreviousViewPageIndex] = useState(0);
 
+  const signer = workFlow?.participants?.find(
+    (item) => item.signerToken === workFlow.signerToken
+  );
+
   const [isSetPos, setIsSetPos] = useState(false);
 
   useEffect(() => {
-    const signer = workFlow?.participants?.find(
-      (item) => item.signerToken === workFlow.signerToken
-    );
-
     const metaInf1 = JSON.parse(signer.metaInformation);
-    if (metaInf1.pdf) {
-      setIsSetPos(true);
-    }
+    setIsSetPos(checkIsPosition(metaInf1));
   }, [workFlow]);
 
   useEffect(() => {
     if (signatures.length > 0) {
-      dispatch(apiControllerManagerActions.setSignaturePrepare(signatures[0]));
+      const signature = signatures.find(
+        (item) => item.field_name === signer.signerId
+      );
+      if (signature && signature.workFlowId === workFlow.workFlowId) {
+        dispatch(apiControllerManagerActions.setSignaturePrepare(signature));
+      }
     }
-  }, [signatures]);
+  }, [signatures, index]);
 
   useEffect(() => {
     const getDocumentDetails = async () => {
@@ -218,12 +221,13 @@ const PdfView = ({ workFlow, index = 0 }) => {
           const { verification, ...repairedSignature } = item;
           return { ...repairedSignature, workFlowId: workFlow.workFlowId };
         });
-      // console.log("signatures: ", signatures);
+      console.log("signatures: ", signatures);
       // this step to check if the signature is signed, then it will the another color
       signatures = await handleGetSignatureAfterVerify(documentID, [
         ...signatures,
       ]);
       setSignatures(signatures);
+      // console.log("signatures: ", signatures);
 
       for (let i = 1; i <= pagesNumber; i++) {
         fpsService
@@ -335,8 +339,9 @@ const PdfView = ({ workFlow, index = 0 }) => {
       workFlowId: workFlow.workFlowId,
       // signerToken: workFlow.signerToken,
     };
-
+    console.log("newSignature: ", newSignature);
     setSignatures((prev) => [...prev, newSignature]);
+    // console.log("signatures: ", signatures);
     fpsService.addSignature(
       pdfInfo,
       {

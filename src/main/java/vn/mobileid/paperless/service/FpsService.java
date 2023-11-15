@@ -2,6 +2,7 @@ package vn.mobileid.paperless.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,10 +19,7 @@ import vn.mobileid.paperless.process.process;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class FpsService {
@@ -265,9 +263,12 @@ public class FpsService {
         requestData.put("page", data.getPage());
         requestData.put("dimension", data.getDimension());
         requestData.put("visible_enabled", data.getVisibleEnabled());
+        List<String> list = new ArrayList<>();
+        list.add("ESEAL");
+        requestData.put("level_of_assurance", list);
 
-//        Gson gson = new Gson();
-//        System.out.println("Request Data: " + gson.toJson(requestData));
+        Gson gson = new Gson();
+        System.out.println("addSignature: " + gson.toJson(requestData));
 
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
 

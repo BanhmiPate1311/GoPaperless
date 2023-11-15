@@ -24,7 +24,7 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
   const { t } = useTranslation();
 
   const { signaturePrepare } = useApiControllerManager();
-  // console.log("signaturePrepare: ", signaturePrepare);
+  console.log("signaturePrepare: ", signaturePrepare);
   // const signer = workFlow?.participants?.find(
   //   (item) => item.signerToken === workFlow.signerToken
   // );
@@ -53,7 +53,7 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
   const documentIdList = [];
   const lastFileIdList = [];
   const signatureList = [];
-  // console.log("signatureList: ", signatureList);
+  console.log("signatureList: ", signatureList);
 
   if (Array.isArray(workFlow) && workFlow.length > 0) {
     let signerId = null;
@@ -95,7 +95,9 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
     signerIdList.push(signerId);
 
     const signature = signaturePrepare.find(
-      (item) => item.field_name === signer.signerId
+      (item) =>
+        item.field_name === signer.signerId &&
+        item.workFlowId === workFlow.workFlowId
     );
     signatureList.push(signature);
   }
@@ -186,7 +188,7 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
 
   function disconnectWSHTML() {
     flagFailedConnectHTML = 0;
-    console.log("sdk", sdk);
+    // console.log("sdk", sdk);
     sdk.current.shutdown();
   }
 
@@ -289,7 +291,7 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
         };
 
         response[i] = await isPluginService.getHash(data);
-        console.log("response[i]: ", response[i]);
+        // console.log("response[i]: ", response[i]);
         const temp = {};
         temp.dtbsHash = response[i].data.hashPG;
         temp.algorithm = "SHA256";
@@ -354,7 +356,7 @@ const FieldUsbToken = ({ isCardChecked, connectorName, workFlow, swError }) => {
               })
               .catch((error) => {
                 let title = "";
-                console.log("error?.response?.data: ", error?.response?.data);
+                // console.log("error?.response?.data: ", error?.response?.data);
                 const errorData = error?.response?.data;
 
                 switch (errorData) {

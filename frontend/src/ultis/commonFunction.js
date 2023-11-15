@@ -411,6 +411,16 @@ export const getSignerId = (value) => {
   ).signerId;
 };
 
-export const getSignature = (value, signerId) => {
-  return value.find((item) => item.field_name === signerId);
+export const getSignature = (value, signerId, workflowId) => {
+  return value.find(
+    (item) => item?.field_name === signerId && item?.workFlowId === workflowId
+  );
+};
+
+export const checkIsPosition = (metaInf1) => {
+  if (metaInf1.pdf && metaInf1.pdf.annotation) {
+    return true;
+  } else {
+    return false;
+  }
 };

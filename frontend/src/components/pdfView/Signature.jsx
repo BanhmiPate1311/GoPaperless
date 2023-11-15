@@ -4,7 +4,7 @@ import { useDrag } from "react-dnd";
 import { ResizableBox } from "react-resizable";
 import { fpsService } from "../../services/fpsService";
 import "../../assets/styles/react-resizable.css";
-import { formatSignerId } from "../../ultis/commonFunction";
+import { checkIsPosition, formatSignerId } from "../../ultis/commonFunction";
 
 export default function Signature({
   useSignatureDataState = () => [null, () => {}],
@@ -24,6 +24,7 @@ export default function Signature({
   const dragRef = useRef();
   // const [signatures, setSignatures] = useSignaturesState();
   const [signatureData, setSignature] = useSignatureDataState();
+
   const [isShowModalSetting, setShowModalSetting] = useState(false);
   // const [isShowModalVefication, setShowModalVefication] = useState(false);
   const maxPosibleResizeWidth =
@@ -34,9 +35,7 @@ export default function Signature({
 
   useEffect(() => {
     const metaInf1 = JSON.parse(signer.metaInformation);
-    if (metaInf1.pdf) {
-      setIsSetPos(true);
-    }
+    setIsSetPos(checkIsPosition(metaInf1));
   }, [signer]);
 
   const [{ isDragged }, drag] = useDrag({
@@ -287,7 +286,7 @@ export default function Signature({
                 className="text-center"
                 style={{ overflowWrap: "break-word", fontSize: "10px" }}
               >
-                {formatSignerId(signatureData.field_name)}
+                {signatureData.field_name}
               </p>
             </div>
           </div>

@@ -26,7 +26,11 @@ const MobileId = ({ isCardChecked, connectorName, workFlow }) => {
   const signerId = getSignerId(workFlow);
 
   const { signaturePrepare } = useApiControllerManager();
-  const signature = getSignature(signaturePrepare, signerId);
+  const signature = getSignature(
+    signaturePrepare,
+    signerId,
+    workFlow.workFlowId
+  );
   console.log("signature: ", signature);
 
   const [isFetching, setIsFecthing] = useState(false);

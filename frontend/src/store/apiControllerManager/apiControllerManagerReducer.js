@@ -38,13 +38,17 @@ export const {
       state.isLoading = action.payload;
     },
     setSignaturePrepare(state, action) {
-      const index = state.signaturePrepare.findIndex(
-        (item) => item.workFlowId === action.payload.workFlowId
-      );
-      if (index === -1) {
-        state.signaturePrepare.push(action.payload);
-      } else {
-        state.signaturePrepare[index] = action.payload;
+      if (action.payload) {
+        const index = state.signaturePrepare.findIndex(
+          (item) =>
+            item.workFlowId === action.payload.workFlowId &&
+            item.field_name === action.payload.field_name
+        );
+        if (index === -1) {
+          state.signaturePrepare.push(action.payload);
+        } else {
+          state.signaturePrepare[index] = action.payload;
+        }
       }
     },
   },

@@ -496,6 +496,7 @@ public class RSSPService {
 //            return "OK";
         } catch (Exception e) {
             commonRepository.connectorLog(connectorLogRequest);
+
             throw new Exception(e.getMessage());
         } finally {
             vcStoringService.remove(requestID);
@@ -716,6 +717,10 @@ public class RSSPService {
 
         } catch (Exception e) {
             commonRepository.connectorLog(connectorLogRequest);
+            if(field_name == null || field_name.isEmpty()){
+                fpsService.deleteSignatue(documentId, signerId);
+            }
+
             throw new Exception(e.getMessage());
         } finally {
             vcStoringService.remove(requestID);

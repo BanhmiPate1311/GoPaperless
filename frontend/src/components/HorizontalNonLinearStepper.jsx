@@ -63,7 +63,11 @@ const HorizontalNonLinearStepper = ({
   const signerId = getSignerId(workFlow);
 
   const { signaturePrepare } = useApiControllerManager();
-  const signature = getSignature(signaturePrepare, signerId);
+  const signature = getSignature(
+    signaturePrepare,
+    signerId,
+    workFlow.workFlowId
+  );
   console.log("signature: ", signature);
 
   const [subject, setSubject] = useState("");
@@ -536,6 +540,7 @@ const HorizontalNonLinearStepper = ({
   };
 
   const authorizeOTP = async (otp) => {
+    dispatch(apiControllerManagerActions.clearsetMessageSuccess());
     console.log("authorizeOTP");
     setIsFetching(true);
     setErrorPG(null);

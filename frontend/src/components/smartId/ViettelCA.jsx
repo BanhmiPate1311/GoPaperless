@@ -36,7 +36,11 @@ const ViettelCA = ({ isCardChecked, connectorName, workFlow }) => {
   // const signature = signaturePrepare.find(
   //   (item) => item.field_name === signerId
   // );
-  const signature = getSignature(signaturePrepare, signerId);
+  const signature = getSignature(
+    signaturePrepare,
+    signerId,
+    workFlow.workFlowId
+  );
   console.log("signature: ", signature);
 
   useEffect(() => {
